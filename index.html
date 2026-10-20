@@ -5,72 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>التوصيل</title>
 <style>
-:root{--main:#ff7a1a;--main2:#ff4d6d;--bg:#f4f6fb;--text:#1d2433;--muted:#7a8399;--ok:#22c55e;--r:16px}
+:root{
+  --bg:#f2f6f5; --ink:#26363a; --muted:#7d8f91;
+  --sage:#5f9d92; --sage2:#8cc3b6; --soft:#e8f1ef; --sand:#fbf5ec;
+  --warm:#d9a35b; --danger:#d9776f; --ok:#4fa37f; --line:#e3ebe9;
+}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,Arial,sans-serif}
-body{background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:30px}
+body{background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px;animation:softIn .8s ease both}
 .hidden{display:none!important}
 
-/* شاشة الافتتاح */
-#splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--main),var(--main2));display:grid;place-items:center;color:#fff;z-index:99;transition:opacity .6s}
+/* ===== الحركات ===== */
+@keyframes softIn{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+
+/* ===== شاشة الافتتاح ===== */
+#splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--sage),var(--sage2));display:grid;place-items:center;color:#fff;z-index:99;transition:opacity .8s ease}
 #splash.gone{opacity:0;pointer-events:none}
-#splash .logo{font-size:72px;text-align:center;animation:bounce 1s infinite}
-#splash p{font-size:26px;font-weight:bold;text-align:center;margin-top:8px;animation:fadeUp .8s both}
+#splash .logo{font-size:70px;text-align:center;animation:float 2.4s ease-in-out infinite}
+#splash p{font-size:24px;font-weight:600;text-align:center;margin-top:10px;animation:rise .9s .2s both}
 
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-@keyframes slideDown{from{transform:translateY(-100%)}to{transform:none}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+/* ===== الهيدر ===== */
+header{background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 26px 26px;box-shadow:0 10px 28px rgba(95,157,146,.25);position:sticky;top:0;z-index:5;animation:slideDown .6s ease both}
+header h1{font-size:19px;font-weight:600}
+header small{opacity:.85;display:block;margin-top:4px;font-size:13px}
+.ghostBtn{background:transparent;border:1px solid rgba(255,255,255,.7);color:#fff;padding:7px 15px;border-radius:999px;cursor:pointer;font-size:14px;transition:background .3s}
+.ghostBtn:hover{background:rgba(255,255,255,.18)}
 
-/* الشاشات */
-.view{animation:fadeUp .5s ease both}
-header{background:linear-gradient(135deg,var(--main),var(--main2));color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5;box-shadow:0 4px 18px rgba(255,77,109,.3);animation:slideDown .5s ease both}
-header small{display:block;opacity:.85}
-main{padding:14px;display:grid;gap:14px}
+main{padding:16px;display:grid;gap:16px;max-width:640px;margin:0 auto}
 
-/* كروت */
-.card{background:#fff;border-radius:var(--r);padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.06);animation:fadeUp .45s ease both;transition:transform .2s,box-shadow .2s}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.1)}
-.card h3{margin-bottom:10px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.muted{color:var(--muted);font-size:14px;margin-top:6px;line-height:1.6}
-.empty{text-align:center;color:var(--muted);padding:30px}
+/* ===== الكروت ===== */
+.card{background:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 22px rgba(38,54,58,.05);border:1px solid var(--line);animation:rise .55s cubic-bezier(.2,.7,.2,1) both;transition:box-shadow .35s}
+.card:hover{box-shadow:0 12px 30px rgba(38,54,58,.09)}
+.card h3{font-size:17px;font-weight:600;margin-bottom:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.muted{color:var(--muted);font-size:13.5px;line-height:1.8}
+.empty{text-align:center;color:var(--muted);padding:26px}
 
-/* الحقول والزراير */
-input,textarea{width:100%;padding:12px;border:1px solid #dfe3ee;border-radius:12px;margin-bottom:10px;font-size:15px;transition:border-color .2s,box-shadow .2s}
-input:focus,textarea:focus{outline:none;border-color:var(--main);box-shadow:0 0 0 3px rgba(255,122,26,.2)}
+/* ===== الحقول والزراير ===== */
+input,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;font-size:15px;background:#fcfefd;transition:border-color .35s,box-shadow .35s,background .35s}
+input:focus,textarea:focus{outline:none;border-color:var(--sage2);box-shadow:0 0 0 4px rgba(140,195,182,.25);background:#fff}
 textarea{min-height:80px;resize:vertical}
-.btn{width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--main),var(--main2));color:#fff;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s,box-shadow .2s}
-.btn:hover{box-shadow:0 6px 16px rgba(255,77,109,.35)}
-.btn:active{transform:scale(.96)}
-.btn.small{width:auto;padding:9px 14px;font-size:14px}
+.btn{width:100%;padding:13px;border:0;border-radius:14px;background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .3s,box-shadow .3s,filter .3s}
+.btn:hover{box-shadow:0 8px 20px rgba(95,157,146,.3);filter:brightness(1.03)}
+.btn:active{transform:scale(.97)}
+.btn.small{width:auto;padding:8px 15px;font-size:13px;border-radius:999px}
 .btn.ok{background:var(--ok)}
-.btn.ghost,.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);padding:8px 12px;border-radius:10px;cursor:pointer}
-.btn.grey{background:#8a93a8}
-.btn.danger{background:#e5484d}
-.link{background:none;border:0;color:var(--main);font-size:14px;cursor:pointer;margin-top:12px;text-decoration:underline}
+.btn.grey{background:#9aa8aa}
+.btn.danger{background:var(--danger)}
+.link{background:none;border:0;color:var(--sage);font-size:14px;cursor:pointer;margin-top:12px;text-decoration:underline}
 button:disabled{opacity:.6}
 
-/* الطلبات */
-.tag{padding:4px 10px;border-radius:20px;font-size:12px;background:#eef1f8;color:#445;white-space:nowrap}
-.tag.new{background:#fff3e0;color:#e65100;animation:pulse 1.4s infinite}
-.tag.accepted{background:#e8efff;color:#2953c9}
-.tag.out{background:#f1e8ff;color:#7c3aed}
-.tag.delivered{background:#e8f9ef;color:#15803d}
-.tag.cancelled{background:#fde8e8;color:#b91c1c}
-.bar{height:8px;background:#eceff6;border-radius:9px;overflow:hidden;margin:12px 0}
-.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--main),var(--main2));border-radius:9px;transition:width .9s cubic-bezier(.4,0,.2,1)}
-.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+/* ===== الطلبات ===== */
+.tag{padding:4px 11px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--sage);white-space:nowrap}
+.tag.new{background:var(--sand);color:var(--warm);animation:float 2s ease-in-out infinite}
+.tag.accepted{background:#e9eef9;color:#4a67a8}
+.tag.out{background:#f0ebf8;color:#7a5ea8}
+.tag.delivered{background:#e4f3ec;color:#3f8a64}
+.tag.cancelled{background:#f8e7e5;color:var(--danger)}
+.bar{height:7px;background:var(--soft);border-radius:9px;overflow:hidden;margin:14px 0 10px}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--sage2));border-radius:9px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.list{display:grid;gap:14px}
 
-/* تبويبات */
-.tabs{display:flex;gap:8px;background:#fff;border-radius:14px;padding:6px;margin:14px 14px 0;box-shadow:0 2px 10px rgba(0,0,0,.05)}
-.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:10px;font-weight:bold;color:var(--muted);cursor:pointer;transition:all .3s}
-.tabs button.active{background:linear-gradient(135deg,var(--main),var(--main2));color:#fff;box-shadow:0 4px 12px rgba(255,77,109,.3)}
-.earn-num{font-size:34px;font-weight:bold;color:var(--main2);margin-top:8px}
+/* ===== تبويبات المندوب ===== */
+.tabs{display:flex;gap:6px;background:#fff;border-radius:999px;padding:5px;margin:16px 16px 0;box-shadow:0 4px 14px rgba(38,54,58,.05);border:1px solid var(--line)}
+.tabs button{flex:1;border:0;background:transparent;padding:10px 6px;border-radius:999px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .35s}
+.tabs button.active{background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;box-shadow:0 4px 12px rgba(95,157,146,.3)}
 
-/* إشعار */
-.toast{position:fixed;top:-90px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:420px;background:#1d2433;color:#fff;padding:14px 18px;border-radius:14px;text-align:center;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:top .45s cubic-bezier(.34,1.56,.64,1)}
-.toast.show{top:16px}
+/* ===== الأرباح ===== */
+.periods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pcard{background:linear-gradient(160deg,var(--soft),#fff);border:1px solid var(--line);border-radius:18px;padding:14px 8px;text-align:center;animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+.pcard:nth-child(2){animation-delay:.08s}
+.pcard:nth-child(3){animation-delay:.16s}
+.pcard span{color:var(--muted);font-size:12.5px}
+.pcard b{display:block;font-size:22px;color:var(--sage);margin:6px 0 2px;font-weight:600}
+.pcard em{display:block;font-style:normal;color:var(--warm);font-weight:600;font-size:14px;margin-top:6px}
+.totalBox{background:var(--sand);border-radius:20px;padding:20px;text-align:center}
+.totalBox span{color:var(--muted);font-size:13px}
+.totalBox b{display:block;font-size:34px;color:var(--warm);margin-top:6px;font-weight:600}
+
+/* ===== إشعار ===== */
+.toast{position:fixed;top:18px;left:50%;background:var(--ink);color:#fff;padding:13px 22px;border-radius:999px;z-index:60;box-shadow:0 12px 30px rgba(0,0,0,.2);opacity:0;pointer-events:none;transform:translate(-50%,-12px);max-width:92%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0);transition:opacity .35s,transform .45s cubic-bezier(.34,1.4,.64,1)}
 .toast.ok{background:var(--ok)}
+
+/* ===== تسجيل الدخول ===== */
+.authWrap{max-width:400px;margin:70px auto;padding:0 16px}
+.authWrap .card{padding:28px}
+.brand{text-align:center;margin-bottom:22px;animation:rise .7s ease both}
+.brand .logo{font-size:48px;animation:float 3s ease-in-out infinite}
+.brand p{color:var(--muted);margin-top:6px;font-size:14px}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -81,53 +109,60 @@ button:disabled{opacity:.6}
 <div id="toast" class="toast"></div>
 
 <!-- شاشة الدخول -->
-<section id="authView" class="view hidden">
-  <header><div><b>🛵 التوصيل</b><small>ادخل برقمك وباسوردك</small></div></header>
-  <main>
+<section id="authView" class="hidden">
+  <div class="authWrap">
+    <div class="brand"><div class="logo">🛵</div><p>ادخل برقمك وباسوردك</p></div>
     <form id="authForm" class="card">
       <h3 id="authTitle">دخول</h3>
       <input id="name" class="hidden" placeholder="اسمك">
       <input id="phone" type="tel" placeholder="رقم التليفون" required>
       <input id="password" type="password" placeholder="الباسورد (6 حروف أو أرقام على الأقل)" required minlength="6">
       <button id="authBtn" class="btn" type="submit">دخول</button>
-      <button id="toggleMode" class="link" type="button">مش عندك حساب؟ سجّل هنا</button>
+      <div style="text-align:center"><button id="toggleMode" class="link" type="button">مش عندك حساب؟ سجّل هنا</button></div>
     </form>
-  </main>
+  </div>
 </section>
 
 <!-- شاشة العميل -->
-<section id="customerView" class="view hidden">
-  <header><div><b id="welcome"></b><small>حساب عميل</small></div><button class="ghost" data-act="logout">خروج</button></header>
+<section id="customerView" class="hidden">
+  <header>
+    <div><h1 id="welcome"></h1><small>حساب عميل</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
   <main>
     <div id="slotOrder"></div>
-    <h3 style="margin-top:6px">طلباتي</h3>
-    <div id="myOrders" style="display:grid;gap:14px"></div>
+    <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلباتي</h3>
+    <div id="myOrders" class="list"></div>
   </main>
 </section>
 
 <!-- شاشة المندوب -->
-<section id="agentView" class="view hidden">
-  <header><div><b id="agentName"></b><small>حساب مندوب</small></div><button class="ghost" data-act="logout">خروج</button></header>
-  <div id="slotOrderA" style="padding:14px 14px 0"></div>
+<section id="agentView" class="hidden">
+  <header>
+    <div><h1 id="agentName"></h1><small>حساب مندوب</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
   <nav class="tabs">
     <button data-tab="open" id="tab-open" class="active">المتاحة</button>
     <button data-tab="mine" id="tab-mine">طلباتي</button>
     <button data-tab="earn" id="tab-earn">أرباحي</button>
   </nav>
   <main>
-    <div id="sec-open" style="display:grid;gap:14px"></div>
-    <div id="sec-mine" class="hidden" style="display:grid;gap:14px"></div>
-    <div id="sec-earn" class="hidden">
-      <div class="card">
-        <p class="muted">أرباحك من الطلبات المكتملة (ثلثين أجرة التوصيل)</p>
-        <div id="earnNum" class="earn-num">0 جنيه</div>
-        <p class="muted" id="doneCount"></p>
+    <div id="slotOrderA"></div>
+    <div id="sec-open" class="list"></div>
+    <div id="sec-mine" class="list hidden"></div>
+    <div id="sec-earn" class="hidden" style="display:grid;gap:14px">
+      <div class="periods" id="earnPeriods"></div>
+      <div class="totalBox">
+        <span>إجمالي أرباحك من كل الطلبات المكتملة</span>
+        <b id="earnTotal">0 جنيه</b>
+        <p class="muted" id="doneCount" style="margin-top:6px"></p>
       </div>
     </div>
   </main>
 </section>
 
-<!-- فورم الطلب (بيتنقل للشاشة المناسبة) -->
+<!-- فورم الطلب -->
 <section id="orderSection" class="card">
   <h3>اطلب توصيل</h3>
   <form id="orderForm">
@@ -156,24 +191,27 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const DEFAULT_FEE = 30;           // أجرة التوصيل (الإدارة هتغيرها بعدين)
-const AGENT_SHARE = 2 / 3;        // المندوب ياخد التلتين
+const DEFAULT_FEE = 30;
+const AGENT_SHARE = 2 / 3;
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const STEPS = ['new','accepted','out','delivered'];
 const NEXT = { accepted:'out', out:'delivered' };
+const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
 
-let me = null, profile = null, unsubs = [], mine = [], mode = 'login';
+let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
 const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
+// وقت التسليم: deliveredAt لو موجود، وإلا وقت إنشاء الطلب
+const doneTime = o => o.deliveredAt?.toMillis?.() ?? o.createdAt?.toMillis?.() ?? 0;
 
 function toast(msg, cls = '') {
   const t = $('toast');
   t.textContent = msg;
   t.className = 'toast show ' + cls;
   clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove('show'), 3500);
+  t._h = setTimeout(() => t.classList.remove('show'), 3300);
 }
 
 function beep() {
@@ -185,21 +223,27 @@ function beep() {
 }
 
 function show(id) {
-  ['authView','customerView','agentView'].forEach(v => {
-    const el = $(v);
-    el.classList.toggle('hidden', v !== id);
-    if (v === id) { el.classList.remove('view'); void el.offsetWidth; el.classList.add('view'); }
-  });
+  ['authView','customerView','agentView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+  const el = $(id);
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
 }
 
-function countTo(el, to) {
-  const t0 = performance.now();
-  const step = t => {
-    const p = Math.min((t - t0) / 900, 1);
-    el.textContent = Math.round(to * p) + ' جنيه';
-    if (p < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+function periodStart(p) {
+  const n = new Date();
+  const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  if (p === 'day') return today.getTime();
+  if (p === 'week') {
+    const d = new Date(today);
+    d.setDate(d.getDate() - ((d.getDay() + 1) % 7)); // الأسبوع بيبدأ السبت
+    return d.getTime();
+  }
+  return new Date(n.getFullYear(), n.getMonth(), 1).getTime();
+}
+
+function summarize(list, p) {
+  const from = periodStart(p);
+  const inP = list.filter(o => doneTime(o) >= from);
+  return { count: inP.length, earn: inP.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0) };
 }
 
 // ===== شاشة الدخول =====
@@ -245,7 +289,7 @@ $('authForm').onsubmit = async e => {
 
 // ===== الجلسة =====
 onAuthStateChanged(auth, async user => {
-  unsubs.forEach(u => u()); unsubs = []; mine = [];
+  unsubs.forEach(u => u()); unsubs = []; mine = []; open = [];
   if (!user) { show('authView'); return; }
   me = user;
   const snap = await getDoc(doc(db, 'users', user.uid));
@@ -264,6 +308,7 @@ function startCustomer() {
     $('myOrders').innerHTML = list.length
       ? list.map((o, i) => orderCardCustomer(o, i)).join('')
       : '<p class="empty">مفيش طلبات لسه</p>';
+    animateBars();
   }));
 }
 
@@ -271,13 +316,19 @@ function orderCardCustomer(o, i) {
   const idx = STEPS.indexOf(o.status);
   const pct = o.status === 'cancelled' ? 0 : ((idx + 1) / STEPS.length) * 100;
   return `
-  <div class="card" style="animation-delay:${i * 0.07}s">
+  <div class="card" style="animation-delay:${i * .07}s">
     <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
-    <div class="bar"><div style="width:${pct}%"></div></div>
+    <div class="bar" data-w="${pct}"><div></div></div>
     ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
   </div>`;
+}
+
+function animateBars() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.bar').forEach(b => { b.firstElementChild.style.width = b.dataset.w + '%'; });
+  });
 }
 
 // ===== فورم الطلب =====
@@ -305,7 +356,6 @@ function startAgent() {
   show('agentView');
 
   let ready = false;
-  let open = [];
   unsubs.push(onSnapshot(query(collection(db, 'orders'), where('status', '==', 'new')), snap => {
     if (ready) {
       snap.docChanges().forEach(c => {
@@ -330,16 +380,25 @@ function startAgent() {
     $('sec-mine').innerHTML = mine.length
       ? mine.map((o, i) => mineCard(o, i)).join('')
       : '<p class="empty">مفيش طلبات معاك</p>';
-    const done = mine.filter(o => o.status === 'delivered');
-    const earn = done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0);
-    $('doneCount').textContent = 'طلبات مكتملة: ' + done.length;
-    countTo($('earnNum'), Math.round(earn));
+    renderEarn();
+    animateBars();
   }));
+}
+
+function renderEarn() {
+  const done = mine.filter(o => o.status === 'delivered');
+  $('earnPeriods').innerHTML = ['day','week','month'].map(p => {
+    const s = summarize(done, p);
+    return `<div class="pcard"><span>${PERIOD_LABEL[p]}</span><b>${s.count}</b><small>طلب</small><em>${Math.round(s.earn)} جنيه</em></div>`;
+  }).join('');
+  const total = summarize(done, 'all');
+  $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
+  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length;
 }
 
 function openCard(o, i) {
   return `
-  <div class="card" style="animation-delay:${i * 0.07}s">
+  <div class="card" style="animation-delay:${i * .07}s">
     <div class="row"><b>طلب جديد</b><span class="tag new">جديد</span></div>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
@@ -358,12 +417,12 @@ function mineCard(o, i) {
   const nxt = NEXT[o.status];
   const label = o.status === 'accepted' ? 'خرجت للتوصيل' : 'تم التسليم';
   return `
-  <div class="card" style="animation-delay:${i * 0.07}s">
+  <div class="card" style="animation-delay:${i * .07}s">
     <div class="row"><b>${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
-    <div class="bar"><div style="width:${pct}%"></div></div>
+    <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
   </div>`;
 }
@@ -390,7 +449,11 @@ const actions = {
   cancel: id => updateDoc(doc(db, 'orders', id), { status: 'cancelled' }),
   next: async id => {
     const o = mine.find(x => x.id === id);
-    if (o && NEXT[o.status]) await updateDoc(doc(db, 'orders', id), { status: NEXT[o.status] });
+    if (!o || !NEXT[o.status]) return;
+    const patch = { status: NEXT[o.status] };
+    if (patch.status === 'delivered') patch.deliveredAt = serverTimestamp();
+    await updateDoc(doc(db, 'orders', id), patch);
+    toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');
   }
 };
 
@@ -399,6 +462,7 @@ function tab(name) {
     $('sec-' + n).classList.toggle('hidden', n !== name);
     $('tab-' + n).classList.toggle('active', n === name);
   });
+  if (name === 'earn') renderEarn();
 }
 
 document.addEventListener('click', e => {
@@ -409,7 +473,7 @@ document.addEventListener('click', e => {
 });
 
 setMode('login');
-setTimeout(() => $('splash').classList.add('gone'), 1200);
+setTimeout(() => $('splash').classList.add('gone'), 1400);
 </script>
 </body>
 </html>
