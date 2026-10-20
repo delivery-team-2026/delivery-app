@@ -194,7 +194,7 @@ header h1{color:#f5c400}
 </section>
 
 <!-- فورم الطلب -->
-<section id="orderSection" class="card">
+<section id="orderSection" class="card hidden">
   <h3>اطلب توصيل</h3>
   <form id="orderForm">
     <textarea id="items" placeholder="اكتب الأصناف، مثال: عيش 5، لبن، فراخ" required></textarea>
@@ -369,7 +369,7 @@ $('authForm').onsubmit = async e => {
 // ===== الجلسة =====
 onAuthStateChanged(auth, async user => {
   unsubs.forEach(u => u()); unsubs = []; mine = []; open = [];
-  if (!user) { show('authView'); return; }
+  if (!user) { $('orderSection').classList.add('hidden'); show('authView'); return; }
   me = user;
   const snap = await getDoc(doc(db, 'users', user.uid));
   if (!snap.exists()) { toast('الحساب ده مش مسجل في النظام'); await signOut(auth); return; }
@@ -386,6 +386,7 @@ onAuthStateChanged(auth, async user => {
 function startCustomer() {
   $('welcome').textContent = 'أهلاً ' + profile.name;
   $('slotOrder').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
   show('customerView');
   unsubs.push(onSnapshot(query(collection(db, 'orders'), where('customerId', '==', me.uid)), snap => {
     const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
@@ -436,6 +437,7 @@ $('orderForm').onsubmit = async e => {
 function startAgent() {
   $('agentName').textContent = profile.name;
   $('slotOrderA').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
   tab('open');
   show('agentView');
 
