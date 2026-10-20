@@ -1,0 +1,23 @@
+{
+  "name": "مكتب السلطان",
+  "short_name": "السلطان",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#f5c400",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "1000115413.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "1000115413.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
