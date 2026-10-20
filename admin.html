@@ -206,7 +206,7 @@ tbody tr:hover{background:#f7fbfa}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, addDoc, query, where, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, setDoc, deleteDoc, collection, addDoc, query, where, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC3jlhf1gZKRj-mn2a-Gb6VvARouFvvL7A",
@@ -339,7 +339,7 @@ function renderAgents() {
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span class="earnPill">${Math.round(agentEarnAll(a.id))} جنيه</span>
-          <button class="btn danger small" data-del="${a.id}">حذف</button>
+          <button class="btn danger small" data-del="${a.id}">إيقاف</button>
         </div>
       </div>`).join('')
     : '<p class="empty">مفيش مندوبين لسه</p>';
@@ -439,7 +439,24 @@ $('agentForm').onsubmit = async e => {
   const pass = $('aPass').value;
   if (phone.length < 10) return toast('اكتب رقم تليفون صحيح');
   try {
-    const cred = await createUserWithEmailAndPassword(secAuth, emailOf(phone), pass);
+    let cred;
+    try {
+      cred = await createUserWithEmailAndPassword(secAuth, emailOf(phone), pass);
+    } catch (err) {
+      if (!String(err.code).includes('email-already-in-use')) throw err;
+      // الرقم متسجل قبل كده: نشوف هل ده مندوب موقوف نرجّعه
+      const found = (await getDocs(query(collection(db, 'users'), where('phone', '==', phone)))).docs[0];
+      if (!found) return toast('الرقم ده متسجل قبل كده، كلّم الدعم');
+      if (found.data().role !== 'disabled') return toast('الرقم ده مستخدم لحساب تاني');
+      await updateDoc(doc(db, 'users', found.id), { name, role: 'agent' });
+      e.target.reset();
+      return toast('اتفعّل حساب المندوب تاني ✅ (بيدخل بالباسورد القديم)', 'ok');
+    }
+    // حساب جديد: نمسح أي سجل موقوف قديم بنفس الرقم
+    const old = await getDocs(query(collection(db, 'users'), where('phone', '==', phone)));
+    for (const d of old.docs) {
+      if (d.id !== cred.user.uid && d.data().role === 'disabled') await deleteDoc(doc(db, 'users', d.id));
+    }
     await setDoc(doc(db, 'users', cred.user.uid), { name, phone, role: 'agent', createdAt: serverTimestamp() });
     await signOut(secAuth);
     e.target.reset();
@@ -473,9 +490,9 @@ document.addEventListener('click', async e => {
   if (del) {
     e.stopPropagation();
     const a = agents.find(x => x.id === del.dataset.del);
-    if (confirm(`تحذف المندوب ${a?.name || ''}؟`)) {
-      await deleteDoc(doc(db, 'users', del.dataset.del));
-      toast('تم حذف المندوب');
+    if (confirm(`توقف حساب المندوب ${a?.name || ''}؟ تقدر تفعّله تاني بإعادة إضافته بنفس الرقم.`)) {
+      await updateDoc(doc(db, 'users', del.dataset.del), { role: 'disabled' });
+      toast('تم إيقاف حساب المندوب');
     }
     return;
   }

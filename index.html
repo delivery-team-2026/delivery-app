@@ -352,6 +352,11 @@ onAuthStateChanged(auth, async user => {
   const snap = await getDoc(doc(db, 'users', user.uid));
   if (!snap.exists()) { toast('الحساب ده مش مسجل في النظام'); await signOut(auth); return; }
   profile = { uid: user.uid, ...snap.data() };
+  if (profile.role === 'disabled') {
+    toast('الحساب ده موقوف، كلّم الإدارة');
+    await signOut(auth);
+    return;
+  }
   profile.role === 'agent' ? startAgent() : startCustomer();
 });
 
