@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الإدارة</title>
+<style>
+:root{--main:#ff7a1a;--main2:#ff4d6d;--bg:#f4f6fb;--text:#1d2433;--muted:#7a8399;--ok:#22c55e;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh}
+.hidden{display:none!important}
+header{background:linear-gradient(135deg,var(--main),var(--main2));color:#fff;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 18px rgba(255,77,109,.3)}
+header small{opacity:.85;display:block}
+.wrap{max-width:1150px;margin:0 auto;padding:22px;display:grid;gap:22px}
+.card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.06);animation:fadeUp .45s ease both}
+.card h3{margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.stat b{display:block;font-size:30px;color:var(--main2);margin-top:6px}
+.stat span{color:var(--muted);font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+input,textarea{width:100%;padding:11px;border:1px solid #dfe3ee;border-radius:10px;margin-bottom:10px;font-size:15px;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{outline:none;border-color:var(--main);box-shadow:0 0 0 3px rgba(255,122,26,.2)}
+textarea{min-height:70px;resize:vertical}
+.btn{padding:11px 18px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--main),var(--main2));color:#fff;font-size:15px;font-weight:bold;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.btn:hover{box-shadow:0 6px 16px rgba(255,77,109,.35)}
+.btn:active{transform:scale(.96)}
+.btn.danger{background:#e5484d}
+.btn.small{padding:7px 12px;font-size:13px}
+.btn.full{width:100%}
+button:disabled{opacity:.6}
+.list{display:grid;gap:10px}
+.item{border:1px solid #eceff6;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;animation:fadeUp .35s ease both}
+.muted{color:var(--muted);font-size:13px;line-height:1.7}
+.empty{color:var(--muted);text-align:center;padding:20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #eceff6;text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:normal;font-size:13px}
+tr{animation:fadeUp .35s ease both}
+.tag{padding:4px 10px;border-radius:20px;font-size:12px;background:#eef1f8;color:#445;white-space:nowrap}
+.tag.new{background:#fff3e0;color:#e65100}
+.tag.accepted{background:#e8efff;color:#2953c9}
+.tag.out{background:#f1e8ff;color:#7c3aed}
+.tag.delivered{background:#e8f9ef;color:#15803d}
+.tag.cancelled{background:#fde8e8;color:#b91c1c}
+.login{max-width:380px;margin:90px auto;padding:0 16px}
+.toast{position:fixed;top:-90px;left:50%;transform:translateX(-50%);background:#1d2433;color:#fff;padding:13px 20px;border-radius:12px;z-index:50;transition:top .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:90%}
+.toast.show{top:16px}
+.toast.ok{background:var(--ok)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- تسجيل دخول الأدمن -->
+<section id="loginView" class="login hidden">
+  <div class="card">
+    <h3>دخول الإدارة</h3>
+    <form id="loginForm">
+      <input id="lPhone" type="tel" placeholder="رقم التليفون" required>
+      <input id="lPass" type="password" placeholder="الباسورد" required>
+      <button class="btn full" type="submit">دخول</button>
+    </form>
+  </div>
+</section>
+
+<!-- لوحة الإدارة -->
+<section id="adminView" class="hidden">
+  <header>
+    <div><b>🛵 لوحة الإدارة</b><small>التوصيل</small></div>
+    <button class="btn small" id="logoutBtn" style="background:transparent;border:1px solid rgba(255,255,255,.7)">خروج</button>
+  </header>
+
+  <div class="wrap">
+    <div class="card stats">
+      <div class="stat"><span>عدد المندوبين</span><b id="stAgents">0</b></div>
+      <div class="stat"><span>طلبات جديدة مستنية مندوب</span><b id="stOpen">0</b></div>
+      <div class="stat"><span>طلبات مكتملة</span><b id="stDone">0</b></div>
+      <div class="stat"><span>أرباحك (ثلث أجرة التوصيل)</span><b id="stEarn">0 جنيه</b></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>إضافة مندوب</h3>
+        <form id="agentForm">
+          <input id="aName" placeholder="اسم المندوب" required>
+          <input id="aPhone" type="tel" placeholder="رقم التليفون" required>
+          <input id="aPass" type="password" placeholder="باسورد مؤقت (6 حروف أو أرقام على الأقل)" required minlength="6">
+          <button class="btn full" type="submit">إضافة المندوب</button>
+        </form>
+        <p class="muted" style="margin-top:10px">بعد الإضافة سلّم المندوب الرقم والباسورد، وهو يدخل من نفس الرابط.</p>
+      </div>
+
+      <div class="card">
+        <h3>المندوبين</h3>
+        <div id="agentList" class="list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>إضافة أوردر (من التليفون)</h3>
+      <form id="orderForm" class="grid2">
+        <div>
+          <input id="oName" placeholder="اسم العميل" required>
+          <input id="oPhone" type="tel" placeholder="رقم العميل" required>
+          <input id="oAddress" placeholder="العنوان بالتفصيل" required>
+        </div>
+        <div>
+          <textarea id="oItems" placeholder="الأصناف، مثال: عيش 5، لبن، فراخ" required></textarea>
+          <input id="oBudget" type="number" min="0" placeholder="ميزانية تقريبية (جنيه)">
+          <input id="oFee" type="number" min="0" placeholder="أجرة التوصيل (جنيه)" required>
+        </div>
+        <div style="grid-column:1/-1"><button class="btn" type="submit">إرسال الأوردر للمندوبين</button></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>كل الطلبات</h3>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>العميل</th><th>الأصناف</th><th>العنوان</th><th>الأجرة</th><th>المندوب</th><th>الحالة</th><th></th></tr>
+          </thead>
+          <tbody id="orderRows"></tbody>
+        </table>
+      </div>
+      <p id="noOrders" class="empty hidden">مفيش طلبات لسه</p>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, addDoc, query, where, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC3jlhf1gZKRj-mn2a-Gb6VvARouFvvL7A",
+  authDomain: "delivery-app-1bb6a.firebaseapp.com",
+  projectId: "delivery-app-1bb6a",
+  storageBucket: "delivery-app-1bb6a.firebasestorage.app",
+  messagingSenderId: "1003596310234",
+  appId: "1:1003596310234:web:5940b3722174bf961e67e3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+// تطبيق تاني عشان إضافة المندوب ماتسجلش الأدمن خروج
+const secApp = initializeApp(firebaseConfig, 'secondary');
+const secAuth = getAuth(secApp);
+
+const AGENT_SHARE = 2 / 3;
+const ADMIN_SHARE = 1 / 3;
+const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
+
+let agents = [], orders = [], unsubs = [];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
+const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
+
+function toast(msg, cls = '') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + cls;
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function friendly(err) {
+  const c = err.code || '';
+  if (c.includes('email-already-in-use')) return 'الرقم ده متسجل قبل كده';
+  if (c.includes('weak-password')) return 'الباسورد لازم 6 حروف أو أرقام على الأقل';
+  if (c.includes('invalid-email')) return 'رقم التليفون مش صحيح';
+  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'الرقم أو الباسورد غلط';
+  return 'حصلت مشكلة، حاول تاني';
+}
+
+// ===== الدخول =====
+$('loginForm').onsubmit = async e => {
+  e.preventDefault();
+  const phone = $('lPhone').value.replace(/\D/g, '');
+  try {
+    await signInWithEmailAndPassword(auth, emailOf(phone), $('lPass').value);
+  } catch (err) {
+    toast(friendly(err));
+  }
+};
+
+$('logoutBtn').onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async user => {
+  unsubs.forEach(u => u()); unsubs = [];
+  if (!user) { $('adminView').classList.add('hidden'); $('loginView').classList.remove('hidden'); return; }
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (!snap.exists() || snap.data().role !== 'admin') {
+    toast('الحساب ده مش حساب إدارة');
+    await signOut(auth);
+    return;
+  }
+  $('loginView').classList.add('hidden');
+  $('adminView').classList.remove('hidden');
+  start();
+});
+
+// ===== البيانات =====
+function start() {
+  unsubs.push(onSnapshot(query(collection(db, 'users'), where('role', '==', 'agent')), snap => {
+    agents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAgents(); renderStats();
+  }));
+  unsubs.push(onSnapshot(collection(db, 'orders'), snap => {
+    orders = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    renderOrders(); renderAgents(); renderStats();
+  }));
+}
+
+function agentEarn(agentId) {
+  return orders
+    .filter(o => o.status === 'delivered' && o.agentId === agentId)
+    .reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0);
+}
+
+function renderStats() {
+  $('stAgents').textContent = agents.length;
+  $('stOpen').textContent = orders.filter(o => o.status === 'new').length;
+  const done = orders.filter(o => o.status === 'delivered');
+  $('stDone').textContent = done.length;
+  const adminEarn = done.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+  $('stEarn').textContent = Math.round(adminEarn) + ' جنيه';
+}
+
+function renderAgents() {
+  $('agentList').innerHTML = agents.length
+    ? agents.map(a => `
+      <div class="item">
+        <div><b>${esc(a.name)}</b><div class="muted">📞 ${esc(a.phone)} · أرباحه: ${Math.round(agentEarn(a.id))} جنيه</div></div>
+        <button class="btn danger small" data-del="${a.id}">حذف</button>
+      </div>`).join('')
+    : '<p class="empty">مفيش مندوبين لسه</p>';
+}
+
+function renderOrders() {
+  $('noOrders').classList.toggle('hidden', orders.length > 0);
+  $('orderRows').innerHTML = orders.map(o => `
+    <tr>
+      <td>${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div></td>
+      <td>${esc(o.items)}</td>
+      <td>${esc(o.address)}</td>
+      <td>${o.deliveryFee ?? 0} جنيه</td>
+      <td>${esc(o.agentName || '—')}</td>
+      <td><span class="tag ${o.status}">${STATUS[o.status]}</span></td>
+      <td>${o.status === 'new' || o.status === 'accepted' ? `<button class="btn danger small" data-cancel="${o.id}">إلغاء</button>` : ''}</td>
+    </tr>`).join('');
+}
+
+// ===== إضافة مندوب =====
+$('agentForm').onsubmit = async e => {
+  e.preventDefault();
+  const name = $('aName').value.trim();
+  const phone = $('aPhone').value.replace(/\D/g, '');
+  const pass = $('aPass').value;
+  if (phone.length < 10) return toast('اكتب رقم تليفون صحيح');
+  try {
+    const cred = await createUserWithEmailAndPassword(secAuth, emailOf(phone), pass);
+    await setDoc(doc(db, 'users', cred.user.uid), { name, phone, role: 'agent', createdAt: serverTimestamp() });
+    await signOut(secAuth);
+    e.target.reset();
+    toast('تم إضافة المندوب ✅', 'ok');
+  } catch (err) {
+    toast(friendly(err));
+  }
+};
+
+// ===== إضافة أوردر =====
+$('orderForm').onsubmit = async e => {
+  e.preventDefault();
+  await addDoc(collection(db, 'orders'), {
+    customerId: null,
+    customerName: $('oName').value.trim(),
+    customerPhone: $('oPhone').value.replace(/\D/g, ''),
+    items: $('oItems').value.trim(),
+    address: $('oAddress').value.trim(),
+    budget: Number($('oBudget').value) || 0,
+    deliveryFee: Number($('oFee').value) || 0,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  });
+  e.target.reset();
+  toast('تم إرسال الأوردر للمندوبين ✅', 'ok');
+};
+
+// ===== الإجراءات =====
+document.addEventListener('click', async e => {
+  const del = e.target.closest('[data-del]');
+  if (del) {
+    const a = agents.find(x => x.id === del.dataset.del);
+    if (confirm(`تحذف المندوب ${a?.name || ''}؟`)) {
+      await deleteDoc(doc(db, 'users', del.dataset.del));
+      toast('تم حذف المندوب');
+    }
+  }
+  const can = e.target.closest('[data-cancel]');
+  if (can && confirm('تلغي الأوردر ده؟')) {
+    await updateDoc(doc(db, 'orders', can.dataset.cancel), { status: 'cancelled' });
+    toast('تم إلغاء الأوردر');
+  }
+});
+</script>
+</body>
+</html>
