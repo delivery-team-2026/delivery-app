@@ -6,9 +6,10 @@
 <title>لوحة الإدارة</title>
 <style>
 :root{
-  --bg:#f2f6f5; --ink:#26363a; --muted:#7d8f91;
-  --sage:#5f9d92; --sage2:#8cc3b6; --soft:#e8f1ef; --sand:#fbf5ec;
-  --warm:#d9a35b; --danger:#d9776f; --line:#e3ebe9;
+  --bg:#fff9f3; --ink:#243447; --muted:#7a8799;
+  --sage:#19b8a6; --sage2:#7fe0cf; --soft:#e6faf6; --sand:#fff4dc;
+  --warm:#f29f2c; --danger:#ff6b7a; --line:#efeaf7;
+  --pink:#ff7ab6; --sun:#ffd166;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,Arial,sans-serif}
 body{background:var(--bg);color:var(--ink);min-height:100vh;animation:softIn .8s ease both}
@@ -16,7 +17,7 @@ body{background:var(--bg);color:var(--ink);min-height:100vh;animation:softIn .8s
 
 /* ===== الحركات ===== */
 @keyframes softIn{from{opacity:0}to{opacity:1}}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes rise{0%{opacity:0;transform:translateY(20px) scale(.96)}65%{opacity:1;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:none}}
 @keyframes sheetUp{from{opacity:0;transform:translateY(40px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -51,7 +52,7 @@ input,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-
 input:focus,textarea:focus{outline:none;border-color:var(--sage2);box-shadow:0 0 0 4px rgba(140,195,182,.25);background:#fff}
 textarea{min-height:76px;resize:vertical}
 .btn{padding:12px 20px;border:0;border-radius:14px;background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .3s,box-shadow .3s,filter .3s}
-.btn:hover{box-shadow:0 8px 20px rgba(95,157,146,.3);filter:brightness(1.03)}
+.btn:hover{box-shadow:0 10px 22px rgba(25,184,166,.35);transform:translateY(-2px) scale(1.02)}
 .btn:active{transform:scale(.97)}
 .btn.danger{background:var(--danger)}
 .btn.small{padding:7px 14px;font-size:13px;border-radius:999px}
