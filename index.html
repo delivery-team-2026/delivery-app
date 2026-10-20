@@ -88,6 +88,14 @@ button:disabled{opacity:.6}
 .totalBox span{color:var(--muted);font-size:13px}
 .totalBox b{display:block;font-size:34px;color:var(--warm);margin-top:6px;font-weight:600}
 
+/* ===== بانر الطلب الجديد ===== */
+.banner{position:fixed;top:-140px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:460px;background:#fff;border:1px solid var(--sage2);border-radius:20px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:70;transition:top .55s cubic-bezier(.34,1.4,.64,1)}
+.banner.show{top:14px;animation:pulseBanner 1.6s ease-in-out infinite}
+.banner b{font-size:16px;color:var(--ink)}
+.banner .muted{font-size:12.5px;margin-top:2px}
+.banner .btns{display:flex;gap:6px;flex-shrink:0}
+@keyframes pulseBanner{0%,100%{box-shadow:0 14px 34px rgba(38,54,58,.18)}50%{box-shadow:0 0 0 8px rgba(140,195,182,.28),0 14px 34px rgba(38,54,58,.18)}}
+
 /* ===== إشعار ===== */
 .toast{position:fixed;top:18px;left:50%;background:var(--ink);color:#fff;padding:13px 22px;border-radius:999px;z-index:60;box-shadow:0 12px 30px rgba(0,0,0,.2);opacity:0;pointer-events:none;transform:translate(-50%,-12px);max-width:92%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0);transition:opacity .35s,transform .45s cubic-bezier(.34,1.4,.64,1)}
@@ -107,6 +115,7 @@ button:disabled{opacity:.6}
 
 <div id="splash"><div><div class="logo">🛵</div><p>التوصيل</p></div></div>
 <div id="toast" class="toast"></div>
+<div id="banner" class="banner"></div>
 
 <!-- شاشة الدخول -->
 <section id="authView" class="hidden">
@@ -214,12 +223,60 @@ function toast(msg, cls = '') {
   t._h = setTimeout(() => t.classList.remove('show'), 3300);
 }
 
-function beep() {
+// ===== رنين الطلب الجديد =====
+let audioCtx = null, ringTimer = null, ringStopper = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+// فتح الصوت أول ما المستخدم يلمس الشاشة (المتصفح بيمنع الصوت قبل كده)
+document.addEventListener('click', () => { try { getAudio(); } catch {} }, { once: true });
+
+function chime() {
   try {
-    const c = new AudioContext(), o = c.createOscillator();
-    o.frequency.value = 880; o.connect(c.destination);
-    o.start(); o.stop(c.currentTime + 0.25);
+    const c = getAudio();
+    [0, 0.3, 0.6].forEach((t, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = i === 1 ? 1175 : 880;
+      g.gain.setValueAtTime(0, c.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.4, c.currentTime + t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + t + 0.25);
+      o.connect(g).connect(c.destination);
+      o.start(c.currentTime + t);
+      o.stop(c.currentTime + t + 0.28);
+    });
   } catch {}
+}
+
+function startRing(order) {
+  stopRing();
+  const b = $('banner');
+  b.innerHTML = `
+    <div>
+      <b>🔔 طلب جديد!</b>
+      <div class="muted">${esc(order.items)}</div>
+      <div class="muted">📍 ${esc(order.address)}</div>
+    </div>
+    <div class="btns">
+      <button class="btn small" data-act="seeOpen">اعرض</button>
+      <button class="btn small grey" data-act="dismiss">تم</button>
+    </div>`;
+  b.classList.add('show');
+  const ring = () => { chime(); navigator.vibrate?.([400, 200, 400, 200, 400]); };
+  ring();
+  ringTimer = setInterval(ring, 2500);
+  // يوقف لوحده بعد دقيقة عشان ما يفضلش يرن للأبد
+  ringStopper = setTimeout(stopRing, 60000);
+}
+
+function stopRing() {
+  clearInterval(ringTimer); clearTimeout(ringStopper);
+  ringTimer = null; ringStopper = null;
+  navigator.vibrate?.(0);
+  $('banner').classList.remove('show');
 }
 
 function show(id) {
@@ -361,9 +418,7 @@ function startAgent() {
       snap.docChanges().forEach(c => {
         const d = c.doc.data();
         if (c.type === 'added' && d.customerId !== me.uid && !(d.declinedBy || []).includes(me.uid)) {
-          toast('🔔 فيه طلب جديد!');
-          navigator.vibrate?.([200, 100, 200]);
-          beep();
+          startRing(d);
         }
       });
     }
@@ -436,6 +491,7 @@ async function acceptOrder(id) {
       if (!s.exists() || s.data().status !== 'new') throw new Error('taken');
       tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name });
     });
+    stopRing();
     toast('تم قبول الطلب، روح خده 🛵', 'ok');
   } catch {
     toast('الطلب ده اتاخد قبلك 😅');
@@ -444,6 +500,8 @@ async function acceptOrder(id) {
 
 const actions = {
   logout: () => signOut(auth),
+  seeOpen: () => { tab('open'); stopRing(); },
+  dismiss: () => stopRing(),
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
   cancel: id => updateDoc(doc(db, 'orders', id), { status: 'cancelled' }),
