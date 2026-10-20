@@ -206,7 +206,7 @@ tbody tr:hover{background:#f7fbfa}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeAuth, browserSessionPersistence, inMemoryPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, getDocs, setDoc, deleteDoc, collection, addDoc, query, where, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -219,11 +219,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// جلسة الأدمن منفصلة عن جلسة التطبيق (تفضل لحد ما تقفل التبويب)
+const auth = initializeAuth(app, { persistence: browserSessionPersistence });
 const db = getFirestore(app);
 // تطبيق تاني عشان إضافة المندوب ماتسجلش الأدمن خروج
 const secApp = initializeApp(firebaseConfig, 'secondary');
-const secAuth = getAuth(secApp);
+const secAuth = initializeAuth(secApp, { persistence: inMemoryPersistence });
 
 const AGENT_SHARE = 2 / 3;
 const ADMIN_SHARE = 1 / 3;
