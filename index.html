@@ -183,6 +183,7 @@ header h1{color:#f5c400}
     <div id="sec-open" class="list"></div>
     <div id="sec-mine" class="list hidden"></div>
     <div id="sec-earn" class="hidden" style="display:grid;gap:14px">
+      <div class="card" id="accountBox"></div>
       <div class="periods" id="earnPeriods"></div>
       <div class="totalBox">
         <span>إجمالي أرباحك من كل الطلبات المكتملة</span>
@@ -231,7 +232,7 @@ const NEXT = { accepted:'out', out:'delivered' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
 const ADMIN_PHONE = '01010422493'; // رقم الإدارة للتواصل المباشر
 
-let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login';
+let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [];
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
@@ -469,14 +470,39 @@ function startAgent() {
       : '<p class="empty">مفيش طلبات متاحة دلوقتي</p>';
   }));
 
+  unsubs.push(onSnapshot(query(collection(db, 'payments'), where('agentId', '==', me.uid)), snap => {
+    myPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAccount();
+  }));
   unsubs.push(onSnapshot(query(collection(db, 'orders'), where('agentId', '==', me.uid)), snap => {
     mine = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
     $('sec-mine').innerHTML = mine.length
       ? mine.map((o, i) => mineCard(o, i)).join('')
       : '<p class="empty">مفيش طلبات معاك</p>';
     renderEarn();
+    renderAccount();
     animateBars();
   }));
+}
+
+function renderAccount() {
+  const owed = mine.filter(o => o.status === 'delivered').reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+  const paid = myPayments.reduce((s, p) => s + (p.amount || 0), 0);
+  const bal = Math.round(owed - paid);
+  const history = [...myPayments]
+    .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+    .slice(0, 5)
+    .map(p => `<div class="muted">${p.kind === 'zero' ? '🧾 تصفير الحساب' : '💵 دفعة'}: ${p.amount} جنيه${p.note && p.kind !== 'zero' ? ' · ' + esc(p.note) : ''}</div>`)
+    .join('');
+  $('accountBox').innerHTML = `
+    <h3>حسابك مع الإدارة</h3>
+    <p class="muted">المستحق عليك للإدارة من الطلبات المكتملة: ${Math.round(owed)} جنيه</p>
+    <p class="muted">اللي دفعته: ${Math.round(paid)} جنيه</p>
+    <div class="totalBox" style="margin-top:12px">
+      <span>${bal > 0 ? 'المتبقي عليك للإدارة' : bal < 0 ? 'الإدارة عليها لك' : 'حسابك متصفّر ✅'}</span>
+      <b style="color:${bal > 0 ? 'var(--danger)' : 'var(--ok)'}">${Math.abs(bal)} جنيه</b>
+    </div>
+    ${history ? `<div style="margin-top:12px;display:grid;gap:4px">${history}</div>` : ''}`;
 }
 
 function renderEarn() {
