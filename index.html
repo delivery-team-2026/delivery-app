@@ -399,6 +399,7 @@ const payNow = o => (o.deliveryFee || 0) - discountOf(o);
 const discountLabel = o => {
   if (o.adminDiscount) return `🎁 كود ترحيب: خصم ${o.adminDiscount} جنيه`;
   if (o.couponDiscount) return `🏷️ كود ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
+  if (o.couponCode) return `🏷️ كود ${esc(o.couponCode)} (قبل التحديث)`;
   return '';
 };
 const invoiceHtml = o => {
@@ -406,7 +407,7 @@ const invoiceHtml = o => {
   const total = goods != null ? goods + payNow(o) : null;
   return `<div style="background:#fffdf7;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:13.5px;line-height:1.9">
     <div>🧺 سعر الأصناف: <b>${goods != null ? goods + ' جنيه' : 'هيتحدد عند التسليم'}</b></div>
-    <div>🛵 أجرة التوصيل: <b>${o.deliveryFee} جنيه</b></div>
+    <div>🛵 أجرة التوصيل: <b>${payNow(o)} جنيه</b>${discountOf(o) ? ` <span style="color:#b8860b">(${o.deliveryFee} - خصم ${discountOf(o)})</span>` : ''}</div>
     ${discountOf(o) ? `<div style="color:#b8860b">${discountLabel(o)}</div>` : ''}
     <div>💵 الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + سعر الأصناف'}</b></div>
   </div>`;
@@ -632,7 +633,7 @@ function openCard(o, i) {
     <p class="muted">📍 ${esc(o.address)}</p>
     <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
     ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة</p>` : ''}
-    <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))})</p>
+    <p class="muted">🛵 أجرة التوصيل: ${payNow(o)} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))})</p>
     <div class="actions">
       <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول</button>
       <button class="btn grey small" data-act="ret" data-id="${o.id}">رجوع</button>
@@ -653,7 +654,7 @@ function mineCard(o, i) {
     <p class="muted">📍 ${esc(o.address)}</p>
     ${o.adminNote ? `<p class="muted" style="color:#b8860b">📝 ملاحظة الإدارة: ${esc(o.adminNote)}</p>` : ''}
     ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة مش من نصيبك</p>` : ''}
-    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))}</p>` : ''}
+    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${payNow(o)} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))}</p>` : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
   </div>`;
@@ -715,9 +716,15 @@ const actions = {
     const patch = { status: NEXT[o.status] };
     if (patch.status === 'out') patch.outAt = serverTimestamp();
     if (patch.status === 'delivered') {
+      let g = null;
+      while (g === null) {
+        const v = prompt('سعر الأصناف اللي استلمته من العميل؟ (لازم تكتب الرقم)');
+        if (v === null) return; // قفل النافذة: التسليم ما يتسجلش
+        if (v.trim() !== '' && !isNaN(Number(v)) && Number(v) >= 0) g = Number(v);
+        else alert('اكتب رقم صحيح');
+      }
+      patch.goodsPrice = g;
       patch.deliveredAt = serverTimestamp();
-      const g = prompt('سعر الأصناف اللي استلمته من العميل؟ (اكتب الرقم، أو سيبها فاضية)');
-      if (g && g.trim() && !isNaN(Number(g))) patch.goodsPrice = Number(g);
     }
     await updateDoc(doc(db, 'orders', id), patch);
     toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');

@@ -279,9 +279,11 @@ const ADMIN_SHARE = 1 / 3;
 // نصيب الإدارة من الطلب: التلت ناقص أي خصم الإدارة اتحمّلته (كود الترحيب)
 const discountOf = o => (o.adminDiscount || 0) + (o.couponDiscount || 0);
 const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - discountOf(o);
+const payNow = o => (o.deliveryFee || 0) - discountOf(o);
 const discountLabel = o => {
   if (o.adminDiscount) return `🎁 كود ترحيب: خصم ${o.adminDiscount} جنيه`;
   if (o.couponDiscount) return `🏷️ كود ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
+  if (o.couponCode) return `🏷️ كود ${esc(o.couponCode)} (قبل التحديث)`;
   return '';
 };
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
@@ -426,7 +428,7 @@ function renderOrders() {
       <td>${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div>${o.issue ? `<div style="margin-top:6px;background:#fff3c4;color:#8a5a00;padding:4px 10px;border-radius:10px;font-size:12px;display:inline-block">⚠️ ${esc(o.issue)}</div>` : ''}</td>
       <td>${esc(o.items)}</td>
       <td>${esc(o.address)}</td>
-      <td>${o.deliveryFee ?? 0} جنيه${discountOf(o) ? `<div class="muted" style="color:#b8860b">${discountLabel(o)}</div><div class="muted">الدفع من العميل: ${(o.deliveryFee || 0) - discountOf(o)} جنيه</div>` : ''}${o.goodsPrice != null ? `<div class="muted">أصناف: ${o.goodsPrice} جنيه</div>` : ''}</td>
+      <td><b>${payNow(o)} جنيه</b>${discountLabel(o) ? `<div class="muted" style="color:#b8860b">${discountLabel(o)}</div><div class="muted">أصل التوصيل ${o.deliveryFee} جنيه</div>` : ''}${o.goodsPrice != null ? `<div class="muted">أصناف: ${o.goodsPrice} جنيه</div>` : ''}</td>
       <td>${esc(o.agentName || '—')}</td>
       <td>
         <span class="tag ${o.status}">${STATUS[o.status]}</span>
