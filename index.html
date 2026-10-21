@@ -224,6 +224,7 @@ const db = getFirestore(app);
 
 const DEFAULT_FEE = 30;
 const AGENT_SHARE = 2 / 3;
+const ADMIN_SHARE = 1 / 3;
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const STEPS = ['new','accepted','out','delivered'];
 const NEXT = { accepted:'out', out:'delivered' };
@@ -482,11 +483,18 @@ function renderEarn() {
   const done = mine.filter(o => o.status === 'delivered');
   $('earnPeriods').innerHTML = ['day','week','month'].map(p => {
     const s = summarize(done, p);
-    return `<div class="pcard"><span>${PERIOD_LABEL[p]}</span><b>${s.count}</b><small>طلب</small><em>${Math.round(s.earn)} جنيه</em></div>`;
+    const fee = done.filter(o => doneTime(o) >= periodStart(p)).reduce((t, o) => t + (o.deliveryFee || 0), 0);
+    return `<div class="pcard">
+      <span>${PERIOD_LABEL[p]}</span>
+      <b>${s.count}</b><small>طلب</small>
+      <em>نصيبك: ${Math.round(s.earn)} جنيه</em>
+      <small style="display:block;margin-top:6px;color:#b8860b">حصة الإدارة: ${Math.round(fee * ADMIN_SHARE)} جنيه</small>
+    </div>`;
   }).join('');
   const total = summarize(done, 'all');
   $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
-  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length;
+  const allFee = done.reduce((t, o) => t + (o.deliveryFee || 0), 0);
+  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length + ' · حصة الإدارة من كل الطلبات: ' + Math.round(allFee * ADMIN_SHARE) + ' جنيه';
 }
 
 function openCard(o, i) {
@@ -496,7 +504,7 @@ function openCard(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
-    <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)})</p>
+    <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(o.deliveryFee * ADMIN_SHARE)})</p>
     <div class="actions">
       <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول</button>
       <button class="btn grey small" data-act="ret" data-id="${o.id}">رجوع</button>
@@ -515,6 +523,7 @@ function mineCard(o, i) {
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(o.deliveryFee * ADMIN_SHARE)}</p>` : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
   </div>`;
