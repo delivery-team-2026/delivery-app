@@ -161,6 +161,7 @@ header h1{color:#f5c400}
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
   <main>
+    <div id="welcomeBox"></div>
     <div id="slotOrder"></div>
     <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلباتي</h3>
     <div id="myOrders" class="list"></div>
@@ -210,7 +211,7 @@ header h1{color:#f5c400}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, updateDoc, runTransaction, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, updateDoc, runTransaction, arrayUnion, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC3jlhf1gZKRj-mn2a-Gb6VvARouFvvL7A",
@@ -390,6 +391,8 @@ onAuthStateChanged(auth, async user => {
 
 // ===== العميل =====
 let coupons = [];
+let myWelcome = null;
+const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - (o.adminDiscount || 0);
 const lastStatus = {};
 let statusReady = false;
 
@@ -398,6 +401,19 @@ function startCustomer() {
   $('slotOrder').appendChild($('orderSection'));
   $('orderSection').classList.remove('hidden');
   show('customerView');
+  (async () => {
+    try {
+      const ref = doc(db, 'welcome', me.uid);
+      const s = await getDoc(ref);
+      if (!s.exists()) {
+        await setDoc(ref, { code: 'WLC' + Math.random().toString(36).slice(2, 7).toUpperCase(), used: false, amount: 5, createdAt: serverTimestamp() });
+      }
+    } catch {}
+  })();
+  unsubs.push(onSnapshot(doc(db, 'welcome', me.uid), s => {
+    myWelcome = s.exists() ? s.data() : null;
+    renderWelcome();
+  }));
   unsubs.push(onSnapshot(collection(db, 'coupons'), snap => {
     coupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }));
@@ -457,19 +473,35 @@ $('orderForm').onsubmit = async e => {
   const budget = Number($('budget').value) || 0;
   if (!items || !address) return toast('اكتب الأصناف والعنوان');
   const code = $('coupon').value.trim().toUpperCase();
-  let fee = DEFAULT_FEE, couponCode = null;
-  if (code) {
+  let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0;
+  if (code && myWelcome && code === myWelcome.code) {
+    if (myWelcome.used) return toast('استخدمت كود الترحيب قبل كده');
+    welcomeCode = code;
+    adminDiscount = myWelcome.amount || 5;
+  }
+  if (code && !welcomeCode) {
     const c = coupons.find(x => x.code === code && x.active);
     if (!c) return toast('كود الخصم مش صحيح أو منتهي');
     fee = Math.max(0, DEFAULT_FEE - c.amount);
     couponCode = code;
   }
-  await addDoc(collection(db, 'orders'), {
+  const orderRef = doc(collection(db, 'orders'));
+  const orderPayload = {
     customerId: me.uid, customerName: profile.name, customerPhone: profile.phone,
     items, address, budget, deliveryFee: fee, couponCode,
     status: 'new', agentId: null, agentName: null, declinedBy: [],
     createdAt: serverTimestamp()
-  });
+  };
+  if (welcomeCode) {
+    orderPayload.welcomeCode = welcomeCode;
+    orderPayload.adminDiscount = adminDiscount;
+    const batch = writeBatch(db);
+    batch.set(orderRef, orderPayload);
+    batch.update(doc(db, 'welcome', me.uid), { used: true });
+    await batch.commit();
+  } else {
+    await setDoc(orderRef, orderPayload);
+  }
   e.target.reset();
   toast('تم إرسال طلبك ✅', 'ok');
 };
@@ -523,8 +555,20 @@ function startAgent() {
   }));
 }
 
+function renderWelcome() {
+  const box = $('welcomeBox');
+  if (!box) return;
+  if (!myWelcome || myWelcome.used) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div class="card" style="background:linear-gradient(120deg,#ffe08a,#fff4c2);border:1px dashed #d4a017">
+      <h3>🎁 هدية أول طلب ليك</h3>
+      <p class="muted">كودك: <b style="font-size:18px;color:#141414;letter-spacing:1px">${esc(myWelcome.code)}</b></p>
+      <p class="muted">خصم 5 جنيه من التوصيل، من الإدارة، ويتستخدم مرة واحدة من حسابك بس. اكتبه في خانة كود الخصم وقت الطلب.</p>
+    </div>`;
+}
+
 function renderAccount() {
-  const owed = mine.filter(o => o.status === 'delivered').reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+  const owed = mine.filter(o => o.status === 'delivered').reduce((s, o) => s + adminCut(o), 0);
   const paid = myPayments.reduce((s, p) => s + (p.amount || 0), 0);
   const bal = Math.round(owed - paid);
   const history = [...myPayments]
@@ -552,13 +596,13 @@ function renderEarn() {
       <span>${PERIOD_LABEL[p]}</span>
       <b>${s.count}</b><small>طلب</small>
       <em>نصيبك: ${Math.round(s.earn)} جنيه</em>
-      <small style="display:block;margin-top:6px;color:#b8860b">حصة الإدارة: ${Math.round(fee * ADMIN_SHARE)} جنيه</small>
+      <small style="display:block;margin-top:6px;color:#b8860b">حصة الإدارة: ${Math.round(done.filter(o => doneTime(o) >= periodStart(p)).reduce((t, o) => t + adminCut(o), 0))} جنيه</small>
     </div>`;
   }).join('');
   const total = summarize(done, 'all');
   $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
   const allFee = done.reduce((t, o) => t + (o.deliveryFee || 0), 0);
-  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length + ' · حصة الإدارة من كل الطلبات: ' + Math.round(allFee * ADMIN_SHARE) + ' جنيه';
+  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length + ' · حصة الإدارة من كل الطلبات: ' + Math.round(done.reduce((t, o) => t + adminCut(o), 0)) + ' جنيه';
 }
 
 function openCard(o, i) {
@@ -568,7 +612,7 @@ function openCard(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
-    <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(o.deliveryFee * ADMIN_SHARE)})</p>
+    <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))})</p>
     <div class="actions">
       <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول</button>
       <button class="btn grey small" data-act="ret" data-id="${o.id}">رجوع</button>
@@ -588,7 +632,7 @@ function mineCard(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     ${o.adminNote ? `<p class="muted" style="color:#b8860b">📝 ملاحظة الإدارة: ${esc(o.adminNote)}</p>` : ''}
-    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(o.deliveryFee * ADMIN_SHARE)}</p>` : ''}
+    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))}</p>` : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
   </div>`;

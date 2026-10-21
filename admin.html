@@ -276,6 +276,8 @@ const secAuth = initializeAuth(secApp, { persistence: inMemoryPersistence });
 
 const AGENT_SHARE = 2 / 3;
 const ADMIN_SHARE = 1 / 3;
+// نصيب الإدارة من الطلب: التلت ناقص أي خصم الإدارة اتحمّلته (كود الترحيب)
+const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - (o.adminDiscount || 0);
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر', all:'الكل' };
 
@@ -388,7 +390,7 @@ function renderStats() {
   $('stOpen').textContent = orders.filter(o => o.status === 'new').length;
   const done = orders.filter(o => o.status === 'delivered');
   $('stDone').textContent = done.length;
-  const adminEarn = done.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+  const adminEarn = done.reduce((s, o) => s + adminCut(o), 0);
   $('stEarn').textContent = Math.round(adminEarn) + ' جنيه';
   renderReport();
   renderDaily();
@@ -525,7 +527,7 @@ function exportOrders() {
   const rows = orders.map(o => [
     tsStr(o.createdAt?.toMillis?.()), o.customerName, o.customerPhone, o.items, o.address, o.budget,
     STATUS[o.status], o.agentName || '', o.deliveryFee || 0,
-    Math.round((o.deliveryFee || 0) * AGENT_SHARE), Math.round((o.deliveryFee || 0) * ADMIN_SHARE),
+    Math.round((o.deliveryFee || 0) * AGENT_SHARE), Math.round(adminCut(o)),
     tsStr(o.acceptedAt?.toMillis?.()), tsStr(o.outAt?.toMillis?.()), tsStr(o.deliveredAt?.toMillis?.()),
     o.rating || '', o.issue || ''
   ]);
@@ -548,7 +550,7 @@ function avgDeliveryMin(id) {
 // ===== حساب المندوب مع الإدارة =====
 function accountOf(id) {
   const owed = orders.filter(o => o.status === 'delivered' && o.agentId === id)
-    .reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+    .reduce((s, o) => s + adminCut(o), 0);
   const paid = payments.filter(p => p.agentId === id).reduce((s, p) => s + (p.amount || 0), 0);
   return { owed: Math.round(owed), paid: Math.round(paid), balance: Math.round(owed - paid) };
 }
@@ -674,7 +676,7 @@ function renderDaily() {
       const list = delivered.filter(o => o.agentId === id && dayKey(doneTime(o)) === k);
       total += list.length;
       earn += list.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0);
-      mine += list.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
+      mine += list.reduce((s, o) => s + adminCut(o), 0);
       return `<td style="text-align:center">${list.length || '—'}</td>`;
     }).join('');
     return `<tr>
@@ -714,7 +716,7 @@ function buildReport(which) {
     `✅ طلبات مكتملة: ${done.length}`,
     `❌ طلبات ملغية: ${cancelled}`,
     `🛵 إجمالي أجرة التوصيل: ${fees} جنيه`,
-    `💰 نصيبك (الثلث): ${Math.round(fees * ADMIN_SHARE)} جنيه`,
+    `💰 نصيبك (الثلث): ${Math.round(done.reduce((s, o) => s + adminCut(o), 0))} جنيه`,
     `🧑‍✈️ نصيب المناديب (التلتين): ${Math.round(fees * AGENT_SHARE)} جنيه`,
     top ? `🏆 أفضل مندوب: ${topName} (${top[1]} طلب)` : '🏆 أفضل مندوب: مفيش طلبات مكتملة'
   ].join('\n');
