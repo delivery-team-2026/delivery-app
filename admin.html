@@ -291,6 +291,10 @@ function summarize(list, p) {
 
 const agentDone = id => orders.filter(o => o.status === 'delivered' && o.agentId === id);
 const agentEarnAll = id => summarize(agentDone(id), 'all').earn;
+const agentRating = id => {
+  const r = orders.filter(o => o.agentId === id && o.rating);
+  return r.length ? { avg: (r.reduce((s, o) => s + o.rating, 0) / r.length).toFixed(1), n: r.length } : null;
+};
 
 // ===== الدخول =====
 $('loginForm').onsubmit = async e => {
@@ -346,7 +350,7 @@ function renderAgents() {
       <div class="item" data-open="${a.id}" style="animation-delay:${i * .06}s">
         <div>
           <b>${esc(a.name)}</b>
-          <div class="muted">📞 ${esc(a.phone)}</div>
+          <div class="muted">📞 ${esc(a.phone)}${agentRating(a.id) ? ` · ⭐ ${agentRating(a.id).avg} (${agentRating(a.id).n} تقييم)` : ''}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span class="earnPill">${Math.round(agentEarnAll(a.id))} جنيه</span>

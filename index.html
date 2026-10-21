@@ -407,6 +407,9 @@ function orderCardCustomer(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <div class="bar" data-w="${pct}"><div></div></div>
+    ${o.status === 'delivered' && o.agentId ? (o.rating
+      ? `<p class="muted">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
+      : `<p class="muted">قيّم المندوب:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
     ${o.issue ? `<p class="muted" style="color:#b8860b">⚠️ مشكلتك: ${esc(o.issue)}</p>` : ''}
     <div class="actions">
       ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
@@ -540,6 +543,11 @@ const actions = {
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
   cancel: id => updateDoc(doc(db, 'orders', id), { status: 'cancelled' }),
+  rate: async (id, el) => {
+    const stars = Number(el.dataset.stars);
+    await updateDoc(doc(db, 'orders', id), { rating: stars, ratedAt: serverTimestamp() });
+    toast('شكراً على تقييمك ⭐', 'ok');
+  },
   report: async id => {
     const txt = prompt('اكتب المشكلة باختصار (تأخير، طلب ناقص، ...)');
     if (!txt || !txt.trim()) return;
@@ -568,7 +576,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-tab]');
   if (t) return tab(t.dataset.tab);
   const b = e.target.closest('[data-act]');
-  if (b) actions[b.dataset.act]?.(b.dataset.id);
+  if (b) actions[b.dataset.act]?.(b.dataset.id, b);
 });
 
 setMode('login');
