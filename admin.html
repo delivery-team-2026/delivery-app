@@ -158,6 +158,19 @@ header h1{color:#f5c400}
       <div class="stat warm"><span>أرباحك (ثلث أجرة التوصيل)</span><b id="stEarn">0 جنيه</b></div>
     </div>
 
+    <div class="card">
+      <h3>تقرير الأسبوع</h3>
+      <div class="seg">
+        <button data-rweek="this" class="active">هذا الأسبوع</button>
+        <button data-rweek="prev">الأسبوع اللي فات</button>
+      </div>
+      <pre id="reportText" style="white-space:pre-wrap;font-family:Tahoma,Arial,sans-serif;line-height:2;background:#fffdf7;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px"></pre>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" data-share="1">ابعته على واتساب</button>
+        <button class="btn grey" data-copy="1">انسخ التقرير</button>
+      </div>
+    </div>
+
     <div class="grid2">
       <div class="card">
         <h3>إضافة مندوب</h3>
@@ -342,6 +355,7 @@ function renderStats() {
   $('stDone').textContent = done.length;
   const adminEarn = done.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
   $('stEarn').textContent = Math.round(adminEarn) + ' جنيه';
+  renderReport();
 }
 
 function renderAgents() {
@@ -449,6 +463,42 @@ function fmtDate(ms) {
   return new Date(ms).toLocaleString('ar-EG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+// ===== تقرير الأسبوع =====
+let reportWeek = 'this';
+const WEEK_MS = 7 * 24 * 3600 * 1000;
+
+function buildReport(which) {
+  const start = periodStart('week');
+  const from = which === 'prev' ? start - WEEK_MS : start;
+  const to = which === 'prev' ? start : Infinity;
+  const inW = o => { const t = doneTime(o); return t >= from && t < to; };
+
+  const done = orders.filter(o => o.status === 'delivered' && inW(o));
+  const cancelled = orders.filter(o => o.status === 'cancelled' && inW(o)).length;
+  const fees = done.reduce((s, o) => s + (o.deliveryFee || 0), 0);
+
+  const byAgent = {};
+  done.forEach(o => { if (o.agentId) byAgent[o.agentId] = (byAgent[o.agentId] || 0) + 1; });
+  const top = Object.entries(byAgent).sort((a, b) => b[1] - a[1])[0];
+  const topName = top ? (done.find(o => o.agentId === top[0])?.agentName || '—') : null;
+
+  const label = which === 'prev' ? 'الأسبوع اللي فات' : 'الأسبوع ده';
+  return [
+    `📊 تقرير ${label} - مكتب السلطان`,
+    `✅ طلبات مكتملة: ${done.length}`,
+    `❌ طلبات ملغية: ${cancelled}`,
+    `🛵 إجمالي أجرة التوصيل: ${fees} جنيه`,
+    `💰 نصيبك (الثلث): ${Math.round(fees * ADMIN_SHARE)} جنيه`,
+    `🧑‍✈️ نصيب المناديب (التلتين): ${Math.round(fees * AGENT_SHARE)} جنيه`,
+    top ? `🏆 أفضل مندوب: ${topName} (${top[1]} طلب)` : '🏆 أفضل مندوب: مفيش طلبات مكتملة'
+  ].join('\n');
+}
+
+function renderReport() {
+  $('reportText').textContent = buildReport(reportWeek);
+  document.querySelectorAll('[data-rweek]').forEach(b => b.classList.toggle('active', b.dataset.rweek === reportWeek));
+}
+
 // ===== إضافة مندوب =====
 $('agentForm').onsubmit = async e => {
   e.preventDefault();
@@ -512,6 +562,17 @@ document.addEventListener('click', async e => {
       await updateDoc(doc(db, 'users', del.dataset.del), { role: 'disabled' });
       toast('تم إيقاف حساب المندوب');
     }
+    return;
+  }
+
+  const rw = e.target.closest('[data-rweek]');
+  if (rw) { reportWeek = rw.dataset.rweek; return renderReport(); }
+  if (e.target.closest('[data-share]')) {
+    return window.open('https://wa.me/?text=' + encodeURIComponent(buildReport(reportWeek)), '_blank');
+  }
+  if (e.target.closest('[data-copy]')) {
+    try { await navigator.clipboard.writeText(buildReport(reportWeek)); toast('اتنسخ التقرير ✅', 'ok'); }
+    catch { toast('مقدرتش أنسخ، حاول تاني'); }
     return;
   }
 
