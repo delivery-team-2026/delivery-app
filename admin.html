@@ -499,14 +499,15 @@ function renderDaily() {
 
   const head = `<thead><tr><th>المندوب</th>${days.map(d =>
     `<th style="text-align:center">${d.toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric', month: 'numeric' })}</th>`).join('')
-  }<th style="text-align:center">الإجمالي</th><th style="text-align:center">أرباحه</th></tr></thead>`;
+  }<th style="text-align:center">الإجمالي</th><th style="text-align:center">أرباحه</th><th style="text-align:center">نصيبك منه</th></tr></thead>`;
 
   const rows = agentIds.map(id => {
-    let total = 0, earn = 0;
+    let total = 0, earn = 0, mine = 0;
     const cells = keys.map(k => {
       const list = delivered.filter(o => o.agentId === id && dayKey(doneTime(o)) === k);
       total += list.length;
       earn += list.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0);
+      mine += list.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
       return `<td style="text-align:center">${list.length || '—'}</td>`;
     }).join('');
     return `<tr>
@@ -514,6 +515,7 @@ function renderDaily() {
       ${cells}
       <td style="text-align:center"><b>${total}</b></td>
       <td style="text-align:center">${Math.round(earn)} جنيه</td>
+      <td style="text-align:center"><b style="color:var(--warm)">${Math.round(mine)} جنيه</b></td>
     </tr>`;
   }).join('');
 
