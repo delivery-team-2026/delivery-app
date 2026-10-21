@@ -392,7 +392,25 @@ onAuthStateChanged(auth, async user => {
 // ===== العميل =====
 let coupons = [];
 let myWelcome = null;
-const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - (o.adminDiscount || 0);
+const discountOf = o => (o.adminDiscount || 0) + (o.couponDiscount || 0);
+// الخصم كله على الإدارة، والمندوب ياخد التلتين من أجرة التوصيل كاملة
+const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - discountOf(o);
+const payNow = o => (o.deliveryFee || 0) - discountOf(o);
+const discountLabel = o => {
+  if (o.adminDiscount) return `🎁 كود ترحيب: خصم ${o.adminDiscount} جنيه`;
+  if (o.couponDiscount) return `🏷️ كود ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
+  return '';
+};
+const invoiceHtml = o => {
+  const goods = o.goodsPrice != null ? o.goodsPrice : null;
+  const total = goods != null ? goods + payNow(o) : null;
+  return `<div style="background:#fffdf7;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:13.5px;line-height:1.9">
+    <div>🧺 سعر الأصناف: <b>${goods != null ? goods + ' جنيه' : 'هيتحدد عند التسليم'}</b></div>
+    <div>🛵 أجرة التوصيل: <b>${o.deliveryFee} جنيه</b></div>
+    ${discountOf(o) ? `<div style="color:#b8860b">${discountLabel(o)}</div>` : ''}
+    <div>💵 الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + سعر الأصناف'}</b></div>
+  </div>`;
+};
 const lastStatus = {};
 let statusReady = false;
 
@@ -445,6 +463,7 @@ function orderCardCustomer(o, i) {
     <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.status !== 'cancelled' ? invoiceHtml(o) : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${o.status === 'delivered' && o.agentId ? (o.rating
       ? `<p class="muted">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
@@ -473,7 +492,7 @@ $('orderForm').onsubmit = async e => {
   const budget = Number($('budget').value) || 0;
   if (!items || !address) return toast('اكتب الأصناف والعنوان');
   const code = $('coupon').value.trim().toUpperCase();
-  let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0;
+  let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0, couponDiscount = 0;
   if (code && myWelcome && code === myWelcome.code) {
     if (myWelcome.used) return toast('استخدمت كود الترحيب قبل كده');
     welcomeCode = code;
@@ -482,13 +501,13 @@ $('orderForm').onsubmit = async e => {
   if (code && !welcomeCode) {
     const c = coupons.find(x => x.code === code && x.active);
     if (!c) return toast('كود الخصم مش صحيح أو منتهي');
-    fee = Math.max(0, DEFAULT_FEE - c.amount);
+    couponDiscount = c.amount;
     couponCode = code;
   }
   const orderRef = doc(collection(db, 'orders'));
   const orderPayload = {
     customerId: me.uid, customerName: profile.name, customerPhone: profile.phone,
-    items, address, budget, deliveryFee: fee, couponCode,
+    items, address, budget, deliveryFee: fee, couponCode, couponDiscount,
     status: 'new', agentId: null, agentName: null, declinedBy: [],
     createdAt: serverTimestamp()
   };
@@ -612,6 +631,7 @@ function openCard(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
+    ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة</p>` : ''}
     <p class="muted">🛵 أجرة التوصيل: ${o.deliveryFee} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))})</p>
     <div class="actions">
       <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول</button>
@@ -632,6 +652,7 @@ function mineCard(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     ${o.adminNote ? `<p class="muted" style="color:#b8860b">📝 ملاحظة الإدارة: ${esc(o.adminNote)}</p>` : ''}
+    ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة مش من نصيبك</p>` : ''}
     ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))}</p>` : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
@@ -693,7 +714,11 @@ const actions = {
     if (!o || !NEXT[o.status]) return;
     const patch = { status: NEXT[o.status] };
     if (patch.status === 'out') patch.outAt = serverTimestamp();
-    if (patch.status === 'delivered') patch.deliveredAt = serverTimestamp();
+    if (patch.status === 'delivered') {
+      patch.deliveredAt = serverTimestamp();
+      const g = prompt('سعر الأصناف اللي استلمته من العميل؟ (اكتب الرقم، أو سيبها فاضية)');
+      if (g && g.trim() && !isNaN(Number(g))) patch.goodsPrice = Number(g);
+    }
     await updateDoc(doc(db, 'orders', id), patch);
     toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');
   }
