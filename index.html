@@ -228,6 +228,7 @@ const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصي
 const STEPS = ['new','accepted','out','delivered'];
 const NEXT = { accepted:'out', out:'delivered' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
+const ADMIN_PHONE = '01010422493'; // رقم الإدارة للتواصل المباشر
 
 let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login';
 const $ = id => document.getElementById(id);
@@ -406,7 +407,12 @@ function orderCardCustomer(o, i) {
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <div class="bar" data-w="${pct}"><div></div></div>
-    ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
+    ${o.issue ? `<p class="muted" style="color:#b8860b">⚠️ مشكلتك: ${esc(o.issue)}</p>` : ''}
+    <div class="actions">
+      ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
+      ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ مشكلة في الطلب</button>` : ''}
+      <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 كلّم الإدارة</a>
+    </div>
   </div>`;
 }
 
@@ -534,6 +540,12 @@ const actions = {
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
   cancel: id => updateDoc(doc(db, 'orders', id), { status: 'cancelled' }),
+  report: async id => {
+    const txt = prompt('اكتب المشكلة باختصار (تأخير، طلب ناقص، ...)');
+    if (!txt || !txt.trim()) return;
+    await updateDoc(doc(db, 'orders', id), { issue: txt.trim(), issueAt: serverTimestamp() });
+    toast('اتبعتت للإدارة، هيتواصلوا معاك ✅', 'ok');
+  },
   next: async id => {
     const o = mine.find(x => x.id === id);
     if (!o || !NEXT[o.status]) return;

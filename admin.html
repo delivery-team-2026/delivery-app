@@ -360,13 +360,16 @@ function renderOrders() {
   $('noOrders').classList.toggle('hidden', orders.length > 0);
   $('orderRows').innerHTML = orders.map((o, i) => `
     <tr style="animation-delay:${Math.min(i, 12) * .04}s">
-      <td>${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div></td>
+      <td>${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div>${o.issue ? `<div style="margin-top:6px;background:#fff3c4;color:#8a5a00;padding:4px 10px;border-radius:10px;font-size:12px;display:inline-block">⚠️ ${esc(o.issue)}</div>` : ''}</td>
       <td>${esc(o.items)}</td>
       <td>${esc(o.address)}</td>
       <td>${o.deliveryFee ?? 0} جنيه</td>
       <td>${esc(o.agentName || '—')}</td>
       <td><span class="tag ${o.status}">${STATUS[o.status]}</span></td>
-      <td>${o.status === 'new' || o.status === 'accepted' ? `<button class="btn danger small" data-cancel="${o.id}">إلغاء</button>` : ''}</td>
+      <td>
+        ${o.issue ? `<button class="btn small" data-resolve="${o.id}">تم الحل</button>` : ''}
+        ${o.status === 'new' || o.status === 'accepted' ? `<button class="btn danger small" data-cancel="${o.id}">إلغاء</button>` : ''}
+      </td>
     </tr>`).join('');
 }
 
@@ -505,6 +508,13 @@ document.addEventListener('click', async e => {
       await updateDoc(doc(db, 'users', del.dataset.del), { role: 'disabled' });
       toast('تم إيقاف حساب المندوب');
     }
+    return;
+  }
+
+  const res = e.target.closest('[data-resolve]');
+  if (res) {
+    await updateDoc(doc(db, 'orders', res.dataset.resolve), { issue: null });
+    toast('تم حل المشكلة ✅', 'ok');
     return;
   }
 
