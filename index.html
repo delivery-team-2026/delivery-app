@@ -173,6 +173,7 @@ header h1{color:#f5c400}
     <div><h1 id="agentName"></h1><small>حساب مندوب</small></div>
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
+  <div style="padding:14px 16px 0"><button id="availBtn" class="btn small" data-act="avail">🟢 متاح للطلبات</button></div>
   <nav class="tabs">
     <button data-tab="open" id="tab-open" class="active">المتاحة</button>
     <button data-tab="mine" id="tab-mine">طلباتي</button>
@@ -232,7 +233,8 @@ const NEXT = { accepted:'out', out:'delivered' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
 const ADMIN_PHONE = '01010422493'; // رقم الإدارة للتواصل المباشر
 
-let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [];
+let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [], myOrdersList = [];
+const isAvail = () => profile?.available !== false;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
@@ -393,6 +395,7 @@ function startCustomer() {
   show('customerView');
   unsubs.push(onSnapshot(query(collection(db, 'orders'), where('customerId', '==', me.uid)), snap => {
     const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    myOrdersList = list;
     $('myOrders').innerHTML = list.length
       ? list.map((o, i) => orderCardCustomer(o, i)).join('')
       : '<p class="empty">مفيش طلبات لسه</p>';
@@ -415,6 +418,7 @@ function orderCardCustomer(o, i) {
     ${o.issue ? `<p class="muted" style="color:#b8860b">⚠️ مشكلتك: ${esc(o.issue)}</p>` : ''}
     <div class="actions">
       ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
+      ${o.status === 'delivered' || o.status === 'cancelled' ? `<button class="btn grey small" data-act="reorder" data-id="${o.id}">🔁 اطلب تاني</button>` : ''}
       ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ مشكلة في الطلب</button>` : ''}
       <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 كلّم الإدارة</a>
     </div>
@@ -457,7 +461,7 @@ function startAgent() {
     if (ready) {
       snap.docChanges().forEach(c => {
         const d = c.doc.data();
-        if (c.type === 'added' && d.customerId !== me.uid && !(d.declinedBy || []).includes(me.uid)) {
+        if (c.type === 'added' && isAvail() && d.customerId !== me.uid && !(d.declinedBy || []).includes(me.uid)) {
           startRing(d);
         }
       });
@@ -470,6 +474,14 @@ function startAgent() {
       : '<p class="empty">مفيش طلبات متاحة دلوقتي</p>';
   }));
 
+  unsubs.push(onSnapshot(doc(db, 'users', me.uid), s => {
+    profile = { ...profile, ...s.data() };
+    const b = $('availBtn');
+    if (b) {
+      b.textContent = isAvail() ? '🟢 متاح للطلبات (اضغط للإيقاف)' : '⚪ مشغول (اضغط عشان تستقبل طلبات)';
+      b.className = 'btn small ' + (isAvail() ? 'ok' : 'grey');
+    }
+  }));
   unsubs.push(onSnapshot(query(collection(db, 'payments'), where('agentId', '==', me.uid)), snap => {
     myPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAccount();
@@ -557,12 +569,13 @@ function mineCard(o, i) {
 
 // ===== الإجراءات =====
 async function acceptOrder(id) {
+  if (!isAvail()) return toast('غيّر حالتك لمتاح الأول 🟢');
   const ref = doc(db, 'orders', id);
   try {
     await runTransaction(db, async tx => {
       const s = await tx.get(ref);
       if (!s.exists() || s.data().status !== 'new') throw new Error('taken');
-      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name });
+      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, acceptedAt: serverTimestamp() });
     });
     stopRing();
     toast('تم قبول الطلب، روح خده 🛵', 'ok');
@@ -578,6 +591,16 @@ const actions = {
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
   cancel: id => updateDoc(doc(db, 'orders', id), { status: 'cancelled' }),
+  reorder: id => {
+    const o = myOrdersList.find(x => x.id === id);
+    if (!o) return;
+    $('items').value = o.items;
+    $('address').value = o.address;
+    $('budget').value = o.budget || '';
+    $('orderSection').scrollIntoView({ behavior: 'smooth' });
+    toast('اتملّت البيانات، راجعها واضغط إرسال ✅', 'ok');
+  },
+  avail: () => updateDoc(doc(db, 'users', me.uid), { available: !isAvail() }),
   rate: async (id, el) => {
     const stars = Number(el.dataset.stars);
     await updateDoc(doc(db, 'orders', id), { rating: stars, ratedAt: serverTimestamp() });
@@ -593,6 +616,7 @@ const actions = {
     const o = mine.find(x => x.id === id);
     if (!o || !NEXT[o.status]) return;
     const patch = { status: NEXT[o.status] };
+    if (patch.status === 'out') patch.outAt = serverTimestamp();
     if (patch.status === 'delivered') patch.deliveredAt = serverTimestamp();
     await updateDoc(doc(db, 'orders', id), patch);
     toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');

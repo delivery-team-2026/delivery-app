@@ -217,6 +217,7 @@ header h1{color:#f5c400}
 
     <div class="card">
       <h3>كل الطلبات</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn small" data-export="orders">📥 تصدير الطلبات (Excel)</button><button class="btn grey small" data-export="payments">📥 تصدير الدفعات (Excel)</button></div>
       <div style="overflow-x:auto">
         <table>
           <thead>
@@ -377,7 +378,7 @@ function renderAgents() {
     ? agents.map((a, i) => `
       <div class="item" data-open="${a.id}" style="animation-delay:${i * .06}s">
         <div>
-          <b>${esc(a.name)}</b>
+          <b>${a.available !== false ? '🟢' : '⚪'} ${esc(a.name)}</b>
           <div class="muted">📞 ${esc(a.phone)}${agentRating(a.id) ? ` · ⭐ ${agentRating(a.id).avg} (${agentRating(a.id).n} تقييم)` : ''}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
@@ -403,6 +404,43 @@ function renderOrders() {
         ${o.status === 'new' || o.status === 'accepted' ? `<button class="btn danger small" data-cancel="${o.id}">إلغاء</button>` : ''}
       </td>
     </tr>`).join('');
+}
+
+// ===== التصدير و متوسط وقت التوصيل =====
+const csvEsc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+const tsStr = ms => ms ? new Date(ms).toLocaleString('ar-EG') : '';
+
+function downloadCsv(name, rows) {
+  const csv = '\uFEFF' + rows.map(r => r.map(csvEsc).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function exportOrders() {
+  const head = ['التاريخ','العميل','الهاتف','الأصناف','العنوان','الميزانية','الحالة','المندوب','أجرة التوصيل','نصيب المندوب','نصيب الإدارة','وقت القبول','وقت الخروج للتوصيل','وقت التسليم','التقييم','المشكلة'];
+  const rows = orders.map(o => [
+    tsStr(o.createdAt?.toMillis?.()), o.customerName, o.customerPhone, o.items, o.address, o.budget,
+    STATUS[o.status], o.agentName || '', o.deliveryFee || 0,
+    Math.round((o.deliveryFee || 0) * AGENT_SHARE), Math.round((o.deliveryFee || 0) * ADMIN_SHARE),
+    tsStr(o.acceptedAt?.toMillis?.()), tsStr(o.outAt?.toMillis?.()), tsStr(o.deliveredAt?.toMillis?.()),
+    o.rating || '', o.issue || ''
+  ]);
+  downloadCsv('الطلبات.csv', [head, ...rows]);
+}
+
+function exportPayments() {
+  const head = ['التاريخ','المندوب','المبلغ','النوع','ملاحظة'];
+  const nameOf = id => agents.find(a => a.id === id)?.name || orders.find(o => o.agentId === id)?.agentName || '—';
+  const rows = payments.map(p => [tsStr(p.createdAt?.toMillis?.()), nameOf(p.agentId), p.amount, p.kind === 'zero' ? 'تصفير' : 'دفعة', p.note || '']);
+  downloadCsv('الدفعات.csv', [head, ...rows]);
+}
+
+function avgDeliveryMin(id) {
+  const r = orders.filter(o => o.agentId === id && o.status === 'delivered' && o.acceptedAt?.toMillis && o.deliveredAt?.toMillis);
+  if (!r.length) return null;
+  return Math.round(r.reduce((s, o) => s + (o.deliveredAt.toMillis() - o.acceptedAt.toMillis()) / 60000, 0) / r.length);
 }
 
 // ===== حساب المندوب مع الإدارة =====
@@ -468,7 +506,7 @@ function renderPanel() {
     <div class="sheetHead">
       <div>
         <h2>${esc(a.name)}</h2>
-        <div class="muted">📞 ${esc(a.phone)} · طلبات شغالة دلوقتي: ${active.length}</div>
+        <div class="muted">📞 ${esc(a.phone)} · طلبات شغالة دلوقتي: ${active.length} · متوسط التوصيل: ${avgDeliveryMin(a.id) ?? '—'} دقيقة</div>
       </div>
       <button class="closeBtn" data-close>×</button>
     </div>
@@ -675,6 +713,9 @@ document.addEventListener('click', async e => {
     toast('الحساب اتصفّر ✅', 'ok');
     return;
   }
+
+  const ex = e.target.closest('[data-export]');
+  if (ex) { ex.dataset.export === 'orders' ? exportOrders() : exportPayments(); return; }
 
   const dr = e.target.closest('[data-drange]');
   if (dr) { dailyRange = Number(dr.dataset.drange); return renderDaily(); }
