@@ -180,6 +180,22 @@ header h1{color:#f5c400}
       </div>
     </div>
 
+    <div class="card">
+      <h3>كوبونات الخصم</h3>
+      <form id="couponForm" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <input id="cCode" placeholder="الكود، مثال: SULTAN10" style="flex:2;min-width:150px;margin:0">
+        <input id="cAmount" type="number" min="1" placeholder="الخصم بالجنيه" style="flex:1;min-width:110px;margin:0">
+        <button class="btn small" type="submit">أضف الكود</button>
+      </form>
+      <p class="muted" style="margin-bottom:10px">الخصم بيتطبّق على أجرة التوصيل، ومنها بيتقسم نصيبك ونصيب المندوب.</p>
+      <div id="couponList" class="list"></div>
+    </div>
+
+    <div class="card">
+      <h3>أكتر العملاء (الشهر ده)</h3>
+      <div id="topCust" class="list"></div>
+    </div>
+
     <div class="grid2">
       <div class="card">
         <h3>إضافة مندوب</h3>
@@ -217,7 +233,7 @@ header h1{color:#f5c400}
 
     <div class="card">
       <h3>كل الطلبات</h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn small" data-export="orders">📥 تصدير الطلبات (Excel)</button><button class="btn grey small" data-export="payments">📥 تصدير الدفعات (Excel)</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn small" data-export="orders">📥 تصدير الطلبات (Excel)</button><button class="btn grey small" data-export="payments">📥 تصدير الدفعات (Excel)</button><button class="btn small" data-export="backup">💾 نسخة احتياطية</button></div>
       <div style="overflow-x:auto">
         <table>
           <thead>
@@ -263,7 +279,7 @@ const ADMIN_SHARE = 1 / 3;
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر', all:'الكل' };
 
-let agents = [], orders = [], payments = [], unsubs = [];
+let agents = [], orders = [], payments = [], coupons = [], unsubs = [];
 let selectedId = null, period = 'all';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -353,6 +369,10 @@ function start() {
     agents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAgents(); renderStats(); renderPanel();
   }));
+  unsubs.push(onSnapshot(collection(db, 'coupons'), snap => {
+    coupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCoupons();
+  }));
   unsubs.push(onSnapshot(collection(db, 'payments'), snap => {
     payments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderPanel();
@@ -372,6 +392,7 @@ function renderStats() {
   $('stEarn').textContent = Math.round(adminEarn) + ' جنيه';
   renderReport();
   renderDaily();
+  renderTopCustomers();
 }
 
 function renderAgents() {
@@ -411,6 +432,65 @@ function renderOrders() {
         <button class="btn grey small" data-note="${o.id}">📝 ملاحظة</button>
       </td>
     </tr>`).join('');
+}
+
+// ===== الكوبونات =====
+function renderCoupons() {
+  $('couponList').innerHTML = coupons.length
+    ? coupons.map(c => `
+      <div class="item">
+        <div><b>${esc(c.code)}</b><div class="muted">خصم ${c.amount} جنيه من أجرة التوصيل</div></div>
+        <button class="btn small ${c.active ? '' : 'grey'}" data-ctoggle="${c.id}">${c.active ? 'مفعّل ✅' : 'موقوف'}</button>
+      </div>`).join('')
+    : '<p class="empty">مفيش كوبونات لسه</p>';
+}
+
+$('couponForm').onsubmit = async e => {
+  e.preventDefault();
+  const code = $('cCode').value.trim().toUpperCase().replace(/\s+/g, '');
+  const amount = Number($('cAmount').value);
+  if (!code) return toast('اكتب الكود');
+  if (!amount || amount <= 0) return toast('اكتب قيمة خصم صحيحة');
+  if (coupons.some(c => c.code === code)) return toast('الكود ده موجود قبل كده');
+  await addDoc(collection(db, 'coupons'), { code, amount, active: true, createdAt: serverTimestamp() });
+  e.target.reset();
+  toast('الكود اتضاف ✅', 'ok');
+};
+
+// ===== أكتر العملاء =====
+function renderTopCustomers() {
+  const from = periodStart('month');
+  const map = {};
+  orders.filter(o => o.status === 'delivered' && doneTime(o) >= from).forEach(o => {
+    const k = o.customerPhone || o.customerName;
+    if (!map[k]) map[k] = { name: o.customerName, phone: o.customerPhone, count: 0 };
+    map[k].count++;
+  });
+  const top = Object.values(map).sort((a, b) => b.count - a.count).slice(0, 5);
+  $('topCust').innerHTML = top.length
+    ? top.map((c, i) => `
+      <div class="item">
+        <div><b>${i + 1}. ${esc(c.name)}</b><div class="muted">📞 ${esc(c.phone)}</div></div>
+        <span class="earnPill">${c.count} طلب</span>
+      </div>`).join('')
+    : '<p class="empty">مفيش طلبات مكتملة الشهر ده</p>';
+}
+
+// ===== النسخة الاحتياطية =====
+function exportBackup() {
+  const fix = v => (v && typeof v === 'object' && v.toMillis) ? v.toMillis() : v;
+  const clean = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, fix(v)]));
+  const data = {
+    exportedAt: new Date().toISOString(),
+    agents: agents.map(a => ({ id: a.id, name: a.name, phone: a.phone, available: a.available !== false })),
+    orders: orders.map(clean),
+    payments: payments.map(clean),
+    coupons: coupons.map(clean)
+  };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  a.download = 'نسخة-احتياطية-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
 // ===== تنبيه التأخير =====
@@ -736,8 +816,19 @@ document.addEventListener('click', async e => {
     return;
   }
 
+  const ct = e.target.closest('[data-ctoggle]');
+  if (ct) {
+    const c = coupons.find(x => x.id === ct.dataset.ctoggle);
+    if (c) await updateDoc(doc(db, 'coupons', c.id), { active: !c.active });
+    return;
+  }
+
   const ex = e.target.closest('[data-export]');
-  if (ex) { ex.dataset.export === 'orders' ? exportOrders() : exportPayments(); return; }
+  if (ex) {
+    const k = ex.dataset.export;
+    if (k === 'orders') exportOrders(); else if (k === 'payments') exportPayments(); else exportBackup();
+    return;
+  }
 
   const dr = e.target.closest('[data-drange]');
   if (dr) { dailyRange = Number(dr.dataset.drange); return renderDaily(); }
