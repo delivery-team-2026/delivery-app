@@ -561,6 +561,7 @@ function mineCard(o, i) {
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.adminNote ? `<p class="muted" style="color:#b8860b">📝 ملاحظة الإدارة: ${esc(o.adminNote)}</p>` : ''}
     ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${o.deliveryFee} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(o.deliveryFee * ADMIN_SHARE)}</p>` : ''}
     <div class="bar" data-w="${pct}"><div></div></div>
     ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}

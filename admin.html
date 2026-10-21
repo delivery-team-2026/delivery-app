@@ -348,6 +348,7 @@ onAuthStateChanged(auth, async user => {
 
 // ===== البيانات =====
 function start() {
+  if (!window._tick) window._tick = setInterval(renderOrders, 60000);
   unsubs.push(onSnapshot(query(collection(db, 'users'), where('role', '==', 'agent')), snap => {
     agents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAgents(); renderStats(); renderPanel();
@@ -398,12 +399,33 @@ function renderOrders() {
       <td>${esc(o.address)}</td>
       <td>${o.deliveryFee ?? 0} جنيه</td>
       <td>${esc(o.agentName || '—')}</td>
-      <td><span class="tag ${o.status}">${STATUS[o.status]}</span></td>
+      <td>
+        <span class="tag ${o.status}">${STATUS[o.status]}</span>
+        ${lateTag(o)}
+        ${o.status === 'cancelled' && o.cancelReason ? `<div class="muted">السبب: ${esc(o.cancelReason)}</div>` : ''}
+        ${o.adminNote ? `<div class="muted" style="color:#b8860b">📝 ${esc(o.adminNote)}</div>` : ''}
+      </td>
       <td>
         ${o.issue ? `<button class="btn small" data-resolve="${o.id}">تم الحل</button>` : ''}
         ${o.status === 'new' || o.status === 'accepted' ? `<button class="btn danger small" data-cancel="${o.id}">إلغاء</button>` : ''}
+        <button class="btn grey small" data-note="${o.id}">📝 ملاحظة</button>
       </td>
     </tr>`).join('');
+}
+
+// ===== تنبيه التأخير =====
+const LATE_ACCEPT_MIN = 30; // مقبول ولسه مخرجش للتوصيل
+const LATE_OUT_MIN = 45;    // خرج للتوصيل ولسه متسلمش
+function lateTag(o) {
+  const now = Date.now();
+  let since = null, limit = 0;
+  if (o.status === 'accepted') { since = o.acceptedAt?.toMillis?.() ?? o.createdAt?.toMillis?.(); limit = LATE_ACCEPT_MIN; }
+  if (o.status === 'out') { since = o.outAt?.toMillis?.() ?? o.acceptedAt?.toMillis?.(); limit = LATE_OUT_MIN; }
+  if (!since) return '';
+  const m = Math.round((now - since) / 60000);
+  return m >= limit
+    ? `<div class="tag" style="background:#ffe1de;color:#b42318;margin-top:6px;display:inline-block">⏰ متأخر ${m} د</div>`
+    : '';
 }
 
 // ===== التصدير و متوسط وقت التوصيل =====
@@ -738,10 +760,21 @@ document.addEventListener('click', async e => {
     return;
   }
 
+  const nt = e.target.closest('[data-note]');
+  if (nt) {
+    const cur = orders.find(o => o.id === nt.dataset.note)?.adminNote || '';
+    const txt = prompt('ملاحظة للمندوب على الطلب (اتركها فاضية عشان تمسحها)', cur);
+    if (txt === null) return;
+    await updateDoc(doc(db, 'orders', nt.dataset.note), { adminNote: txt.trim() });
+    toast('الملاحظة اتحفظت ✅', 'ok');
+    return;
+  }
+
   const can = e.target.closest('[data-cancel]');
   if (can) {
-    if (confirm('تلغي الأوردر ده؟')) {
-      await updateDoc(doc(db, 'orders', can.dataset.cancel), { status: 'cancelled' });
+    const reason = prompt('سبب الإلغاء؟ (العميل ما ردش، المنطقة بعيدة، ...)');
+    if (reason !== null) {
+      await updateDoc(doc(db, 'orders', can.dataset.cancel), { status: 'cancelled', cancelReason: reason.trim() || 'بدون سبب' });
       toast('تم إلغاء الأوردر');
     }
     return;
