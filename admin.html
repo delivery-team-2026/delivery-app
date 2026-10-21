@@ -196,6 +196,17 @@ header h1{color:#f5c400}
       <div id="topCust" class="list"></div>
     </div>
 
+    <div class="card">
+      <h3>المطاعم</h3>
+      <form id="restAddForm" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <input id="rsName" placeholder="اسم المطعم" style="flex:2;min-width:140px;margin:0">
+        <input id="rsPhone" type="tel" placeholder="رقم التليفون" style="flex:1;min-width:120px;margin:0">
+        <input id="rsPass" type="password" placeholder="باسورد (6 على الأقل)" minlength="6" style="flex:1;min-width:140px;margin:0">
+        <button class="btn small" type="submit">إضافة المطعم</button>
+      </form>
+      <div id="restList" class="list"></div>
+    </div>
+
     <div class="grid2">
       <div class="card">
         <h3>إضافة مندوب</h3>
@@ -289,7 +300,7 @@ const discountLabel = o => {
 const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر', all:'الكل' };
 
-let agents = [], orders = [], payments = [], coupons = [], unsubs = [];
+let agents = [], orders = [], payments = [], coupons = [], restaurants = [], unsubs = [];
 let selectedId = null, period = 'all';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -379,6 +390,10 @@ function start() {
     agents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAgents(); renderStats(); renderPanel();
   }));
+  unsubs.push(onSnapshot(query(collection(db, 'users'), where('role', '==', 'restaurant')), snap => {
+    restaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderRestaurants();
+  }));
   unsubs.push(onSnapshot(collection(db, 'coupons'), snap => {
     coupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderCoupons();
@@ -425,7 +440,7 @@ function renderOrders() {
   $('noOrders').classList.toggle('hidden', orders.length > 0);
   $('orderRows').innerHTML = orders.map((o, i) => `
     <tr style="animation-delay:${Math.min(i, 12) * .04}s">
-      <td>${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div>${o.issue ? `<div style="margin-top:6px;background:#fff3c4;color:#8a5a00;padding:4px 10px;border-radius:10px;font-size:12px;display:inline-block">⚠️ ${esc(o.issue)}</div>` : ''}</td>
+      <td>${o.restaurantName ? `<div class="muted" style="color:#b8860b">🍽️ ${esc(o.restaurantName)}</div>` : ''}${esc(o.customerName)}<div class="muted">${esc(o.customerPhone)}</div>${o.issue ? `<div style="margin-top:6px;background:#fff3c4;color:#8a5a00;padding:4px 10px;border-radius:10px;font-size:12px;display:inline-block">⚠️ ${esc(o.issue)}</div>` : ''}</td>
       <td>${esc(o.items)}</td>
       <td>${esc(o.address)}</td>
       <td><b>${payNow(o)} جنيه</b>${discountLabel(o) ? `<div class="muted" style="color:#b8860b">${discountLabel(o)}</div><div class="muted">أصل التوصيل ${o.deliveryFee} جنيه</div>` : ''}${o.goodsPrice != null ? `<div class="muted">أصناف: ${o.goodsPrice} جنيه</div>` : ''}</td>
@@ -443,6 +458,46 @@ function renderOrders() {
       </td>
     </tr>`).join('');
 }
+
+// ===== المطاعم =====
+function renderRestaurants() {
+  $('restList').innerHTML = restaurants.length
+    ? restaurants.map(r => `
+      <div class="item">
+        <div><b>🍽️ ${esc(r.name)}</b><div class="muted">📞 ${esc(r.phone)}</div></div>
+        <button class="btn danger small" data-rstop="${r.id}">إيقاف</button>
+      </div>`).join('')
+    : '<p class="empty">مفيش مطاعم لسه</p>';
+}
+
+$('restAddForm').onsubmit = async e => {
+  e.preventDefault();
+  const name = $('rsName').value.trim();
+  const phone = $('rsPhone').value.replace(/\D/g, '');
+  const pass = $('rsPass').value;
+  if (!name) return toast('اكتب اسم المطعم');
+  if (phone.length < 10) return toast('اكتب رقم تليفون صحيح');
+  try {
+    let uid;
+    try {
+      const cred = await createUserWithEmailAndPassword(secAuth, emailOf(phone), pass);
+      uid = cred.user.uid;
+      await signOut(secAuth);
+    } catch (err) {
+      if (!String(err.code).includes('email-already-in-use')) throw err;
+      const found = (await getDocs(query(collection(db, 'users'), where('phone', '==', phone)))).docs[0];
+      if (!found || found.data().role !== 'disabled') return toast('الرقم ده متسجل قبل كده');
+      await updateDoc(doc(db, 'users', found.id), { name, role: 'restaurant' });
+      e.target.reset();
+      return toast('اتفعّل حساب المطعم تاني ✅', 'ok');
+    }
+    await setDoc(doc(db, 'users', uid), { name, phone, role: 'restaurant', createdAt: serverTimestamp() });
+    e.target.reset();
+    toast('تم إضافة المطعم ✅', 'ok');
+  } catch (err) {
+    toast(friendly(err));
+  }
+};
 
 // ===== الكوبونات =====
 function renderCoupons() {
@@ -823,6 +878,12 @@ document.addEventListener('click', async e => {
       kind: 'zero', createdAt: serverTimestamp()
     });
     toast('الحساب اتصفّر ✅', 'ok');
+    return;
+  }
+
+  const rs = e.target.closest('[data-rstop]');
+  if (rs) {
+    if (confirm('توقف حساب المطعم؟')) await updateDoc(doc(db, 'users', rs.dataset.rstop), { role: 'disabled' });
     return;
   }
 

@@ -197,6 +197,25 @@ header h1{color:#f5c400}
 </section>
 
 <!-- فورم الطلب -->
+<!-- شاشة المطعم -->
+<section id="restView" class="hidden">
+  <header><div><h1 id="restName"></h1><small>حساب مطعم</small></div><button class="ghostBtn" data-act="logout">خروج</button></header>
+  <main>
+    <div class="card">
+      <h3>طلب توصيل جديد</h3>
+      <form id="restForm">
+        <input id="rName" placeholder="اسم العميل" required>
+        <input id="rPhone" type="tel" placeholder="رقم العميل" required>
+        <input id="rAddress" placeholder="العنوان بالتفصيل" required>
+        <textarea id="rItems" placeholder="الأصناف" required></textarea>
+        <button class="btn" type="submit">إرسال للمناديب</button>
+      </form>
+    </div>
+    <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلبات المطعم</h3>
+    <div id="restOrders" class="list"></div>
+  </main>
+</section>
+
 <section id="orderSection" class="card hidden">
   <h3>اطلب توصيل</h3>
   <form id="orderForm">
@@ -309,7 +328,7 @@ function stopRing() {
 }
 
 function show(id) {
-  ['authView','customerView','agentView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+  ['authView','customerView','agentView','restView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
   const el = $(id);
   el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
 }
@@ -386,7 +405,7 @@ onAuthStateChanged(auth, async user => {
     await signOut(auth);
     return;
   }
-  profile.role === 'agent' ? startAgent() : startCustomer();
+  profile.role === 'agent' ? startAgent() : profile.role === 'restaurant' ? startRestaurant() : startCustomer();
 });
 
 // ===== العميل =====
@@ -526,6 +545,55 @@ $('orderForm').onsubmit = async e => {
   toast('تم إرسال طلبك ✅', 'ok');
 };
 
+
+// ===== شاشة المطعم =====
+function startRestaurant() {
+  $('restName').textContent = profile.name;
+  show('restView');
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('restaurantId', '==', me.uid)), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    $('restOrders').innerHTML = list.length
+      ? list.map((o, i) => restCard(o, i)).join('')
+      : '<p class="empty">مفيش طلبات لسه</p>';
+    animateBars();
+  }));
+}
+
+function restCard(o, i) {
+  return `
+  <div class="card" style="animation-delay:${i * .07}s">
+    <div class="row"><b>${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 ${esc(o.customerPhone)}</p>
+    <p class="muted">🛒 ${esc(o.items)}</p>
+    <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.agentId
+      ? `<div style="margin-top:10px;background:var(--soft);border-radius:14px;padding:12px">
+           <div>🛵 المندوب: <b>${esc(o.agentName)}</b></div>
+           ${o.agentPhone ? `<div class="actions"><a class="btn small" style="text-decoration:none" href="tel:+2${esc(o.agentPhone)}">📞 اتصل بالمندوب</a></div>` : ''}
+         </div>`
+      : '<p class="muted">لسه ما اتقبلش من مندوب</p>'}
+    ${o.status === 'new' ? `<div class="actions"><button class="btn danger small" data-act="restCancel" data-id="${o.id}">إلغاء الطلب</button></div>` : ''}
+  </div>`;
+}
+
+$('restForm').onsubmit = async e => {
+  e.preventDefault();
+  const payload = {
+    restaurantId: me.uid, restaurantName: profile.name, customerId: null,
+    customerName: $('rName').value.trim(),
+    customerPhone: $('rPhone').value.replace(/\D/g, ''),
+    items: $('rItems').value.trim(),
+    address: $('rAddress').value.trim(),
+    budget: 0, deliveryFee: DEFAULT_FEE, couponCode: null, couponDiscount: 0,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  };
+  if (!payload.customerName || !payload.customerPhone || !payload.address || !payload.items) return toast('اكتب كل البيانات');
+  await addDoc(collection(db, 'orders'), payload);
+  e.target.reset();
+  toast('الطلب اتبعت للمناديب ✅', 'ok');
+};
+
 // ===== المندوب =====
 function startAgent() {
   $('agentName').textContent = profile.name;
@@ -628,7 +696,7 @@ function renderEarn() {
 function openCard(o, i) {
   return `
   <div class="card" style="animation-delay:${i * .07}s">
-    <div class="row"><b>طلب جديد</b><span class="tag new">جديد</span></div>
+    <div class="row"><b>${o.restaurantName ? '🍽️ ' + esc(o.restaurantName) : 'طلب جديد'}</b><span class="tag new">جديد</span></div>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
@@ -648,7 +716,7 @@ function mineCard(o, i) {
   const label = o.status === 'accepted' ? 'خرجت للتوصيل' : 'تم التسليم';
   return `
   <div class="card" style="animation-delay:${i * .07}s">
-    <div class="row"><b>${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">· 🍽️ ${esc(o.restaurantName)}</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
@@ -668,7 +736,7 @@ async function acceptOrder(id) {
     await runTransaction(db, async tx => {
       const s = await tx.get(ref);
       if (!s.exists() || s.data().status !== 'new') throw new Error('taken');
-      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, acceptedAt: serverTimestamp() });
+      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, agentPhone: profile.phone, acceptedAt: serverTimestamp() });
     });
     stopRing();
     toast('تم قبول الطلب، روح خده 🛵', 'ok');
@@ -683,6 +751,11 @@ const actions = {
   dismiss: () => stopRing(),
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
+  restCancel: async id => {
+    if (!confirm('تلغي الطلب ده؟')) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: 'المطعم ألغاه' });
+    toast('الطلب اتلغى');
+  },
   cancel: async id => {
     const reason = prompt('سبب الإلغاء؟ (اختياري)');
     if (reason === null) return;
@@ -714,6 +787,7 @@ const actions = {
     const o = mine.find(x => x.id === id);
     if (!o || !NEXT[o.status]) return;
     const patch = { status: NEXT[o.status] };
+    let restPrice = null;
     if (patch.status === 'out') patch.outAt = serverTimestamp();
     if (patch.status === 'delivered') {
       let g = null;
@@ -723,10 +797,11 @@ const actions = {
         if (v.trim() !== '' && !isNaN(Number(v)) && Number(v) >= 0) g = Number(v);
         else alert('اكتب رقم صحيح');
       }
-      patch.goodsPrice = g;
+      if (o.restaurantId) restPrice = g; else patch.goodsPrice = g;
       patch.deliveredAt = serverTimestamp();
     }
     await updateDoc(doc(db, 'orders', id), patch);
+    if (restPrice != null) await setDoc(doc(db, 'prices', id), { price: restPrice, createdAt: serverTimestamp() });
     toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');
   }
 };
