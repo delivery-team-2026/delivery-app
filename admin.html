@@ -159,6 +159,15 @@ header h1{color:#f5c400}
     </div>
 
     <div class="card">
+      <h3>المناديب يوم بيوم</h3>
+      <div class="seg">
+        <button data-drange="7" class="active">آخر 7 أيام</button>
+        <button data-drange="30">آخر 30 يوم</button>
+      </div>
+      <div style="overflow-x:auto"><table id="dailyTable"></table></div>
+    </div>
+
+    <div class="card">
       <h3>تقرير الأسبوع</h3>
       <div class="seg">
         <button data-rweek="this" class="active">هذا الأسبوع</button>
@@ -356,6 +365,7 @@ function renderStats() {
   const adminEarn = done.reduce((s, o) => s + (o.deliveryFee || 0) * ADMIN_SHARE, 0);
   $('stEarn').textContent = Math.round(adminEarn) + ' جنيه';
   renderReport();
+  renderDaily();
 }
 
 function renderAgents() {
@@ -463,6 +473,53 @@ function fmtDate(ms) {
   return new Date(ms).toLocaleString('ar-EG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+// ===== المناديب يوم بيوم =====
+let dailyRange = 7;
+const dayKey = ms => { const d = new Date(ms); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+
+function renderDaily() {
+  document.querySelectorAll('[data-drange]').forEach(b => b.classList.toggle('active', Number(b.dataset.drange) === dailyRange));
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = [];
+  for (let i = dailyRange - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i); days.push(d);
+  }
+  const keys = days.map(d => dayKey(d.getTime()));
+  const delivered = orders.filter(o => o.status === 'delivered' && o.agentId);
+  const agentIds = [...new Set(delivered.map(o => o.agentId))];
+  const isActive = id => agents.some(x => x.id === id);
+  agentIds.sort((a, b) => Number(isActive(b)) - Number(isActive(a)));
+  const nameOf = id => agents.find(x => x.id === id)?.name || delivered.find(o => o.agentId === id)?.agentName || '—';
+
+  if (!agentIds.length) {
+    $('dailyTable').innerHTML = '<tr><td class="empty">مفيش طلبات مكتملة لسه</td></tr>';
+    return;
+  }
+
+  const head = `<thead><tr><th>المندوب</th>${days.map(d =>
+    `<th style="text-align:center">${d.toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric', month: 'numeric' })}</th>`).join('')
+  }<th style="text-align:center">الإجمالي</th><th style="text-align:center">أرباحه</th></tr></thead>`;
+
+  const rows = agentIds.map(id => {
+    let total = 0, earn = 0;
+    const cells = keys.map(k => {
+      const list = delivered.filter(o => o.agentId === id && dayKey(doneTime(o)) === k);
+      total += list.length;
+      earn += list.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0);
+      return `<td style="text-align:center">${list.length || '—'}</td>`;
+    }).join('');
+    return `<tr>
+      <td><b>${esc(nameOf(id))}</b>${isActive(id) ? '' : ' <span class="muted">(موقوف)</span>'}</td>
+      ${cells}
+      <td style="text-align:center"><b>${total}</b></td>
+      <td style="text-align:center">${Math.round(earn)} جنيه</td>
+    </tr>`;
+  }).join('');
+
+  $('dailyTable').innerHTML = head + `<tbody>${rows}</tbody>`;
+}
+
 // ===== تقرير الأسبوع =====
 let reportWeek = 'this';
 const WEEK_MS = 7 * 24 * 3600 * 1000;
@@ -564,6 +621,9 @@ document.addEventListener('click', async e => {
     }
     return;
   }
+
+  const dr = e.target.closest('[data-drange]');
+  if (dr) { dailyRange = Number(dr.dataset.drange); return renderDaily(); }
 
   const rw = e.target.closest('[data-rweek]');
   if (rw) { reportWeek = rw.dataset.rweek; return renderReport(); }
