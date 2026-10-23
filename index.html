@@ -130,6 +130,24 @@ header h1{color:#f5c400}
 #splash p{color:#f5c400}
 .brandImg,.splashImg{width:130px;height:130px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px;box-shadow:0 0 0 5px #f5c400,0 14px 36px rgba(0,0,0,.25);animation:float 3s ease-in-out infinite}
 
+/* ===== الشكل الجديد (بانر + كروت داكنة) ===== */
+body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.14) 1px,transparent 1px);background-size:22px 22px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#141414,#2b2510);color:#fff;border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(245,196,0,.35);box-shadow:0 14px 34px rgba(20,20,20,.25);animation:rise .6s both}
+.hero h2{color:#f5c400;font-size:22px;font-weight:700}
+.hero p{color:#fff;opacity:.9;margin-top:6px;font-size:14px;line-height:1.7}
+.hero .heroSub{color:#f5c400;font-weight:600}
+.heroLogo{width:78px;height:78px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #f5c400;flex-shrink:0}
+.authWrap .card{border-top:6px solid #f5c400}
+.pcard{background:linear-gradient(160deg,#1c1c1c,#2a2412);border:1px solid rgba(245,196,0,.25);color:#fff}
+.pcard span,.pcard small{color:#cfc7a8}
+.pcard b{color:#f5c400}
+.pcard em{color:#ffd84d}
+.totalBox{background:linear-gradient(160deg,#141414,#2a2412);color:#fff}
+.totalBox span{color:#cfc7a8}
+.totalBox b{color:#ffd84d}
+.tabs{background:#fff}
+.tabs button.active{background:#141414;color:#f5c400}
+
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -161,6 +179,14 @@ header h1{color:#f5c400}
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
   <main>
+    <div class="hero">
+      <div>
+        <h2>مكتب السلطان</h2>
+        <p class="heroSub">طلبك يوصل لحد الباب</p>
+        <p>من السوبر ماركت أو الصيدلية أو أي محل في منطقتك</p>
+      </div>
+      <img src="1000115413.jpg" alt="" class="heroLogo">
+    </div>
     <div id="welcomeBox"></div>
     <div id="slotOrder"></div>
     <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلباتي</h3>
@@ -174,6 +200,14 @@ header h1{color:#f5c400}
     <div><h1 id="agentName"></h1><small>حساب مندوب</small></div>
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
+  <div style="padding:14px 16px 0"><div class="hero">
+    <div>
+      <h2>جاهز للمشوار؟</h2>
+      <p class="heroSub">الطلبات مستنياك</p>
+      <p>اقبل الطلب، وضّله، وأرباحك بتتحسب لوحدها</p>
+    </div>
+    <img src="1000115413.jpg" alt="" class="heroLogo">
+  </div></div>
   <div style="padding:14px 16px 0"><button id="availBtn" class="btn small" data-act="avail">🟢 متاح للطلبات</button></div>
   <nav class="tabs">
     <button data-tab="open" id="tab-open" class="active">المتاحة</button>
