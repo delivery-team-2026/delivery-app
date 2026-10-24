@@ -2,201 +2,361 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>مكتب السلطان</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>مكتب السلطان | التوصيل الفاخر</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/jpeg" href="1000115413.jpg">
 <link rel="apple-touch-icon" href="1000115413.jpg">
-<meta name="theme-color" content="#f5c400">
+<meta name="theme-color" content="#121214">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="السلطان">
+
+<!-- الخط العربي الاحترافي -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#fff9f3; --ink:#243447; --muted:#7a8799;
-  --sage:#19b8a6; --sage2:#7fe0cf; --soft:#e6faf6; --sand:#fff4dc;
-  --warm:#f29f2c; --danger:#ff6b7a; --ok:#2fbf7f; --line:#efeaf7;
-  --pink:#ff7ab6; --sun:#ffd166;
+:root {
+  --bg-main: #0c0d0f;
+  --bg-card: rgba(22, 23, 28, 0.75);
+  --bg-card-hover: rgba(30, 32, 40, 0.85);
+  --surface: rgba(255, 255, 255, 0.04);
+  --border-glass: rgba(245, 196, 0, 0.16);
+  --border-focus: rgba(245, 196, 0, 0.5);
+  
+  --gold: #f5c400;
+  --gold-dark: #b8860b;
+  --gold-glow: rgba(245, 196, 0, 0.35);
+  
+  --ink: #f8fafc;
+  --ink-muted: #94a3b8;
+  --danger: #ef4444;
+  --ok: #10b981;
+  --info: #38bdf8;
+  --font: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,Arial,sans-serif}
-body{background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px;animation:softIn .8s ease both}
-.hidden{display:none!important}
 
-/* ===== الحركات ===== */
-@keyframes softIn{from{opacity:0}to{opacity:1}}
-@keyframes rise{0%{opacity:0;transform:translateY(20px) scale(.96)}65%{opacity:1;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:none}}
-@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-@keyframes sheetUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
 
-/* ===== شاشة الافتتاح ===== */
-#splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--sage),var(--sage2));display:grid;place-items:center;color:#fff;z-index:99;transition:opacity .8s ease}
-#splash.gone{opacity:0;pointer-events:none}
-#splash .logo{font-size:70px;text-align:center;animation:float 2.4s ease-in-out infinite}
-#splash p{font-size:24px;font-weight:600;text-align:center;margin-top:10px;animation:rise .9s .2s both}
+body {
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(245, 196, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 160, 23, 0.06) 0%, transparent 45%),
+    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 50px;
+  overflow-x: hidden;
+  animation: pageFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
-/* ===== الهيدر ===== */
-header{background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 26px 26px;box-shadow:0 10px 28px rgba(95,157,146,.25);position:sticky;top:0;z-index:5;animation:slideDown .6s ease both}
-header h1{font-size:19px;font-weight:600}
-header small{opacity:.85;display:block;margin-top:4px;font-size:13px}
-.ghostBtn{background:transparent;border:1px solid rgba(255,255,255,.7);color:#fff;padding:7px 15px;border-radius:999px;cursor:pointer;font-size:14px;transition:background .3s}
-.ghostBtn:hover{background:rgba(255,255,255,.18)}
+.hidden { display: none !important; }
 
-main{padding:16px;display:grid;gap:16px;max-width:640px;margin:0 auto}
+/* ===== سلاسل الحركة والموشن جرافيكس ===== */
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes floatLogo { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+@keyframes goldSheen { 0% { transform: translateX(-150%) skewX(-25deg); } 100% { transform: translateX(250%) skewX(-25deg); } }
+@keyframes pulseRings { 0% { box-shadow: 0 0 0 0 var(--gold-glow); } 70% { box-shadow: 0 0 0 14px rgba(245,196,0,0); } 100% { box-shadow: 0 0 0 0 rgba(245,196,0,0); } }
+@keyframes cardEntrance { 0% { opacity: 0; transform: translateY(22px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes dynamicPop { 0% { transform: scale(0.9) translateY(-20px); opacity: 0; } 60% { transform: scale(1.03) translateY(3px); opacity: 1; } 100% { transform: scale(1) translateY(0); } }
+@keyframes flowGlow { 0%, 100% { filter: drop-shadow(0 0 6px rgba(245,196,0,0.4)); } 50% { filter: drop-shadow(0 0 16px rgba(245,196,0,0.8)); } }
 
-/* ===== الكروت ===== */
-.card{background:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 22px rgba(38,54,58,.05);border:1px solid var(--line);animation:rise .55s cubic-bezier(.2,.7,.2,1) both;transition:box-shadow .35s}
-.card:hover{box-shadow:0 12px 30px rgba(38,54,58,.09)}
-.card h3{font-size:17px;font-weight:600;margin-bottom:14px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.muted{color:var(--muted);font-size:13.5px;line-height:1.8}
-.empty{text-align:center;color:var(--muted);padding:26px}
+/* ===== شاشة الافتتاح (Splash Screen) ===== */
+#splash {
+  position: fixed; inset: 0;
+  background: radial-gradient(circle at center, #1e1b10 0%, #0a0a0c 100%);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  z-index: 9999;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s;
+}
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.splashImg {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 35px var(--gold-glow);
+  animation: floatLogo 3s ease-in-out infinite, pulseRings 2s infinite;
+  object-fit: cover;
+}
+#splash h2 {
+  font-size: 26px; font-weight: 800; color: var(--gold);
+  margin-top: 18px; letter-spacing: 0.5px;
+  animation: flowGlow 3s ease-in-out infinite;
+}
 
-/* ===== الحقول والزراير ===== */
-input,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;font-size:15px;background:#fcfefd;transition:border-color .35s,box-shadow .35s,background .35s}
-input:focus,textarea:focus{outline:none;border-color:var(--sage2);box-shadow:0 0 0 4px rgba(140,195,182,.25);background:#fff}
-textarea{min-height:80px;resize:vertical}
-.btn{width:100%;padding:13px;border:0;border-radius:14px;background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .3s,box-shadow .3s,filter .3s}
-.btn:hover{box-shadow:0 10px 22px rgba(25,184,166,.35);transform:translateY(-2px) scale(1.02)}
-.btn:active{transform:scale(.97)}
-.btn.small{width:auto;padding:8px 15px;font-size:13px;border-radius:999px}
-.btn.ok{background:var(--ok)}
-.btn.grey{background:#9aa8aa}
-.btn.danger{background:var(--danger)}
-.link{background:none;border:0;color:var(--sage);font-size:14px;cursor:pointer;margin-top:12px;text-decoration:underline}
-button:disabled{opacity:.6}
+/* ===== الهيدر الزجاجي (Frosted Glass Header) ===== */
+header {
+  position: sticky; top: 0; z-index: 60;
+  background: rgba(14, 15, 18, 0.82);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 16px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+header h1 { font-size: 19px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+header h1 span { color: var(--gold); }
+header small { font-size: 12px; color: var(--ink-muted); font-weight: 500; display: block; margin-top: 2px; }
 
-/* ===== الطلبات ===== */
-.tag{padding:4px 11px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--sage);white-space:nowrap}
-.tag.new{background:var(--sun);color:#7a4d00;animation:wiggle 1.6s ease-in-out infinite}
-.tag.accepted{background:#e9eef9;color:#4a67a8}
-.tag.out{background:#f0ebf8;color:#7a5ea8}
-.tag.delivered{background:#e4f3ec;color:#3f8a64}
-.tag.cancelled{background:#f8e7e5;color:var(--danger)}
-.bar{height:7px;background:var(--soft);border-radius:9px;overflow:hidden;margin:14px 0 10px}
-.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--sage2));border-radius:9px;transition:width 1s cubic-bezier(.4,0,.2,1)}
-.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.list{display:grid;gap:14px}
+.ghostBtn {
+  background: rgba(245, 196, 0, 0.08);
+  border: 1px solid var(--border-glass);
+  color: var(--gold);
+  padding: 7px 16px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ghostBtn:hover { background: var(--gold); color: #000; transform: translateY(-1px); }
+.ghostBtn:active { transform: scale(0.95); }
 
-/* ===== تبويبات المندوب ===== */
-.tabs{display:flex;gap:6px;background:#fff;border-radius:999px;padding:5px;margin:16px 16px 0;box-shadow:0 4px 14px rgba(38,54,58,.05);border:1px solid var(--line)}
-.tabs button{flex:1;border:0;background:transparent;padding:10px 6px;border-radius:999px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .35s}
-.tabs button.active{background:linear-gradient(120deg,var(--sage),var(--sage2));color:#fff;box-shadow:0 4px 12px rgba(95,157,146,.3)}
+main { padding: 18px 16px; display: grid; gap: 18px; max-width: 580px; margin: 0 auto; }
 
-/* ===== الأرباح ===== */
-.periods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pcard{background:linear-gradient(160deg,var(--soft),#fff);border:1px solid var(--line);border-radius:18px;padding:14px 8px;text-align:center;animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
-.pcard:nth-child(2){animation-delay:.08s}
-.pcard:nth-child(3){animation-delay:.16s}
-.pcard span{color:var(--muted);font-size:12.5px}
-.pcard b{display:block;font-size:22px;color:var(--sage);margin:6px 0 2px;font-weight:600}
-.pcard em{display:block;font-style:normal;color:var(--warm);font-weight:600;font-size:14px;margin-top:6px}
-.totalBox{background:var(--sand);border-radius:20px;padding:20px;text-align:center}
-.totalBox span{color:var(--muted);font-size:13px}
-.totalBox b{display:block;font-size:34px;color:var(--warm);margin-top:6px;font-weight:600}
+/* ===== كارت الترحيب الفاخر (Hero Card) ===== */
+.hero {
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg, #1b1913 0%, #111114 100%);
+  border-radius: 24px; padding: 22px 20px;
+  border: 1px solid rgba(245, 196, 0, 0.3);
+  box-shadow: 0 16px 36px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(245, 196, 0, 0.18) 50%, transparent 100%);
+  animation: goldSheen 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.hero h2 { font-size: 20px; font-weight: 900; color: var(--gold); letter-spacing: -0.3px; }
+.hero .heroSub { font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; }
+.hero p { font-size: 12.5px; color: var(--ink-muted); margin-top: 5px; line-height: 1.6; }
+.heroLogo {
+  width: 76px; height: 76px; border-radius: 50%;
+  border: 2px solid var(--gold);
+  box-shadow: 0 6px 20px var(--gold-glow);
+  object-fit: cover; flex-shrink: 0;
+  animation: floatLogo 3.5s ease-in-out infinite;
+}
 
-/* ===== بانر الطلب الجديد ===== */
-.banner{position:fixed;top:-140px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:460px;background:#fff;border:1px solid var(--sage2);border-radius:20px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:70;transition:top .55s cubic-bezier(.34,1.4,.64,1)}
-.banner.show{top:14px;animation:pulseBanner 1.6s ease-in-out infinite}
-.banner b{font-size:16px;color:var(--ink)}
-.banner .muted{font-size:12.5px;margin-top:2px}
-.banner .btns{display:flex;gap:6px;flex-shrink:0}
-@keyframes pulseBanner{0%,100%{box-shadow:0 14px 34px rgba(38,54,58,.18)}50%{box-shadow:0 0 0 8px rgba(140,195,182,.28),0 14px 34px rgba(38,54,58,.18)}}
+/* ===== الكروت الزجاجية (Glassmorphic Cards) ===== */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px; padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.card:hover { border-color: rgba(245, 196, 0, 0.35); box-shadow: 0 14px 35px rgba(0,0,0,0.5); }
+.card h3 { font-size: 16.5px; font-weight: 800; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.muted { color: var(--ink-muted); font-size: 13.5px; line-height: 1.8; }
+.empty { text-align: center; color: var(--ink-muted); padding: 36px 14px; font-weight: 600; font-size: 14px; }
 
-/* ===== إشعار ===== */
-.toast{position:fixed;top:18px;left:50%;background:var(--ink);color:#fff;padding:13px 22px;border-radius:999px;z-index:60;box-shadow:0 12px 30px rgba(0,0,0,.2);opacity:0;pointer-events:none;transform:translate(-50%,-12px);max-width:92%;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0);transition:opacity .35s,transform .45s cubic-bezier(.34,1.4,.64,1)}
-.toast.ok{background:var(--ok)}
+/* ===== الحقول والمدخلات الفخمة ===== */
+input, textarea {
+  width: 100%; padding: 13px 16px;
+  background: rgba(10, 11, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px; margin-bottom: 12px;
+  color: #fff; font-size: 14.5px; font-weight: 500;
+  transition: all 0.25s ease;
+}
+input::placeholder, textarea::placeholder { color: #64748b; }
+input:focus, textarea:focus {
+  outline: none; border-color: var(--gold);
+  background: #14151a;
+  box-shadow: 0 0 0 3px rgba(245, 196, 0, 0.18);
+}
+textarea { min-height: 84px; resize: vertical; }
 
-/* ===== تسجيل الدخول ===== */
-.authWrap{max-width:400px;margin:70px auto;padding:0 16px}
-.authWrap .card{padding:28px}
-.brand{text-align:center;margin-bottom:22px;animation:rise .7s ease both}
-.brand .logo{font-size:48px;animation:float 3s ease-in-out infinite}
-.brand p{color:var(--muted);margin-top:6px;font-size:14px}
+/* ===== الأزرار والمؤثرات التفاعلية ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; padding: 13px 20px; border: 0; border-radius: 14px;
+  background: linear-gradient(135deg, #d4a017 0%, #f5c400 100%);
+  color: #0d0e12; font-size: 15px; font-weight: 800;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.2s;
+  box-shadow: 0 6px 18px rgba(245, 196, 0, 0.28);
+}
+.btn::after {
+  content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(245, 196, 0, 0.42); }
+.btn:hover::after { left: 160%; }
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* ===== هوية مكتب السلطان ===== */
-:root{--bg:#fffaf0;--ink:#141414;--muted:#7a7468;--sage:#d4a017;--sage2:#f5c400;--soft:#fff6d6;--sand:#fff3c4;--warm:#b8860b;--danger:#d9534f;--ok:#2e9e6a;--line:#eee6cf;--sun:#f5c400}
-header{background:#141414;color:#fff;border-bottom:3px solid #f5c400;border-radius:0 0 26px 26px;box-shadow:0 10px 28px rgba(20,20,20,.28)}
-header h1{color:#f5c400}
-.btn{background:linear-gradient(120deg,#d4a017,#f5c400);color:#141414;font-weight:700}
-.btn.ok{background:var(--ok);color:#fff}
-.btn.danger{background:var(--danger);color:#fff}
-.btn.grey{background:#8a8f96;color:#fff}
-.tabs button.active{background:linear-gradient(120deg,#d4a017,#f5c400);color:#141414;box-shadow:0 4px 12px rgba(245,196,0,.35)}
-#splash{background:#141414;color:#f5c400}
-#splash p{color:#f5c400}
-.brandImg,.splashImg{width:130px;height:130px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px;box-shadow:0 0 0 5px #f5c400,0 14px 36px rgba(0,0,0,.25);animation:float 3s ease-in-out infinite}
+.btn.small { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 999px; }
+.btn.ok { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; box-shadow: 0 6px 16px rgba(16,185,129,0.3); }
+.btn.danger { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; box-shadow: 0 6px 16px rgba(239,68,68,0.3); }
+.btn.grey { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; box-shadow: none; }
+.btn.grey:hover { background: rgba(255,255,255,0.14); }
 
-/* ===== الشكل الجديد (بانر + كروت داكنة) ===== */
-body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.14) 1px,transparent 1px);background-size:22px 22px}
-.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#141414,#2b2510);color:#fff;border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(245,196,0,.35);box-shadow:0 14px 34px rgba(20,20,20,.25);animation:rise .6s both}
-.hero h2{color:#f5c400;font-size:22px;font-weight:700}
-.hero p{color:#fff;opacity:.9;margin-top:6px;font-size:14px;line-height:1.7}
-.hero .heroSub{color:#f5c400;font-weight:600}
-.heroLogo{width:78px;height:78px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #f5c400;flex-shrink:0}
-.authWrap .card{border-top:6px solid #f5c400}
-.pcard{background:linear-gradient(160deg,#1c1c1c,#2a2412);border:1px solid rgba(245,196,0,.25);color:#fff}
-.pcard span,.pcard small{color:#cfc7a8}
-.pcard b{color:#f5c400}
-.pcard em{color:#ffd84d}
-.totalBox{background:linear-gradient(160deg,#141414,#2a2412);color:#fff}
-.totalBox span{color:#cfc7a8}
-.totalBox b{color:#ffd84d}
-.tabs{background:#fff}
-.tabs button.active{background:#141414;color:#f5c400}
+.link { background: none; border: 0; color: var(--gold); font-size: 13.5px; font-weight: 700; cursor: pointer; text-decoration: underline; margin-top: 14px; }
 
-/* ===== حركات ===== */
-@keyframes shine{0%{background-position:150% 0}100%{background-position:-60% 0}}
-@keyframes glow{0%,100%{box-shadow:0 14px 34px rgba(20,20,20,.25),0 0 0 0 rgba(245,196,0,0)}50%{box-shadow:0 14px 34px rgba(20,20,20,.25),0 0 24px 2px rgba(245,196,0,.35)}}
-.hero{animation:rise .6s both,glow 3.2s ease-in-out infinite}
-.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(245,196,0,.22) 50%,transparent 70%);background-size:220% 100%;animation:shine 4.5s linear infinite;pointer-events:none}
-.hero > *{position:relative;z-index:1}
-.heroLogo{animation:float 3s ease-in-out infinite}
-.btn{position:relative;overflow:hidden}
-.btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);transition:left .7s ease;pointer-events:none}
-.btn:hover::after{left:130%}
-.pcard{transition:transform .35s,box-shadow .35s}
-.pcard:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(245,196,0,.25)}
-.tabs button{transition:background .35s,color .35s,transform .25s}
-.tabs button:active{transform:scale(.95)}
-.item:hover{transform:translateX(-3px)}
+/* ===== التاغات وحالات الطلب (Neon Tags) ===== */
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.tag.new { background: rgba(245, 196, 0, 0.15); color: #f5c400; border: 1px solid rgba(245, 196, 0, 0.3); animation: pulseRings 2.5s infinite; }
+.tag.accepted { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.tag.out { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+.tag.delivered { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.tag.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-/* ===== خطوات الطلب ===== */
-.stepper{position:relative;display:flex;justify-content:space-between;margin:16px 0 8px}
-.stepper .line{position:absolute;top:19px;left:12%;right:12%;height:4px;background:#eee6cf;border-radius:4px;z-index:0;overflow:hidden}
-.stepper .line div{height:100%;width:var(--w);background:linear-gradient(90deg,#d4a017,#f5c400);border-radius:4px;animation:grow 1.2s cubic-bezier(.4,0,.2,1) both}
-@keyframes grow{from{width:0}}
-.step{position:relative;z-index:1;text-align:center;flex:1}
-.dot{width:38px;height:38px;border-radius:50%;margin:0 auto;display:grid;place-items:center;background:#fff;border:2px solid #eee6cf;font-size:16px;transition:all .5s}
-.step.done .dot{background:#f5c400;border-color:#d4a017;box-shadow:0 4px 12px rgba(245,196,0,.4)}
-.step.now .dot{animation:pulseDot 1.4s ease-in-out infinite}
-.step small{display:block;margin-top:6px;color:var(--muted);font-size:11.5px}
-.step.done small{color:var(--ink);font-weight:600}
-@keyframes pulseDot{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(245,196,0,.6)}50%{transform:scale(1.12);box-shadow:0 0 0 10px rgba(245,196,0,0)}}
+/* ===== خطوات مسار الطلب (Stepper) ===== */
+.stepper { position: relative; display: flex; justify-content: space-between; margin: 20px 0 10px; }
+.stepper .line {
+  position: absolute; top: 18px; left: 10%; right: 10%; height: 3px;
+  background: rgba(255,255,255,0.08); border-radius: 999px; z-index: 0;
+}
+.stepper .line div {
+  height: 100%; width: var(--w);
+  background: linear-gradient(90deg, #d4a017, #f5c400);
+  box-shadow: 0 0 10px var(--gold-glow);
+  border-radius: 999px; transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step { position: relative; z-index: 1; text-align: center; flex: 1; }
+.dot {
+  width: 38px; height: 38px; border-radius: 50%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: #15161c; border: 2px solid rgba(255,255,255,0.12);
+  font-size: 15px; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step.done .dot { background: var(--gold); border-color: #ffe066; color: #000; box-shadow: 0 0 16px var(--gold-glow); }
+.step.now .dot {
+  background: #231f0d; border-color: var(--gold);
+  animation: pulseRings 1.8s infinite; transform: scale(1.12);
+}
+.step small { display: block; margin-top: 7px; color: var(--ink-muted); font-size: 11px; font-weight: 600; }
+.step.done small { color: #fff; }
+.step.now small { color: var(--gold); }
 
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+/* ===== التبويبات المتطورة (Sliding Tabs) ===== */
+.tabs {
+  display: flex; gap: 4px;
+  background: rgba(18, 19, 24, 0.9);
+  border: 1px solid var(--border-glass);
+  border-radius: 999px; padding: 4px;
+  margin: 14px 16px 0; max-width: 580px; margin-left: auto; margin-right: auto;
+}
+.tabs button {
+  flex: 1; border: 0; background: transparent; padding: 9px 12px;
+  border-radius: 999px; font-weight: 700; font-size: 13.5px;
+  color: var(--ink-muted); cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tabs button.active {
+  background: linear-gradient(135deg, #d4a017, #f5c400);
+  color: #0b0c0e; box-shadow: 0 4px 14px rgba(245, 196, 0, 0.3);
+}
+
+/* ===== الأرباح والإحصائيات المضيئة ===== */
+.periods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pcard {
+  background: linear-gradient(160deg, #181920 0%, #0f1013 100%);
+  border: 1px solid rgba(245, 196, 0, 0.14); border-radius: 18px;
+  padding: 14px 8px; text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.pcard:hover { transform: translateY(-3px); border-color: var(--gold); }
+.pcard span { color: var(--ink-muted); font-size: 12px; font-weight: 600; }
+.pcard b { display: block; font-size: 22px; color: #fff; margin: 4px 0 2px; font-weight: 800; }
+.pcard em { display: block; font-style: normal; color: var(--gold); font-weight: 700; font-size: 13.5px; }
+
+.totalBox {
+  background: linear-gradient(135deg, #201a08 0%, #121318 100%);
+  border: 1px solid rgba(245, 196, 0, 0.35); border-radius: 20px;
+  padding: 22px; text-align: center;
+}
+.totalBox span { color: var(--ink-muted); font-size: 13px; }
+.totalBox b { display: block; font-size: 34px; color: var(--gold); font-weight: 900; margin-top: 4px; text-shadow: 0 0 20px rgba(245,196,0,0.3); }
+
+/* ===== بانر الطلب الجديد (Dynamic Island Notification) ===== */
+.banner {
+  position: fixed; top: -140px; left: 50%; transform: translateX(-50%);
+  width: calc(100% - 24px); max-width: 480px;
+  background: rgba(22, 23, 30, 0.95);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--gold);
+  border-radius: 22px; padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px rgba(245,196,0,0.25);
+  transition: top 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.banner.show { top: 16px; animation: dynamicPop 0.6s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.banner b { font-size: 15px; color: var(--gold); font-weight: 800; }
+.banner .muted { font-size: 12.5px; color: #cbd5e1; }
+.banner .btns { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ===== التوست المنبثق (Toast Pill) ===== */
+.toast {
+  position: fixed; top: 22px; left: 50%;
+  background: rgba(18, 19, 24, 0.94);
+  color: #fff; padding: 12px 24px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.6);
+  z-index: 2000; opacity: 0; pointer-events: none;
+  transform: translate(-50%, -20px) scale(0.95);
+  font-size: 14px; font-weight: 700;
+  transition: all 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.toast.ok { border-color: var(--ok); color: #34d399; }
+
+/* شاشة تسجيل الدخول */
+.authWrap { max-width: 420px; margin: 50px auto 20px; padding: 0 16px; }
+.brand { text-align: center; margin-bottom: 24px; }
+.brandImg {
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 3px solid var(--gold); margin: 0 auto 12px; display: block;
+  box-shadow: 0 0 30px var(--gold-glow);
+  animation: floatLogo 3.2s ease-in-out infinite;
+}
+.brand p { color: var(--ink-muted); font-size: 14px; font-weight: 500; }
+
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.list { display: grid; gap: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation: none !important; transition: none !important; }
+}
 </style>
 </head>
 <body>
 
-<div id="splash"><div><img class="splashImg" src="1000115413.jpg" alt="مكتب السلطان"><p>مكتب السلطان</p></div></div>
+<!-- شاشة البداية -->
+<div id="splash">
+  <img class="splashImg" src="1000115413.jpg" alt="مكتب السلطان">
+  <h2>مكتب السلطان</h2>
+</div>
+
+<!-- التنبيهات المنبثقة -->
 <div id="toast" class="toast"></div>
 <div id="banner" class="banner"></div>
 
-<!-- شاشة الدخول -->
+<!-- شاشة تسجيل الدخول -->
 <section id="authView" class="hidden">
   <div class="authWrap">
-    <div class="brand"><img class="brandImg" src="1000115413.jpg" alt="مكتب السلطان"><p>ادخل برقمك وباسوردك</p></div>
+    <div class="brand">
+      <img class="brandImg" src="1000115413.jpg" alt="مكتب السلطان">
+      <p>خدمة التوصيل السريع على مدار الساعة</p>
+    </div>
     <form id="authForm" class="card">
-      <h3 id="authTitle">دخول</h3>
-      <input id="name" class="hidden" placeholder="اسمك">
-      <input id="phone" type="tel" placeholder="رقم التليفون" required>
-      <input id="password" type="password" placeholder="الباسورد (6 حروف أو أرقام على الأقل)" required minlength="6">
+      <h3 id="authTitle">دخول للحساب</h3>
+      <input id="name" class="hidden" placeholder="الاسم بالكامل">
+      <input id="phone" type="tel" placeholder="رقم الهاتف" required>
+      <input id="password" type="password" placeholder="كلمة المرور (6 خانات على الأقل)" required minlength="6">
       <button id="authBtn" class="btn" type="submit">دخول</button>
-      <div style="text-align:center"><button id="toggleMode" class="link" type="button">مش عندك حساب؟ سجّل هنا</button></div>
+      <div style="text-align:center"><button id="toggleMode" class="link" type="button">ليس لديك حساب؟ اشترك معنا الآن</button></div>
     </form>
   </div>
 </section>
@@ -204,21 +364,21 @@ body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.
 <!-- شاشة العميل -->
 <section id="customerView" class="hidden">
   <header>
-    <div><h1 id="welcome"></h1><small>حساب عميل</small></div>
+    <div><h1 id="welcome"></h1><small>حساب العميل المميز</small></div>
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
   <main>
     <div class="hero">
       <div>
         <h2>مكتب السلطان</h2>
-        <p class="heroSub">طلبك يوصل لحد الباب</p>
-        <p>من السوبر ماركت أو الصيدلية أو أي محل في منطقتك</p>
+        <p class="heroSub">مشاويرك ومشترياتك تصل لباب بيتك</p>
+        <p>مطاعم، سوبرماركت، صيدليات أو شحنات خاصة بأعلى سرعة وأمان</p>
       </div>
-      <img src="1000115413.jpg" alt="" class="heroLogo">
+      <img src="1000115413.jpg" alt="شعار السلطان" class="heroLogo">
     </div>
     <div id="welcomeBox"></div>
     <div id="slotOrder"></div>
-    <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلباتي</h3>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📋 طلباتي السابقة والجارية</h3>
     <div id="myOrders" class="list"></div>
   </main>
 </section>
@@ -226,22 +386,26 @@ body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.
 <!-- شاشة المندوب -->
 <section id="agentView" class="hidden">
   <header>
-    <div><h1 id="agentName"></h1><small>حساب مندوب</small></div>
+    <div><h1 id="agentName"></h1><small>بوابة كابتن التوصيل</small></div>
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
-  <div style="padding:14px 16px 0"><div class="hero">
-    <div>
-      <h2>جاهز للمشوار؟</h2>
-      <p class="heroSub">الطلبات مستنياك</p>
-      <p>اقبل الطلب، ووصل، وأرباحك بتتحسب لوحدها</p>
+  <div style="padding:14px 16px 0; max-width:580px; margin:0 auto">
+    <div class="hero">
+      <div>
+        <h2>جاهز للمشوار اليوم؟ 🛵</h2>
+        <p class="heroSub">الطلبات بانتظارك</p>
+        <p>اقبل الطلب فور صدوره وسيتم احتساب نسبتك آلياً بمجرد التسليم.</p>
+      </div>
+      <img src="1000115413.jpg" alt="" class="heroLogo">
     </div>
-    <img src="1000115413.jpg" alt="" class="heroLogo">
-  </div></div>
-  <div style="padding:14px 16px 0"><button id="availBtn" class="btn small" data-act="avail">🟢 متاح للطلبات</button></div>
+  </div>
+  <div style="padding:12px 16px 0; max-width:580px; margin:0 auto">
+    <button id="availBtn" class="btn small" data-act="avail">🟢 متاح لاستقبال الطلبات</button>
+  </div>
   <nav class="tabs">
     <button data-tab="open" id="tab-open" class="active">المتاحة</button>
     <button data-tab="mine" id="tab-mine">طلباتي</button>
-    <button data-tab="earn" id="tab-earn">أرباحي</button>
+    <button data-tab="earn" id="tab-earn">أرباحي وحسابي</button>
   </nav>
   <main>
     <div id="slotOrderA"></div>
@@ -251,7 +415,7 @@ body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.
       <div class="card" id="accountBox"></div>
       <div class="periods" id="earnPeriods"></div>
       <div class="totalBox">
-        <span>إجمالي أرباحك من كل الطلبات المكتملة</span>
+        <span>إجمالي ما حققته من طلبات مكتملة</span>
         <b id="earnTotal">0 جنيه</b>
         <p class="muted" id="doneCount" style="margin-top:6px"></p>
       </div>
@@ -259,38 +423,42 @@ body{background-color:#fffaf0;background-image:radial-gradient(rgba(212,160,23,.
   </main>
 </section>
 
-<!-- فورم الطلب -->
-<!-- شاشة المطعم -->
+<!-- شاشة المطعم الشريك -->
 <section id="restView" class="hidden">
-  <header><div><h1 id="restName"></h1><small>حساب مطعم</small></div><button class="ghostBtn" data-act="logout">خروج</button></header>
+  <header>
+    <div><h1 id="restName"></h1><small>بوابة المطاعم والمحلات</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
   <main>
     <div class="card">
-      <h3>طلب توصيل جديد</h3>
+      <h3>طلب كابتن توصيل سريع</h3>
       <form id="restForm">
-        <input id="rName" placeholder="اسم العميل" required>
-        <input id="rPhone" type="tel" placeholder="رقم العميل" required>
-        <input id="rAddress" placeholder="العنوان بالتفصيل" required>
-        <textarea id="rItems" placeholder="الأصناف" required></textarea>
-        <p class="muted">🛵 سعر التوصيل: <b>30 جنيه</b> (ثابت)</p>
-        <button class="btn" type="submit">إرسال للمناديب</button>
+        <input id="rName" placeholder="اسم العميل المستلم" required>
+        <input id="rPhone" type="tel" placeholder="رقم هاتف العميل" required>
+        <input id="rAddress" placeholder="عنوان التوصيل بالتفصيل" required>
+        <textarea id="rItems" placeholder="تفاصيل ومحتويات الوجبات / الأصناف" required></textarea>
+        <p class="muted" style="color:var(--gold); font-weight:700">🛵 سعر التوصيل الثابت: 30 جنيه</p>
+        <button class="btn" type="submit" style="margin-top:10px">إرسال للكباتن الآن</button>
       </form>
     </div>
-    <h3 style="margin-top:4px;font-size:17px;font-weight:600">طلبات المطعم</h3>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📦 سجل طلبات المطعم</h3>
     <div id="restOrders" class="list"></div>
   </main>
 </section>
 
+<!-- استمارة طلب التوصيل المشتركة -->
 <section id="orderSection" class="card hidden">
-  <h3>اطلب توصيل</h3>
+  <h3>اطلب مشوار أو طلبية جديدة</h3>
   <form id="orderForm">
-    <textarea id="items" placeholder="اكتب الأصناف، مثال: عيش 5، لبن، فراخ" required></textarea>
-    <input id="address" placeholder="العنوان بالتفصيل" required>
-    <input id="coupon" placeholder="كود الخصم (اختياري)">
-    <input id="budget" type="number" min="0" placeholder="ميزانية تقريبية (جنيه)">
-    <button class="btn" type="submit">إرسال الطلب</button>
+    <textarea id="items" placeholder="اكتب الأصناف بالتفصيل، مثال: عيش فينو 10، حليب، دواء من الصيدلية" required></textarea>
+    <input id="address" placeholder="عنوان الاستلام والتسليم بالتفصيل" required>
+    <input id="coupon" placeholder="كود الخصم أو كود الترحيب (إن وجد)">
+    <input id="budget" type="number" min="0" placeholder="ميزانية تقديرية للمشتريات (جنيه)">
+    <button class="btn" type="submit">إرسال الطلب فوراً</button>
   </form>
 </section>
 
+<!-- كود Firebase و JavaScript بكامل المنطق البرمجي -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -312,11 +480,11 @@ const db = getFirestore(app);
 const DEFAULT_FEE = 30;
 const AGENT_SHARE = 2 / 3;
 const ADMIN_SHARE = 1 / 3;
-const STATUS = { new:'جديد', accepted:'مقبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
+const STATUS = { new:'جديد ومتاح', accepted:'تم القبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
 const STEPS = ['new','accepted','out','delivered'];
 const NEXT = { accepted:'out', out:'delivered' };
 const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
-const ADMIN_PHONE = '01010422493'; // رقم الإدارة للتواصل المباشر
+const ADMIN_PHONE = '01010422493';
 
 let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [], myOrdersList = [];
 const isAvail = () => profile?.available !== false;
@@ -324,7 +492,6 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
 const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
-// وقت التسليم: deliveredAt لو موجود، وإلا وقت إنشاء الطلب
 const doneTime = o => o.deliveredAt?.toMillis?.() ?? o.createdAt?.toMillis?.() ?? 0;
 
 function toast(msg, cls = '') {
@@ -335,7 +502,7 @@ function toast(msg, cls = '') {
   t._h = setTimeout(() => t.classList.remove('show'), 3300);
 }
 
-// ===== رنين الطلب الجديد =====
+// ===== نغمات ورنين التنبيه للمناديب =====
 let audioCtx = null, ringTimer = null, ringStopper = null;
 
 function getAudio() {
@@ -343,22 +510,21 @@ function getAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
-// فتح الصوت أول ما المستخدم يلمس الشاشة (المتصفح بيمنع الصوت قبل كده)
 document.addEventListener('click', () => { try { getAudio(); } catch {} }, { once: true });
 
 function chime() {
   try {
     const c = getAudio();
-    [0, 0.3, 0.6].forEach((t, i) => {
+    [0, 0.25, 0.55].forEach((t, i) => {
       const o = c.createOscillator(), g = c.createGain();
       o.type = 'sine';
-      o.frequency.value = i === 1 ? 1175 : 880;
+      o.frequency.value = i === 1 ? 1240 : 920;
       g.gain.setValueAtTime(0, c.currentTime + t);
-      g.gain.linearRampToValueAtTime(0.4, c.currentTime + t + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + t + 0.25);
+      g.gain.linearRampToValueAtTime(0.35, c.currentTime + t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + t + 0.24);
       o.connect(g).connect(c.destination);
       o.start(c.currentTime + t);
-      o.stop(c.currentTime + t + 0.28);
+      o.stop(c.currentTime + t + 0.26);
     });
   } catch {}
 }
@@ -368,19 +534,18 @@ function startRing(order) {
   const b = $('banner');
   b.innerHTML = `
     <div>
-      <b>🔔 طلب جديد!</b>
+      <b>⚡ طلب توصيل متاح الآن!</b>
       <div class="muted">${esc(order.items)}</div>
-      <div class="muted">📍 ${esc(order.address)}</div>
+      <div class="muted" style="color:var(--gold)">📍 ${esc(order.address)}</div>
     </div>
     <div class="btns">
-      <button class="btn small" data-act="seeOpen">اعرض</button>
-      <button class="btn small grey" data-act="dismiss">تم</button>
+      <button class="btn small" data-act="seeOpen">عرض</button>
+      <button class="btn small grey" data-act="dismiss">إغلاق</button>
     </div>`;
   b.classList.add('show');
-  const ring = () => { chime(); navigator.vibrate?.([400, 200, 400, 200, 400]); };
+  const ring = () => { chime(); navigator.vibrate?.([400, 200, 400]); };
   ring();
-  ringTimer = setInterval(ring, 2500);
-  // يوقف لوحده بعد دقيقة عشان ما يفضلش يرن للأبد
+  ringTimer = setInterval(ring, 2600);
   ringStopper = setTimeout(stopRing, 60000);
 }
 
@@ -393,8 +558,6 @@ function stopRing() {
 
 function show(id) {
   ['authView','customerView','agentView','restView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
-  const el = $(id);
-  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
 }
 
 function periodStart(p) {
@@ -403,7 +566,7 @@ function periodStart(p) {
   if (p === 'day') return today.getTime();
   if (p === 'week') {
     const d = new Date(today);
-    d.setDate(d.getDate() - ((d.getDay() + 1) % 7)); // الأسبوع بيبدأ السبت
+    d.setDate(d.getDate() - ((d.getDay() + 1) % 7));
     return d.getTime();
   }
   return new Date(n.getFullYear(), n.getMonth(), 1).getTime();
@@ -415,35 +578,35 @@ function summarize(list, p) {
   return { count: inP.length, earn: inP.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0) };
 }
 
-// ===== شاشة الدخول =====
+// ===== تسجيل الدخول والاشتراك =====
 function setMode(m) {
   mode = m;
   $('name').classList.toggle('hidden', m !== 'register');
-  $('authBtn').textContent = m === 'login' ? 'دخول' : 'تسجيل حساب جديد';
-  $('authTitle').textContent = m === 'login' ? 'دخول' : 'حساب جديد';
-  $('toggleMode').textContent = m === 'login' ? 'مش عندك حساب؟ سجّل هنا' : 'عندك حساب؟ ادخل من هنا';
+  $('authBtn').textContent = m === 'login' ? 'دخول الحساب' : 'إنشاء حساب جديد';
+  $('authTitle').textContent = m === 'login' ? 'دخول للحساب' : 'إنشاء حساب عميل جديد';
+  $('toggleMode').textContent = m === 'login' ? 'ليس لديك حساب؟ اشترك معنا الآن' : 'لديك حساب بالفعل؟ سجل دخولك هنا';
 }
 $('toggleMode').onclick = () => setMode(mode === 'login' ? 'register' : 'login');
 
 function friendly(err) {
   const c = err.code || '';
-  if (c.includes('email-already-in-use')) return 'الرقم ده متسجل قبل كده';
-  if (c.includes('weak-password')) return 'الباسورد لازم 6 حروف أو أرقام على الأقل';
-  if (c.includes('invalid-email')) return 'رقم التليفون مش صحيح';
-  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'الرقم أو الباسورد غلط';
-  return 'حصلت مشكلة، حاول تاني';
+  if (c.includes('email-already-in-use')) return 'هذا الرقم مسجل به حساب سابق';
+  if (c.includes('weak-password')) return 'كلمة المرور يجب أن تكون 6 خانات على الأقل';
+  if (c.includes('invalid-email')) return 'رقم الهاتف غير صحيح';
+  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'بيانات الدخول غير صحيحة';
+  return 'حدث خطأ، يرجى إعادة المحاولة';
 }
 
 $('authForm').onsubmit = async e => {
   e.preventDefault();
   const phone = $('phone').value.replace(/\D/g, '');
   const pass = $('password').value;
-  if (phone.length < 10) return toast('اكتب رقم تليفون صحيح');
+  if (phone.length < 10) return toast('يرجى كتابة رقم هاتف صحيح');
   $('authBtn').disabled = true;
   try {
     if (mode === 'register') {
       const name = $('name').value.trim();
-      if (!name) return toast('اكتب اسمك');
+      if (!name) return toast('يرجى كتابة اسمك');
       const cred = await createUserWithEmailAndPassword(auth, emailOf(phone), pass);
       await setDoc(doc(db, 'users', cred.user.uid), { name, phone, role: 'customer', createdAt: serverTimestamp() });
     } else {
@@ -456,50 +619,47 @@ $('authForm').onsubmit = async e => {
   }
 };
 
-// ===== الجلسة =====
 onAuthStateChanged(auth, async user => {
   unsubs.forEach(u => u()); unsubs = []; mine = []; open = [];
   if (!user) { $('orderSection').classList.add('hidden'); show('authView'); return; }
   me = user;
   const snap = await getDoc(doc(db, 'users', user.uid));
-  if (!snap.exists()) { toast('الحساب ده مش مسجل في النظام'); await signOut(auth); return; }
+  if (!snap.exists()) { toast('الحساب غير مسجل بالنظام'); await signOut(auth); return; }
   profile = { uid: user.uid, ...snap.data() };
   if (profile.role === 'disabled') {
-    toast('الحساب ده موقوف، كلّم الإدارة');
+    toast('هذا الحساب معطل حالياً، تواصل مع الإدارة');
     await signOut(auth);
     return;
   }
   profile.role === 'agent' ? startAgent() : profile.role === 'restaurant' ? startRestaurant() : startCustomer();
 });
 
-// ===== العميل =====
+// ===== لوحة العميل =====
 let coupons = [];
 let myWelcome = null;
 const discountOf = o => (o.adminDiscount || 0) + (o.couponDiscount || 0);
-// الخصم كله على الإدارة، والمندوب ياخد التلتين من أجرة التوصيل كاملة
 const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - discountOf(o);
 const payNow = o => (o.deliveryFee || 0) - discountOf(o);
 const discountLabel = o => {
-  if (o.adminDiscount) return `🎁 كود ترحيب: خصم ${o.adminDiscount} جنيه`;
-  if (o.couponDiscount) return `🏷️ كود ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
-  if (o.couponCode) return `🏷️ كود ${esc(o.couponCode)} (قبل التحديث)`;
+  if (o.adminDiscount) return `🎁 كود ترحيبي: خصم ${o.adminDiscount} جنيه`;
+  if (o.couponDiscount) return `🏷️ كوبون ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
   return '';
 };
 const invoiceHtml = o => {
   const goods = o.goodsPrice != null ? o.goodsPrice : null;
   const total = goods != null ? goods + payNow(o) : null;
-  return `<div style="background:#fffdf7;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:13.5px;line-height:1.9">
-    <div>🧺 سعر الأصناف: <b>${goods != null ? goods + ' جنيه' : 'هيتحدد عند التسليم'}</b></div>
-    <div>🛵 أجرة التوصيل: <b>${payNow(o)} جنيه</b>${discountOf(o) ? ` <span style="color:#b8860b">(${o.deliveryFee} - خصم ${discountOf(o)})</span>` : ''}</div>
-    ${discountOf(o) ? `<div style="color:#b8860b">${discountLabel(o)}</div>` : ''}
-    <div>💵 الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + سعر الأصناف'}</b></div>
+  return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(245,196,0,0.18);border-radius:14px;padding:12px;margin-top:12px;font-size:13.5px;line-height:2">
+    <div>🧺 قيمة المشتريات: <b>${goods != null ? goods + ' جنيه' : 'تُحدد عند استلام الفاتورة'}</b></div>
+    <div>🛵 رسوم التوصيل: <b style="color:var(--gold)">${payNow(o)} جنيه</b>${discountOf(o) ? ` <span style="color:#94a3b8">(${o.deliveryFee} - خصم ${discountOf(o)})</span>` : ''}</div>
+    ${discountOf(o) ? `<div style="color:var(--gold)">${discountLabel(o)}</div>` : ''}
+    <div style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:4px; padding-top:4px">💵 المبلغ الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + قيمة الطلبات'}</b></div>
   </div>`;
 };
 const lastStatus = {};
 let statusReady = false;
 
 function startCustomer() {
-  $('welcome').textContent = 'أهلاً ' + profile.name;
+  $('welcome').textContent = 'أهلاً بك، ' + profile.name;
   $('slotOrder').appendChild($('orderSection'));
   $('orderSection').classList.remove('hidden');
   show('customerView');
@@ -524,7 +684,7 @@ function startCustomer() {
     if (statusReady) {
       list.forEach(o => {
         if (lastStatus[o.id] && lastStatus[o.id] !== o.status) {
-          toast(`طلبك #${o.id.slice(-5)}: ${STATUS[o.status]} 🔔`, 'ok');
+          toast(`حالة طلبك #${o.id.slice(-5)} أصبحت: ${STATUS[o.status]} 🔔`, 'ok');
           navigator.vibrate?.([200, 100, 200]);
         }
       });
@@ -534,15 +694,14 @@ function startCustomer() {
     myOrdersList = list;
     $('myOrders').innerHTML = list.length
       ? list.map((o, i) => orderCardCustomer(o, i)).join('')
-      : '<p class="empty">مفيش طلبات لسه</p>';
-    animateBars();
+      : '<p class="empty">لم تقم بإجراء أي طلبات حتى الآن</p>';
   }));
 }
 
 function stepperHtml(status) {
   const steps = [
     { k: 'new', t: 'تم الإرسال', i: '📝' },
-    { k: 'accepted', t: 'المندوب قبل', i: '🤝' },
+    { k: 'accepted', t: 'قيد التجهيز', i: '🤝' },
     { k: 'out', t: 'في الطريق', i: '🛵' },
     { k: 'delivered', t: 'تم التسليم', i: '✅' }
   ];
@@ -550,7 +709,7 @@ function stepperHtml(status) {
   const pct = (idx / (steps.length - 1)) * 100;
   return `
   <div class="stepper">
-    <div class="line" style="--w:${pct}%"><div></div></div>
+    <div class="line"><div style="--w:${pct}%"></div></div>
     ${steps.map((st, n) => `
       <div class="step ${n <= idx ? 'done' : ''} ${n === idx ? 'now' : ''}">
         <div class="dot">${st.i}</div>
@@ -560,51 +719,43 @@ function stepperHtml(status) {
 }
 
 function orderCardCustomer(o, i) {
-  const idx = STEPS.indexOf(o.status);
-  const pct = o.status === 'cancelled' ? 0 : ((idx + 1) / STEPS.length) * 100;
   return `
-  <div class="card" style="animation-delay:${i * .07}s">
+  <div class="card" style="animation-delay:${i * 0.06}s">
     <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
-    <p class="muted">🛒 ${esc(o.items)}</p>
-    <p class="muted">📍 ${esc(o.address)}</p>
+    <p class="muted" style="margin-top:6px">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>العنوان:</b> ${esc(o.address)}</p>
     ${o.status !== 'cancelled' ? invoiceHtml(o) : ''}
     ${o.status !== 'cancelled' ? stepperHtml(o.status) : ''}
     ${o.status === 'delivered' && o.agentId ? (o.rating
-      ? `<p class="muted">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
-      : `<p class="muted">قيّم المندوب:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
-    ${o.issue ? `<p class="muted" style="color:#b8860b">⚠️ مشكلتك: ${esc(o.issue)}</p>` : ''}
+      ? `<p class="muted" style="color:var(--gold);margin-top:8px">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
+      : `<p class="muted" style="margin-top:8px">قيّم كابتن التوصيل:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
+    ${o.issue ? `<p class="muted" style="color:#f87171;margin-top:8px">⚠️ بلاغك قيد المتابعة: ${esc(o.issue)}</p>` : ''}
     <div class="actions">
       ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
-      ${o.status === 'delivered' || o.status === 'cancelled' ? `<button class="btn grey small" data-act="reorder" data-id="${o.id}">🔁 اطلب تاني</button>` : ''}
-      ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ مشكلة في الطلب</button>` : ''}
-      <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 كلّم الإدارة</a>
+      ${o.status === 'delivered' || o.status === 'cancelled' ? `<button class="btn grey small" data-act="reorder" data-id="${o.id}">🔁 طلب مطابق مرة أخرى</button>` : ''}
+      ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ إبلاغ عن مشكلة</button>` : ''}
+      <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 اتصال بالإدارة</a>
     </div>
   </div>`;
 }
 
-function animateBars() {
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.bar').forEach(b => { b.firstElementChild.style.width = b.dataset.w + '%'; });
-  });
-}
-
-// ===== فورم الطلب =====
+// ===== إرسال الطلب =====
 $('orderForm').onsubmit = async e => {
   e.preventDefault();
   const items = $('items').value.trim();
   const address = $('address').value.trim();
   const budget = Number($('budget').value) || 0;
-  if (!items || !address) return toast('اكتب الأصناف والعنوان');
+  if (!items || !address) return toast('يرجى تحديد الأصناف والعنوان بدقة');
   const code = $('coupon').value.trim().toUpperCase();
   let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0, couponDiscount = 0;
   if (code && myWelcome && code === myWelcome.code) {
-    if (myWelcome.used) return toast('استخدمت كود الترحيب قبل كده');
+    if (myWelcome.used) return toast('تم استخدام كود الترحيب مسبقاً');
     welcomeCode = code;
     adminDiscount = myWelcome.amount || 5;
   }
   if (code && !welcomeCode) {
     const c = coupons.find(x => x.code === code && x.active);
-    if (!c) return toast('كود الخصم مش صحيح أو منتهي');
+    if (!c) return toast('كود الخصم غير فعال أو منتهي الصلاحية');
     couponDiscount = c.amount;
     couponCode = code;
   }
@@ -626,9 +777,8 @@ $('orderForm').onsubmit = async e => {
     await setDoc(orderRef, orderPayload);
   }
   e.target.reset();
-  toast('تم إرسال طلبك ✅', 'ok');
+  toast('تم إرسال طلبك للمناديب بنجاح 🚀', 'ok');
 };
-
 
 // ===== شاشة المطعم =====
 function startRestaurant() {
@@ -638,24 +788,23 @@ function startRestaurant() {
     const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
     $('restOrders').innerHTML = list.length
       ? list.map((o, i) => restCard(o, i)).join('')
-      : '<p class="empty">مفيش طلبات لسه</p>';
-    animateBars();
+      : '<p class="empty">لا توجد طلبات جارية حالياً</p>';
   }));
 }
 
 function restCard(o, i) {
   return `
-  <div class="card" style="animation-delay:${i * .07}s">
-    <div class="row"><b>${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>عميل: ${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
     <p class="muted">📍 ${esc(o.address)}</p>
     ${o.agentId
-      ? `<div style="margin-top:10px;background:var(--soft);border-radius:14px;padding:12px">
-           <div>🛵 المندوب: <b>${esc(o.agentName)}</b></div>
-           ${o.agentPhone ? `<div class="actions"><a class="btn small" style="text-decoration:none" href="tel:+2${esc(o.agentPhone)}">📞 اتصل بالمندوب</a></div>` : ''}
+      ? `<div style="margin-top:10px;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.2);border-radius:14px;padding:12px">
+           <div>🛵 كابتن التوصيل: <b>${esc(o.agentName)}</b></div>
+           ${o.agentPhone ? `<div class="actions"><a class="btn small" style="text-decoration:none" href="tel:+2${esc(o.agentPhone)}">📞 اتصال بالمندوب</a></div>` : ''}
          </div>`
-      : '<p class="muted">لسه ما اتقبلش من مندوب</p>'}
+      : '<p class="muted" style="color:var(--gold)">⏳ في انتظار قبول أحد المناديب...</p>'}
     ${o.status === 'new' ? `<div class="actions"><button class="btn danger small" data-act="restCancel" data-id="${o.id}">إلغاء الطلب</button></div>` : ''}
   </div>`;
 }
@@ -672,13 +821,13 @@ $('restForm').onsubmit = async e => {
     status: 'new', agentId: null, agentName: null, declinedBy: [],
     createdAt: serverTimestamp()
   };
-  if (!payload.customerName || !payload.customerPhone || !payload.address || !payload.items) return toast('اكتب كل البيانات');
+  if (!payload.customerName || !payload.customerPhone || !payload.address || !payload.items) return toast('يرجى استكمال كافة الحقول');
   await addDoc(collection(db, 'orders'), payload);
   e.target.reset();
-  toast('الطلب اتبعت للمناديب ✅', 'ok');
+  toast('تم تعميم الطلب على الكباتن بنجاح ✅', 'ok');
 };
 
-// ===== المندوب =====
+// ===== شاشة المندوب =====
 function startAgent() {
   $('agentName').textContent = profile.name;
   $('slotOrderA').appendChild($('orderSection'));
@@ -701,29 +850,30 @@ function startAgent() {
       .filter(o => o.customerId !== me.uid && !(o.declinedBy || []).includes(me.uid));
     $('sec-open').innerHTML = open.length
       ? open.map((o, i) => openCard(o, i)).join('')
-      : '<p class="empty">مفيش طلبات متاحة دلوقتي</p>';
+      : '<p class="empty">لا توجد طلبات متاحة في منطقتك حالياً</p>';
   }));
 
   unsubs.push(onSnapshot(doc(db, 'users', me.uid), s => {
     profile = { ...profile, ...s.data() };
     const b = $('availBtn');
     if (b) {
-      b.textContent = isAvail() ? '🟢 متاح للطلبات (اضغط للإيقاف)' : '⚪ مشغول (اضغط عشان تستقبل طلبات)';
+      b.textContent = isAvail() ? '🟢 متاح لاستقبال الطلبات (اضغط للإيقاف المؤقت)' : '⚪ في استراحة (اضغط للعودة للعمل)';
       b.className = 'btn small ' + (isAvail() ? 'ok' : 'grey');
     }
   }));
+
   unsubs.push(onSnapshot(query(collection(db, 'payments'), where('agentId', '==', me.uid)), snap => {
     myPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAccount();
   }));
+
   unsubs.push(onSnapshot(query(collection(db, 'orders'), where('agentId', '==', me.uid)), snap => {
     mine = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
     $('sec-mine').innerHTML = mine.length
       ? mine.map((o, i) => mineCard(o, i)).join('')
-      : '<p class="empty">مفيش طلبات معاك</p>';
+      : '<p class="empty">ليس لديك طلبات نشطة حالياً</p>';
     renderEarn();
     renderAccount();
-    animateBars();
   }));
 }
 
@@ -732,10 +882,10 @@ function renderWelcome() {
   if (!box) return;
   if (!myWelcome || myWelcome.used) { box.innerHTML = ''; return; }
   box.innerHTML = `
-    <div class="card" style="background:linear-gradient(120deg,#ffe08a,#fff4c2);border:1px dashed #d4a017">
-      <h3>🎁 هدية أول طلب ليك</h3>
-      <p class="muted">كودك: <b style="font-size:18px;color:#141414;letter-spacing:1px">${esc(myWelcome.code)}</b></p>
-      <p class="muted">خصم 5 جنيه من التوصيل، من الإدارة، ويتستخدم مرة واحدة من حسابك بس. اكتبه في خانة كود الخصم وقت الطلب.</p>
+    <div class="card" style="background:linear-gradient(135deg,rgba(245,196,0,0.15) 0%,rgba(18,19,24,0.9) 100%);border:1px dashed var(--gold)">
+      <h3 style="color:var(--gold)">🎁 هدية انضمامك لمكتب السلطان</h3>
+      <p class="muted">كود الخصم الحصري لك: <b style="font-size:18px;color:#fff;letter-spacing:1px">${esc(myWelcome.code)}</b></p>
+      <p class="muted">خصم 5 جنيه على أول أوردر لك من الإدارة. انسخ الكود وضعه في خانة الكوبون.</p>
     </div>`;
 }
 
@@ -746,75 +896,65 @@ function renderAccount() {
   const history = [...myPayments]
     .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
     .slice(0, 5)
-    .map(p => `<div class="muted">${p.kind === 'zero' ? '🧾 تصفير الحساب' : '💵 دفعة'}: ${p.amount} جنيه${p.note && p.kind !== 'zero' ? ' · ' + esc(p.note) : ''}</div>`)
+    .map(p => `<div class="muted">${p.kind === 'zero' ? '🧾 تسوية وتصفير' : '💵 دفعة سداد'}: ${p.amount} جنيه${p.note && p.kind !== 'zero' ? ' · ' + esc(p.note) : ''}</div>`)
     .join('');
   $('accountBox').innerHTML = `
-    <h3>حسابك مع الإدارة</h3>
-    <p class="muted">المستحق عليك للإدارة من الطلبات المكتملة: ${Math.round(owed)} جنيه</p>
-    <p class="muted">اللي دفعته: ${Math.round(paid)} جنيه</p>
-    <div class="totalBox" style="margin-top:12px">
-      <span>${bal > 0 ? 'المتبقي عليك للإدارة' : bal < 0 ? 'الإدارة عليها لك' : 'حسابك متصفّر ✅'}</span>
+    <h3>حساباتك مع إدارة المكتب</h3>
+    <p class="muted">حصة الإدارة المستحقة من الطلبات المسلمة: <b>${Math.round(owed)} جنيه</b></p>
+    <p class="muted">إجمالي ما قمت بتوريده وسداده: <b>${Math.round(paid)} جنيه</b></p>
+    <div class="totalBox" style="margin-top:14px">
+      <span>${bal > 0 ? 'المبلغ المتبقي عليك للإدارة' : bal < 0 ? 'رصيد لك لدى الإدارة' : 'حسابك خالص ومسوى تماماً ✅'}</span>
       <b style="color:${bal > 0 ? 'var(--danger)' : 'var(--ok)'}">${Math.abs(bal)} جنيه</b>
     </div>
-    ${history ? `<div style="margin-top:12px;display:grid;gap:4px">${history}</div>` : ''}`;
+    ${history ? `<div style="margin-top:14px;display:grid;gap:6px">${history}</div>` : ''}`;
 }
 
 function renderEarn() {
   const done = mine.filter(o => o.status === 'delivered');
   $('earnPeriods').innerHTML = ['day','week','month'].map(p => {
     const s = summarize(done, p);
-    const fee = done.filter(o => doneTime(o) >= periodStart(p)).reduce((t, o) => t + (o.deliveryFee || 0), 0);
     return `<div class="pcard">
       <span>${PERIOD_LABEL[p]}</span>
-      <b>${s.count}</b><small>طلب</small>
-      <em>نصيبك: ${Math.round(s.earn)} جنيه</em>
-      <small style="display:block;margin-top:6px;color:#b8860b">حصة الإدارة: ${Math.round(done.filter(o => doneTime(o) >= periodStart(p)).reduce((t, o) => t + adminCut(o), 0))} جنيه</small>
+      <b>${s.count}</b><small>طلب مكتمل</small>
+      <em>أرباحك: ${Math.round(s.earn)} جنيه</em>
     </div>`;
   }).join('');
-  const total = summarize(done, 'all');
   $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
-  const allFee = done.reduce((t, o) => t + (o.deliveryFee || 0), 0);
-  $('doneCount').textContent = 'عدد الطلبات المكتملة: ' + done.length + ' · حصة الإدارة من كل الطلبات: ' + Math.round(done.reduce((t, o) => t + adminCut(o), 0)) + ' جنيه';
+  $('doneCount').textContent = 'إجمالي الطلبات المكتملة عبرك: ' + done.length;
 }
 
 function openCard(o, i) {
   return `
-  <div class="card" style="animation-delay:${i * .07}s">
-    <div class="row"><b>${o.restaurantName ? '🍽️ ' + esc(o.restaurantName) : 'طلب جديد'}</b><span class="tag new">جديد</span></div>
-    <p class="muted">🛒 ${esc(o.items)}</p>
-    <p class="muted">📍 ${esc(o.address)}</p>
-    <p class="muted">💰 ميزانية تقريبية: ${esc(o.budget || '—')} جنيه</p>
-    ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة</p>` : ''}
-    <p class="muted">🛵 أجرة التوصيل: ${payNow(o)} جنيه (نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))})</p>
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${o.restaurantName ? '🍽️ طلب مطعم: ' + esc(o.restaurantName) : 'طلب عميل مباشر'}</b><span class="tag new">جديد متاح</span></div>
+    <p class="muted">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>المكان:</b> ${esc(o.address)}</p>
+    <p class="muted">💰 الميزانية التقديرية: ${esc(o.budget || 'غير محددة')} جنيه</p>
+    <p class="muted" style="color:var(--gold);font-weight:700">🛵 أجرة المشوار: ${payNow(o)} جنيه (نصيبك الصافي: ${Math.round(o.deliveryFee * AGENT_SHARE)} جنيه)</p>
     <div class="actions">
-      <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول</button>
-      <button class="btn grey small" data-act="ret" data-id="${o.id}">رجوع</button>
+      <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول المشوار 🛵</button>
+      <button class="btn grey small" data-act="ret" data-id="${o.id}">تخطي</button>
     </div>
   </div>`;
 }
 
 function mineCard(o, i) {
-  const idx = STEPS.indexOf(o.status);
-  const pct = o.status === 'cancelled' ? 0 : ((idx + 1) / STEPS.length) * 100;
   const nxt = NEXT[o.status];
-  const label = o.status === 'accepted' ? 'خرجت للتوصيل' : 'تم التسليم';
+  const label = o.status === 'accepted' ? 'خرجت للتوصيل 🛵' : 'تم التسليم وقبض المبلغ ✅';
   return `
-  <div class="card" style="animation-delay:${i * .07}s">
-    <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">· 🍽️ ${esc(o.restaurantName)}</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
-    <p class="muted">📞 ${esc(o.customerPhone)}</p>
-    <p class="muted">🛒 ${esc(o.items)}</p>
-    <p class="muted">📍 ${esc(o.address)}</p>
-    ${o.adminNote ? `<p class="muted" style="color:#b8860b">📝 ملاحظة الإدارة: ${esc(o.adminNote)}</p>` : ''}
-    ${discountOf(o) ? `<p class="muted" style="color:#b8860b">${discountLabel(o)} · من الإدارة مش من نصيبك</p>` : ''}
-    ${o.status === 'delivered' ? `<p class="muted">أجرة التوصيل ${payNow(o)} جنيه · نصيبك ${Math.round(o.deliveryFee * AGENT_SHARE)} · حصة الإدارة ${Math.round(adminCut(o))}</p>` : ''}
-    <div class="bar" data-w="${pct}"><div></div></div>
-    ${nxt ? `<button class="btn small" data-act="next" data-id="${o.id}">${label}</button>` : ''}
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">(مطعم: ${esc(o.restaurantName)})</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 هاتف العميل: <a href="tel:${esc(o.customerPhone)}" style="color:var(--gold);text-decoration:none;font-weight:700">${esc(o.customerPhone)}</a></p>
+    <p class="muted">🛒 الأصناف: ${esc(o.items)}</p>
+    <p class="muted">📍 العنوان: ${esc(o.address)}</p>
+    ${o.adminNote ? `<p class="muted" style="color:var(--gold)">📝 تنبيه الإدارة: ${esc(o.adminNote)}</p>` : ''}
+    ${nxt ? `<button class="btn small" style="margin-top:12px" data-act="next" data-id="${o.id}">${label}</button>` : ''}
   </div>`;
 }
 
-// ===== الإجراءات =====
+// ===== إجراءات الأوامر والتعاملات =====
 async function acceptOrder(id) {
-  if (!isAvail()) return toast('غيّر حالتك لمتاح الأول 🟢');
+  if (!isAvail()) return toast('قم بتفعيل حالتك إلى (متاح) أولاً 🟢');
   const ref = doc(db, 'orders', id);
   try {
     await runTransaction(db, async tx => {
@@ -823,9 +963,9 @@ async function acceptOrder(id) {
       tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, agentPhone: profile.phone, acceptedAt: serverTimestamp() });
     });
     stopRing();
-    toast('تم قبول الطلب، روح خده 🛵', 'ok');
+    toast('تم قبول الطلب، توجه لاستلامه فوراً 🛵', 'ok');
   } catch {
-    toast('الطلب ده اتاخد قبلك 😅');
+    toast('عذراً، قام كابتن آخر بقبول هذا الطلب قبلك');
   }
 }
 
@@ -836,15 +976,15 @@ const actions = {
   accept: id => acceptOrder(id),
   ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
   restCancel: async id => {
-    if (!confirm('تلغي الطلب ده؟')) return;
-    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: 'المطعم ألغاه' });
-    toast('الطلب اتلغى');
+    if (!confirm('هل تريد بالتأكيد إلغاء هذا الطلب؟')) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: 'ألغاه المطعم' });
+    toast('تم إلغاء الطلب');
   },
   cancel: async id => {
-    const reason = prompt('سبب الإلغاء؟ (اختياري)');
+    const reason = prompt('يرجى كتابة سبب الإلغاء إن رغبت (اختياري)');
     if (reason === null) return;
-    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: reason.trim() || 'العميل ألغاه' });
-    toast('الطلب اتلغى');
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: reason.trim() || 'ألغاه العميل' });
+    toast('تم إلغاء طلبك');
   },
   reorder: id => {
     const o = myOrdersList.find(x => x.id === id);
@@ -853,19 +993,19 @@ const actions = {
     $('address').value = o.address;
     $('budget').value = o.budget || '';
     $('orderSection').scrollIntoView({ behavior: 'smooth' });
-    toast('اتملّت البيانات، راجعها واضغط إرسال ✅', 'ok');
+    toast('تم ملء تفاصيل الطلب السابقة، راجعها واضغط إرسال', 'ok');
   },
   avail: () => updateDoc(doc(db, 'users', me.uid), { available: !isAvail() }),
   rate: async (id, el) => {
     const stars = Number(el.dataset.stars);
     await updateDoc(doc(db, 'orders', id), { rating: stars, ratedAt: serverTimestamp() });
-    toast('شكراً على تقييمك ⭐', 'ok');
+    toast('شكراً جزيلاً على تقييمك ⭐', 'ok');
   },
   report: async id => {
-    const txt = prompt('اكتب المشكلة باختصار (تأخير، طلب ناقص، ...)');
+    const txt = prompt('يرجى توضيح الشكوى أو الملاحظة (تأخير، أصناف ناقصة..)');
     if (!txt || !txt.trim()) return;
     await updateDoc(doc(db, 'orders', id), { issue: txt.trim(), issueAt: serverTimestamp() });
-    toast('اتبعتت للإدارة، هيتواصلوا معاك ✅', 'ok');
+    toast('تم إرسال بلاغك للإدارة للمتابعة السريعة', 'ok');
   },
   next: async id => {
     const o = mine.find(x => x.id === id);
@@ -876,17 +1016,17 @@ const actions = {
     if (patch.status === 'delivered') {
       let g = null;
       while (g === null) {
-        const v = prompt('سعر الأصناف اللي استلمته من العميل؟ (لازم تكتب الرقم)');
-        if (v === null) return; // قفل النافذة: التسليم ما يتسجلش
+        const v = prompt('أدخل قيمة المشتريات/الأصناف المحصلة من العميل بالفاتورة:');
+        if (v === null) return;
         if (v.trim() !== '' && !isNaN(Number(v)) && Number(v) >= 0) g = Number(v);
-        else alert('اكتب رقم صحيح');
+        else alert('يرجى إدخال أرقام صحيحة فقط');
       }
       if (o.restaurantId) restPrice = g; else patch.goodsPrice = g;
       patch.deliveredAt = serverTimestamp();
     }
     await updateDoc(doc(db, 'orders', id), patch);
     if (restPrice != null) await setDoc(doc(db, 'prices', id), { price: restPrice, createdAt: serverTimestamp() });
-    toast(patch.status === 'delivered' ? 'تم التسليم ✅ تمام' : 'تم تحديث الحالة', 'ok');
+    toast(patch.status === 'delivered' ? 'تم إنهاء وتسليم الطلب بنجاح ✅' : 'تم تحديث حالة الطلب', 'ok');
   }
 };
 
@@ -906,7 +1046,1058 @@ document.addEventListener('click', e => {
 });
 
 setMode('login');
-setTimeout(() => $('splash').classList.add('gone'), 1400);
+setTimeout(() => $('splash').classList.add('gone'), 1200);
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>مكتب السلطان | التوصيل الفاخر</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/jpeg" href="1000115413.jpg">
+<link rel="apple-touch-icon" href="1000115413.jpg">
+<meta name="theme-color" content="#121214">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="السلطان">
+
+<!-- الخط العربي الاحترافي -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-main: #0c0d0f;
+  --bg-card: rgba(22, 23, 28, 0.75);
+  --bg-card-hover: rgba(30, 32, 40, 0.85);
+  --surface: rgba(255, 255, 255, 0.04);
+  --border-glass: rgba(245, 196, 0, 0.16);
+  --border-focus: rgba(245, 196, 0, 0.5);
+  
+  --gold: #f5c400;
+  --gold-dark: #b8860b;
+  --gold-glow: rgba(245, 196, 0, 0.35);
+  
+  --ink: #f8fafc;
+  --ink-muted: #94a3b8;
+  --danger: #ef4444;
+  --ok: #10b981;
+  --info: #38bdf8;
+  --font: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+
+body {
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(245, 196, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 160, 23, 0.06) 0%, transparent 45%),
+    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 50px;
+  overflow-x: hidden;
+  animation: pageFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hidden { display: none !important; }
+
+/* ===== سلاسل الحركة والموشن جرافيكس ===== */
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes floatLogo { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+@keyframes goldSheen { 0% { transform: translateX(-150%) skewX(-25deg); } 100% { transform: translateX(250%) skewX(-25deg); } }
+@keyframes pulseRings { 0% { box-shadow: 0 0 0 0 var(--gold-glow); } 70% { box-shadow: 0 0 0 14px rgba(245,196,0,0); } 100% { box-shadow: 0 0 0 0 rgba(245,196,0,0); } }
+@keyframes cardEntrance { 0% { opacity: 0; transform: translateY(22px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes dynamicPop { 0% { transform: scale(0.9) translateY(-20px); opacity: 0; } 60% { transform: scale(1.03) translateY(3px); opacity: 1; } 100% { transform: scale(1) translateY(0); } }
+@keyframes flowGlow { 0%, 100% { filter: drop-shadow(0 0 6px rgba(245,196,0,0.4)); } 50% { filter: drop-shadow(0 0 16px rgba(245,196,0,0.8)); } }
+
+/* ===== شاشة الافتتاح (Splash Screen) ===== */
+#splash {
+  position: fixed; inset: 0;
+  background: radial-gradient(circle at center, #1e1b10 0%, #0a0a0c 100%);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  z-index: 9999;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s;
+}
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.splashImg {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 35px var(--gold-glow);
+  animation: floatLogo 3s ease-in-out infinite, pulseRings 2s infinite;
+  object-fit: cover;
+}
+#splash h2 {
+  font-size: 26px; font-weight: 800; color: var(--gold);
+  margin-top: 18px; letter-spacing: 0.5px;
+  animation: flowGlow 3s ease-in-out infinite;
+}
+
+/* ===== الهيدر الزجاجي (Frosted Glass Header) ===== */
+header {
+  position: sticky; top: 0; z-index: 60;
+  background: rgba(14, 15, 18, 0.82);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 16px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+header h1 { font-size: 19px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+header h1 span { color: var(--gold); }
+header small { font-size: 12px; color: var(--ink-muted); font-weight: 500; display: block; margin-top: 2px; }
+
+.ghostBtn {
+  background: rgba(245, 196, 0, 0.08);
+  border: 1px solid var(--border-glass);
+  color: var(--gold);
+  padding: 7px 16px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ghostBtn:hover { background: var(--gold); color: #000; transform: translateY(-1px); }
+.ghostBtn:active { transform: scale(0.95); }
+
+main { padding: 18px 16px; display: grid; gap: 18px; max-width: 580px; margin: 0 auto; }
+
+/* ===== كارت الترحيب الفاخر (Hero Card) ===== */
+.hero {
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg, #1b1913 0%, #111114 100%);
+  border-radius: 24px; padding: 22px 20px;
+  border: 1px solid rgba(245, 196, 0, 0.3);
+  box-shadow: 0 16px 36px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(245, 196, 0, 0.18) 50%, transparent 100%);
+  animation: goldSheen 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.hero h2 { font-size: 20px; font-weight: 900; color: var(--gold); letter-spacing: -0.3px; }
+.hero .heroSub { font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; }
+.hero p { font-size: 12.5px; color: var(--ink-muted); margin-top: 5px; line-height: 1.6; }
+.heroLogo {
+  width: 76px; height: 76px; border-radius: 50%;
+  border: 2px solid var(--gold);
+  box-shadow: 0 6px 20px var(--gold-glow);
+  object-fit: cover; flex-shrink: 0;
+  animation: floatLogo 3.5s ease-in-out infinite;
+}
+
+/* ===== الكروت الزجاجية (Glassmorphic Cards) ===== */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px; padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.card:hover { border-color: rgba(245, 196, 0, 0.35); box-shadow: 0 14px 35px rgba(0,0,0,0.5); }
+.card h3 { font-size: 16.5px; font-weight: 800; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.muted { color: var(--ink-muted); font-size: 13.5px; line-height: 1.8; }
+.empty { text-align: center; color: var(--ink-muted); padding: 36px 14px; font-weight: 600; font-size: 14px; }
+
+/* ===== الحقول والمدخلات الفخمة ===== */
+input, textarea {
+  width: 100%; padding: 13px 16px;
+  background: rgba(10, 11, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px; margin-bottom: 12px;
+  color: #fff; font-size: 14.5px; font-weight: 500;
+  transition: all 0.25s ease;
+}
+input::placeholder, textarea::placeholder { color: #64748b; }
+input:focus, textarea:focus {
+  outline: none; border-color: var(--gold);
+  background: #14151a;
+  box-shadow: 0 0 0 3px rgba(245, 196, 0, 0.18);
+}
+textarea { min-height: 84px; resize: vertical; }
+
+/* ===== الأزرار والمؤثرات التفاعلية ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; padding: 13px 20px; border: 0; border-radius: 14px;
+  background: linear-gradient(135deg, #d4a017 0%, #f5c400 100%);
+  color: #0d0e12; font-size: 15px; font-weight: 800;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.2s;
+  box-shadow: 0 6px 18px rgba(245, 196, 0, 0.28);
+}
+.btn::after {
+  content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(245, 196, 0, 0.42); }
+.btn:hover::after { left: 160%; }
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn.small { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 999px; }
+.btn.ok { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; box-shadow: 0 6px 16px rgba(16,185,129,0.3); }
+.btn.danger { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; box-shadow: 0 6px 16px rgba(239,68,68,0.3); }
+.btn.grey { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; box-shadow: none; }
+.btn.grey:hover { background: rgba(255,255,255,0.14); }
+
+.link { background: none; border: 0; color: var(--gold); font-size: 13.5px; font-weight: 700; cursor: pointer; text-decoration: underline; margin-top: 14px; }
+
+/* ===== التاغات وحالات الطلب (Neon Tags) ===== */
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.tag.new { background: rgba(245, 196, 0, 0.15); color: #f5c400; border: 1px solid rgba(245, 196, 0, 0.3); animation: pulseRings 2.5s infinite; }
+.tag.accepted { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.tag.out { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+.tag.delivered { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.tag.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+/* ===== خطوات مسار الطلب (Stepper) ===== */
+.stepper { position: relative; display: flex; justify-content: space-between; margin: 20px 0 10px; }
+.stepper .line {
+  position: absolute; top: 18px; left: 10%; right: 10%; height: 3px;
+  background: rgba(255,255,255,0.08); border-radius: 999px; z-index: 0;
+}
+.stepper .line div {
+  height: 100%; width: var(--w);
+  background: linear-gradient(90deg, #d4a017, #f5c400);
+  box-shadow: 0 0 10px var(--gold-glow);
+  border-radius: 999px; transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step { position: relative; z-index: 1; text-align: center; flex: 1; }
+.dot {
+  width: 38px; height: 38px; border-radius: 50%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: #15161c; border: 2px solid rgba(255,255,255,0.12);
+  font-size: 15px; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step.done .dot { background: var(--gold); border-color: #ffe066; color: #000; box-shadow: 0 0 16px var(--gold-glow); }
+.step.now .dot {
+  background: #231f0d; border-color: var(--gold);
+  animation: pulseRings 1.8s infinite; transform: scale(1.12);
+}
+.step small { display: block; margin-top: 7px; color: var(--ink-muted); font-size: 11px; font-weight: 600; }
+.step.done small { color: #fff; }
+.step.now small { color: var(--gold); }
+
+/* ===== التبويبات المتطورة (Sliding Tabs) ===== */
+.tabs {
+  display: flex; gap: 4px;
+  background: rgba(18, 19, 24, 0.9);
+  border: 1px solid var(--border-glass);
+  border-radius: 999px; padding: 4px;
+  margin: 14px 16px 0; max-width: 580px; margin-left: auto; margin-right: auto;
+}
+.tabs button {
+  flex: 1; border: 0; background: transparent; padding: 9px 12px;
+  border-radius: 999px; font-weight: 700; font-size: 13.5px;
+  color: var(--ink-muted); cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tabs button.active {
+  background: linear-gradient(135deg, #d4a017, #f5c400);
+  color: #0b0c0e; box-shadow: 0 4px 14px rgba(245, 196, 0, 0.3);
+}
+
+/* ===== الأرباح والإحصائيات المضيئة ===== */
+.periods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pcard {
+  background: linear-gradient(160deg, #181920 0%, #0f1013 100%);
+  border: 1px solid rgba(245, 196, 0, 0.14); border-radius: 18px;
+  padding: 14px 8px; text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.pcard:hover { transform: translateY(-3px); border-color: var(--gold); }
+.pcard span { color: var(--ink-muted); font-size: 12px; font-weight: 600; }
+.pcard b { display: block; font-size: 22px; color: #fff; margin: 4px 0 2px; font-weight: 800; }
+.pcard em { display: block; font-style: normal; color: var(--gold); font-weight: 700; font-size: 13.5px; }
+
+.totalBox {
+  background: linear-gradient(135deg, #201a08 0%, #121318 100%);
+  border: 1px solid rgba(245, 196, 0, 0.35); border-radius: 20px;
+  padding: 22px; text-align: center;
+}
+.totalBox span { color: var(--ink-muted); font-size: 13px; }
+.totalBox b { display: block; font-size: 34px; color: var(--gold); font-weight: 900; margin-top: 4px; text-shadow: 0 0 20px rgba(245,196,0,0.3); }
+
+/* ===== بانر الطلب الجديد (Dynamic Island Notification) ===== */
+.banner {
+  position: fixed; top: -140px; left: 50%; transform: translateX(-50%);
+  width: calc(100% - 24px); max-width: 480px;
+  background: rgba(22, 23, 30, 0.95);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--gold);
+  border-radius: 22px; padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px rgba(245,196,0,0.25);
+  transition: top 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.banner.show { top: 16px; animation: dynamicPop 0.6s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.banner b { font-size: 15px; color: var(--gold); font-weight: 800; }
+.banner .muted { font-size: 12.5px; color: #cbd5e1; }
+.banner .btns { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ===== التوست المنبثق (Toast Pill) ===== */
+.toast {
+  position: fixed; top: 22px; left: 50%;
+  background: rgba(18, 19, 24, 0.94);
+  color: #fff; padding: 12px 24px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.6);
+  z-index: 2000; opacity: 0; pointer-events: none;
+  transform: translate(-50%, -20px) scale(0.95);
+  font-size: 14px; font-weight: 700;
+  transition: all 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.toast.ok { border-color: var(--ok); color: #34d399; }
+
+/* شاشة تسجيل الدخول */
+.authWrap { max-width: 420px; margin: 50px auto 20px; padding: 0 16px; }
+.brand { text-align: center; margin-bottom: 24px; }
+.brandImg {
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 3px solid var(--gold); margin: 0 auto 12px; display: block;
+  box-shadow: 0 0 30px var(--gold-glow);
+  animation: floatLogo 3.2s ease-in-out infinite;
+}
+.brand p { color: var(--ink-muted); font-size: 14px; font-weight: 500; }
+
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.list { display: grid; gap: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- شاشة البداية -->
+<div id="splash">
+  <img class="splashImg" src="1000115413.jpg" alt="مكتب السلطان">
+  <h2>مكتب السلطان</h2>
+</div>
+
+<!-- التنبيهات المنبثقة -->
+<div id="toast" class="toast"></div>
+<div id="banner" class="banner"></div>
+
+<!-- شاشة تسجيل الدخول -->
+<section id="authView" class="hidden">
+  <div class="authWrap">
+    <div class="brand">
+      <img class="brandImg" src="1000115413.jpg" alt="مكتب السلطان">
+      <p>خدمة التوصيل السريع على مدار الساعة</p>
+    </div>
+    <form id="authForm" class="card">
+      <h3 id="authTitle">دخول للحساب</h3>
+      <input id="name" class="hidden" placeholder="الاسم بالكامل">
+      <input id="phone" type="tel" placeholder="رقم الهاتف" required>
+      <input id="password" type="password" placeholder="كلمة المرور (6 خانات على الأقل)" required minlength="6">
+      <button id="authBtn" class="btn" type="submit">دخول</button>
+      <div style="text-align:center"><button id="toggleMode" class="link" type="button">ليس لديك حساب؟ اشترك معنا الآن</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- شاشة العميل -->
+<section id="customerView" class="hidden">
+  <header>
+    <div><h1 id="welcome"></h1><small>حساب العميل المميز</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
+  <main>
+    <div class="hero">
+      <div>
+        <h2>مكتب السلطان</h2>
+        <p class="heroSub">مشاويرك ومشترياتك تصل لباب بيتك</p>
+        <p>مطاعم، سوبرماركت، صيدليات أو شحنات خاصة بأعلى سرعة وأمان</p>
+      </div>
+      <img src="1000115413.jpg" alt="شعار السلطان" class="heroLogo">
+    </div>
+    <div id="welcomeBox"></div>
+    <div id="slotOrder"></div>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📋 طلباتي السابقة والجارية</h3>
+    <div id="myOrders" class="list"></div>
+  </main>
+</section>
+
+<!-- شاشة المندوب -->
+<section id="agentView" class="hidden">
+  <header>
+    <div><h1 id="agentName"></h1><small>بوابة كابتن التوصيل</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
+  <div style="padding:14px 16px 0; max-width:580px; margin:0 auto">
+    <div class="hero">
+      <div>
+        <h2>جاهز للمشوار اليوم؟ 🛵</h2>
+        <p class="heroSub">الطلبات بانتظارك</p>
+        <p>اقبل الطلب فور صدوره وسيتم احتساب نسبتك آلياً بمجرد التسليم.</p>
+      </div>
+      <img src="1000115413.jpg" alt="" class="heroLogo">
+    </div>
+  </div>
+  <div style="padding:12px 16px 0; max-width:580px; margin:0 auto">
+    <button id="availBtn" class="btn small" data-act="avail">🟢 متاح لاستقبال الطلبات</button>
+  </div>
+  <nav class="tabs">
+    <button data-tab="open" id="tab-open" class="active">المتاحة</button>
+    <button data-tab="mine" id="tab-mine">طلباتي</button>
+    <button data-tab="earn" id="tab-earn">أرباحي وحسابي</button>
+  </nav>
+  <main>
+    <div id="slotOrderA"></div>
+    <div id="sec-open" class="list"></div>
+    <div id="sec-mine" class="list hidden"></div>
+    <div id="sec-earn" class="hidden" style="display:grid;gap:14px">
+      <div class="card" id="accountBox"></div>
+      <div class="periods" id="earnPeriods"></div>
+      <div class="totalBox">
+        <span>إجمالي ما حققته من طلبات مكتملة</span>
+        <b id="earnTotal">0 جنيه</b>
+        <p class="muted" id="doneCount" style="margin-top:6px"></p>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- شاشة المطعم الشريك -->
+<section id="restView" class="hidden">
+  <header>
+    <div><h1 id="restName"></h1><small>بوابة المطاعم والمحلات</small></div>
+    <button class="ghostBtn" data-act="logout">خروج</button>
+  </header>
+  <main>
+    <div class="card">
+      <h3>طلب كابتن توصيل سريع</h3>
+      <form id="restForm">
+        <input id="rName" placeholder="اسم العميل المستلم" required>
+        <input id="rPhone" type="tel" placeholder="رقم هاتف العميل" required>
+        <input id="rAddress" placeholder="عنوان التوصيل بالتفصيل" required>
+        <textarea id="rItems" placeholder="تفاصيل ومحتويات الوجبات / الأصناف" required></textarea>
+        <p class="muted" style="color:var(--gold); font-weight:700">🛵 سعر التوصيل الثابت: 30 جنيه</p>
+        <button class="btn" type="submit" style="margin-top:10px">إرسال للكباتن الآن</button>
+      </form>
+    </div>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📦 سجل طلبات المطعم</h3>
+    <div id="restOrders" class="list"></div>
+  </main>
+</section>
+
+<!-- استمارة طلب التوصيل المشتركة -->
+<section id="orderSection" class="card hidden">
+  <h3>اطلب مشوار أو طلبية جديدة</h3>
+  <form id="orderForm">
+    <textarea id="items" placeholder="اكتب الأصناف بالتفصيل، مثال: عيش فينو 10، حليب، دواء من الصيدلية" required></textarea>
+    <input id="address" placeholder="عنوان الاستلام والتسليم بالتفصيل" required>
+    <input id="coupon" placeholder="كود الخصم أو كود الترحيب (إن وجد)">
+    <input id="budget" type="number" min="0" placeholder="ميزانية تقديرية للمشتريات (جنيه)">
+    <button class="btn" type="submit">إرسال الطلب فوراً</button>
+  </form>
+</section>
+
+<!-- كود Firebase و JavaScript بكامل المنطق البرمجي -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, updateDoc, runTransaction, arrayUnion, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC3jlhf1gZKRj-mn2a-Gb6VvARouFvvL7A",
+  authDomain: "delivery-app-1bb6a.firebaseapp.com",
+  projectId: "delivery-app-1bb6a",
+  storageBucket: "delivery-app-1bb6a.firebasestorage.app",
+  messagingSenderId: "1003596310234",
+  appId: "1:1003596310234:web:5940b3722174bf961e67e3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const DEFAULT_FEE = 30;
+const AGENT_SHARE = 2 / 3;
+const ADMIN_SHARE = 1 / 3;
+const STATUS = { new:'جديد ومتاح', accepted:'تم القبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
+const STEPS = ['new','accepted','out','delivered'];
+const NEXT = { accepted:'out', out:'delivered' };
+const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
+const ADMIN_PHONE = '01010422493';
+
+let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [], myOrdersList = [];
+const isAvail = () => profile?.available !== false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
+const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
+const doneTime = o => o.deliveredAt?.toMillis?.() ?? o.createdAt?.toMillis?.() ?? 0;
+
+function toast(msg, cls = '') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + cls;
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 3300);
+}
+
+// ===== نغمات ورنين التنبيه للمناديب =====
+let audioCtx = null, ringTimer = null, ringStopper = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+document.addEventListener('click', () => { try { getAudio(); } catch {} }, { once: true });
+
+function chime() {
+  try {
+    const c = getAudio();
+    [0, 0.25, 0.55].forEach((t, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = i === 1 ? 1240 : 920;
+      g.gain.setValueAtTime(0, c.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.35, c.currentTime + t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + t + 0.24);
+      o.connect(g).connect(c.destination);
+      o.start(c.currentTime + t);
+      o.stop(c.currentTime + t + 0.26);
+    });
+  } catch {}
+}
+
+function startRing(order) {
+  stopRing();
+  const b = $('banner');
+  b.innerHTML = `
+    <div>
+      <b>⚡ طلب توصيل متاح الآن!</b>
+      <div class="muted">${esc(order.items)}</div>
+      <div class="muted" style="color:var(--gold)">📍 ${esc(order.address)}</div>
+    </div>
+    <div class="btns">
+      <button class="btn small" data-act="seeOpen">عرض</button>
+      <button class="btn small grey" data-act="dismiss">إغلاق</button>
+    </div>`;
+  b.classList.add('show');
+  const ring = () => { chime(); navigator.vibrate?.([400, 200, 400]); };
+  ring();
+  ringTimer = setInterval(ring, 2600);
+  ringStopper = setTimeout(stopRing, 60000);
+}
+
+function stopRing() {
+  clearInterval(ringTimer); clearTimeout(ringStopper);
+  ringTimer = null; ringStopper = null;
+  navigator.vibrate?.(0);
+  $('banner').classList.remove('show');
+}
+
+function show(id) {
+  ['authView','customerView','agentView','restView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+}
+
+function periodStart(p) {
+  const n = new Date();
+  const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  if (p === 'day') return today.getTime();
+  if (p === 'week') {
+    const d = new Date(today);
+    d.setDate(d.getDate() - ((d.getDay() + 1) % 7));
+    return d.getTime();
+  }
+  return new Date(n.getFullYear(), n.getMonth(), 1).getTime();
+}
+
+function summarize(list, p) {
+  const from = periodStart(p);
+  const inP = list.filter(o => doneTime(o) >= from);
+  return { count: inP.length, earn: inP.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0) };
+}
+
+// ===== تسجيل الدخول والاشتراك =====
+function setMode(m) {
+  mode = m;
+  $('name').classList.toggle('hidden', m !== 'register');
+  $('authBtn').textContent = m === 'login' ? 'دخول الحساب' : 'إنشاء حساب جديد';
+  $('authTitle').textContent = m === 'login' ? 'دخول للحساب' : 'إنشاء حساب عميل جديد';
+  $('toggleMode').textContent = m === 'login' ? 'ليس لديك حساب؟ اشترك معنا الآن' : 'لديك حساب بالفعل؟ سجل دخولك هنا';
+}
+$('toggleMode').onclick = () => setMode(mode === 'login' ? 'register' : 'login');
+
+function friendly(err) {
+  const c = err.code || '';
+  if (c.includes('email-already-in-use')) return 'هذا الرقم مسجل به حساب سابق';
+  if (c.includes('weak-password')) return 'كلمة المرور يجب أن تكون 6 خانات على الأقل';
+  if (c.includes('invalid-email')) return 'رقم الهاتف غير صحيح';
+  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'بيانات الدخول غير صحيحة';
+  return 'حدث خطأ، يرجى إعادة المحاولة';
+}
+
+$('authForm').onsubmit = async e => {
+  e.preventDefault();
+  const phone = $('phone').value.replace(/\D/g, '');
+  const pass = $('password').value;
+  if (phone.length < 10) return toast('يرجى كتابة رقم هاتف صحيح');
+  $('authBtn').disabled = true;
+  try {
+    if (mode === 'register') {
+      const name = $('name').value.trim();
+      if (!name) return toast('يرجى كتابة اسمك');
+      const cred = await createUserWithEmailAndPassword(auth, emailOf(phone), pass);
+      await setDoc(doc(db, 'users', cred.user.uid), { name, phone, role: 'customer', createdAt: serverTimestamp() });
+    } else {
+      await signInWithEmailAndPassword(auth, emailOf(phone), pass);
+    }
+  } catch (err) {
+    toast(friendly(err));
+  } finally {
+    $('authBtn').disabled = false;
+  }
+};
+
+onAuthStateChanged(auth, async user => {
+  unsubs.forEach(u => u()); unsubs = []; mine = []; open = [];
+  if (!user) { $('orderSection').classList.add('hidden'); show('authView'); return; }
+  me = user;
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (!snap.exists()) { toast('الحساب غير مسجل بالنظام'); await signOut(auth); return; }
+  profile = { uid: user.uid, ...snap.data() };
+  if (profile.role === 'disabled') {
+    toast('هذا الحساب معطل حالياً، تواصل مع الإدارة');
+    await signOut(auth);
+    return;
+  }
+  profile.role === 'agent' ? startAgent() : profile.role === 'restaurant' ? startRestaurant() : startCustomer();
+});
+
+// ===== لوحة العميل =====
+let coupons = [];
+let myWelcome = null;
+const discountOf = o => (o.adminDiscount || 0) + (o.couponDiscount || 0);
+const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - discountOf(o);
+const payNow = o => (o.deliveryFee || 0) - discountOf(o);
+const discountLabel = o => {
+  if (o.adminDiscount) return `🎁 كود ترحيبي: خصم ${o.adminDiscount} جنيه`;
+  if (o.couponDiscount) return `🏷️ كوبون ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
+  return '';
+};
+const invoiceHtml = o => {
+  const goods = o.goodsPrice != null ? o.goodsPrice : null;
+  const total = goods != null ? goods + payNow(o) : null;
+  return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(245,196,0,0.18);border-radius:14px;padding:12px;margin-top:12px;font-size:13.5px;line-height:2">
+    <div>🧺 قيمة المشتريات: <b>${goods != null ? goods + ' جنيه' : 'تُحدد عند استلام الفاتورة'}</b></div>
+    <div>🛵 رسوم التوصيل: <b style="color:var(--gold)">${payNow(o)} جنيه</b>${discountOf(o) ? ` <span style="color:#94a3b8">(${o.deliveryFee} - خصم ${discountOf(o)})</span>` : ''}</div>
+    ${discountOf(o) ? `<div style="color:var(--gold)">${discountLabel(o)}</div>` : ''}
+    <div style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:4px; padding-top:4px">💵 المبلغ الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + قيمة الطلبات'}</b></div>
+  </div>`;
+};
+const lastStatus = {};
+let statusReady = false;
+
+function startCustomer() {
+  $('welcome').textContent = 'أهلاً بك، ' + profile.name;
+  $('slotOrder').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
+  show('customerView');
+  (async () => {
+    try {
+      const ref = doc(db, 'welcome', me.uid);
+      const s = await getDoc(ref);
+      if (!s.exists()) {
+        await setDoc(ref, { code: 'WLC' + Math.random().toString(36).slice(2, 7).toUpperCase(), used: false, amount: 5, createdAt: serverTimestamp() });
+      }
+    } catch {}
+  })();
+  unsubs.push(onSnapshot(doc(db, 'welcome', me.uid), s => {
+    myWelcome = s.exists() ? s.data() : null;
+    renderWelcome();
+  }));
+  unsubs.push(onSnapshot(collection(db, 'coupons'), snap => {
+    coupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }));
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('customerId', '==', me.uid)), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    if (statusReady) {
+      list.forEach(o => {
+        if (lastStatus[o.id] && lastStatus[o.id] !== o.status) {
+          toast(`حالة طلبك #${o.id.slice(-5)} أصبحت: ${STATUS[o.status]} 🔔`, 'ok');
+          navigator.vibrate?.([200, 100, 200]);
+        }
+      });
+    }
+    list.forEach(o => { lastStatus[o.id] = o.status; });
+    statusReady = true;
+    myOrdersList = list;
+    $('myOrders').innerHTML = list.length
+      ? list.map((o, i) => orderCardCustomer(o, i)).join('')
+      : '<p class="empty">لم تقم بإجراء أي طلبات حتى الآن</p>';
+  }));
+}
+
+function stepperHtml(status) {
+  const steps = [
+    { k: 'new', t: 'تم الإرسال', i: '📝' },
+    { k: 'accepted', t: 'قيد التجهيز', i: '🤝' },
+    { k: 'out', t: 'في الطريق', i: '🛵' },
+    { k: 'delivered', t: 'تم التسليم', i: '✅' }
+  ];
+  const idx = Math.max(0, STEPS.indexOf(status));
+  const pct = (idx / (steps.length - 1)) * 100;
+  return `
+  <div class="stepper">
+    <div class="line"><div style="--w:${pct}%"></div></div>
+    ${steps.map((st, n) => `
+      <div class="step ${n <= idx ? 'done' : ''} ${n === idx ? 'now' : ''}">
+        <div class="dot">${st.i}</div>
+        <small>${st.t}</small>
+      </div>`).join('')}
+  </div>`;
+}
+
+function orderCardCustomer(o, i) {
+  return `
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted" style="margin-top:6px">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>العنوان:</b> ${esc(o.address)}</p>
+    ${o.status !== 'cancelled' ? invoiceHtml(o) : ''}
+    ${o.status !== 'cancelled' ? stepperHtml(o.status) : ''}
+    ${o.status === 'delivered' && o.agentId ? (o.rating
+      ? `<p class="muted" style="color:var(--gold);margin-top:8px">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
+      : `<p class="muted" style="margin-top:8px">قيّم كابتن التوصيل:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
+    ${o.issue ? `<p class="muted" style="color:#f87171;margin-top:8px">⚠️ بلاغك قيد المتابعة: ${esc(o.issue)}</p>` : ''}
+    <div class="actions">
+      ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
+      ${o.status === 'delivered' || o.status === 'cancelled' ? `<button class="btn grey small" data-act="reorder" data-id="${o.id}">🔁 طلب مطابق مرة أخرى</button>` : ''}
+      ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ إبلاغ عن مشكلة</button>` : ''}
+      <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 اتصال بالإدارة</a>
+    </div>
+  </div>`;
+}
+
+// ===== إرسال الطلب =====
+$('orderForm').onsubmit = async e => {
+  e.preventDefault();
+  const items = $('items').value.trim();
+  const address = $('address').value.trim();
+  const budget = Number($('budget').value) || 0;
+  if (!items || !address) return toast('يرجى تحديد الأصناف والعنوان بدقة');
+  const code = $('coupon').value.trim().toUpperCase();
+  let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0, couponDiscount = 0;
+  if (code && myWelcome && code === myWelcome.code) {
+    if (myWelcome.used) return toast('تم استخدام كود الترحيب مسبقاً');
+    welcomeCode = code;
+    adminDiscount = myWelcome.amount || 5;
+  }
+  if (code && !welcomeCode) {
+    const c = coupons.find(x => x.code === code && x.active);
+    if (!c) return toast('كود الخصم غير فعال أو منتهي الصلاحية');
+    couponDiscount = c.amount;
+    couponCode = code;
+  }
+  const orderRef = doc(collection(db, 'orders'));
+  const orderPayload = {
+    customerId: me.uid, customerName: profile.name, customerPhone: profile.phone,
+    items, address, budget, deliveryFee: fee, couponCode, couponDiscount,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  };
+  if (welcomeCode) {
+    orderPayload.welcomeCode = welcomeCode;
+    orderPayload.adminDiscount = adminDiscount;
+    const batch = writeBatch(db);
+    batch.set(orderRef, orderPayload);
+    batch.update(doc(db, 'welcome', me.uid), { used: true });
+    await batch.commit();
+  } else {
+    await setDoc(orderRef, orderPayload);
+  }
+  e.target.reset();
+  toast('تم إرسال طلبك للمناديب بنجاح 🚀', 'ok');
+};
+
+// ===== شاشة المطعم =====
+function startRestaurant() {
+  $('restName').textContent = profile.name;
+  show('restView');
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('restaurantId', '==', me.uid)), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    $('restOrders').innerHTML = list.length
+      ? list.map((o, i) => restCard(o, i)).join('')
+      : '<p class="empty">لا توجد طلبات جارية حالياً</p>';
+  }));
+}
+
+function restCard(o, i) {
+  return `
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>عميل: ${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 ${esc(o.customerPhone)}</p>
+    <p class="muted">🛒 ${esc(o.items)}</p>
+    <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.agentId
+      ? `<div style="margin-top:10px;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.2);border-radius:14px;padding:12px">
+           <div>🛵 كابتن التوصيل: <b>${esc(o.agentName)}</b></div>
+           ${o.agentPhone ? `<div class="actions"><a class="btn small" style="text-decoration:none" href="tel:+2${esc(o.agentPhone)}">📞 اتصال بالمندوب</a></div>` : ''}
+         </div>`
+      : '<p class="muted" style="color:var(--gold)">⏳ في انتظار قبول أحد المناديب...</p>'}
+    ${o.status === 'new' ? `<div class="actions"><button class="btn danger small" data-act="restCancel" data-id="${o.id}">إلغاء الطلب</button></div>` : ''}
+  </div>`;
+}
+
+$('restForm').onsubmit = async e => {
+  e.preventDefault();
+  const payload = {
+    restaurantId: me.uid, restaurantName: profile.name, customerId: null,
+    customerName: $('rName').value.trim(),
+    customerPhone: $('rPhone').value.replace(/\D/g, ''),
+    items: $('rItems').value.trim(),
+    address: $('rAddress').value.trim(),
+    budget: 0, deliveryFee: DEFAULT_FEE, couponCode: null, couponDiscount: 0,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  };
+  if (!payload.customerName || !payload.customerPhone || !payload.address || !payload.items) return toast('يرجى استكمال كافة الحقول');
+  await addDoc(collection(db, 'orders'), payload);
+  e.target.reset();
+  toast('تم تعميم الطلب على الكباتن بنجاح ✅', 'ok');
+};
+
+// ===== شاشة المندوب =====
+function startAgent() {
+  $('agentName').textContent = profile.name;
+  $('slotOrderA').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
+  tab('open');
+  show('agentView');
+
+  let ready = false;
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('status', '==', 'new')), snap => {
+    if (ready) {
+      snap.docChanges().forEach(c => {
+        const d = c.doc.data();
+        if (c.type === 'added' && isAvail() && d.customerId !== me.uid && !(d.declinedBy || []).includes(me.uid)) {
+          startRing(d);
+        }
+      });
+    }
+    ready = true;
+    open = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(o => o.customerId !== me.uid && !(o.declinedBy || []).includes(me.uid));
+    $('sec-open').innerHTML = open.length
+      ? open.map((o, i) => openCard(o, i)).join('')
+      : '<p class="empty">لا توجد طلبات متاحة في منطقتك حالياً</p>';
+  }));
+
+  unsubs.push(onSnapshot(doc(db, 'users', me.uid), s => {
+    profile = { ...profile, ...s.data() };
+    const b = $('availBtn');
+    if (b) {
+      b.textContent = isAvail() ? '🟢 متاح لاستقبال الطلبات (اضغط للإيقاف المؤقت)' : '⚪ في استراحة (اضغط للعودة للعمل)';
+      b.className = 'btn small ' + (isAvail() ? 'ok' : 'grey');
+    }
+  }));
+
+  unsubs.push(onSnapshot(query(collection(db, 'payments'), where('agentId', '==', me.uid)), snap => {
+    myPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAccount();
+  }));
+
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('agentId', '==', me.uid)), snap => {
+    mine = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    $('sec-mine').innerHTML = mine.length
+      ? mine.map((o, i) => mineCard(o, i)).join('')
+      : '<p class="empty">ليس لديك طلبات نشطة حالياً</p>';
+    renderEarn();
+    renderAccount();
+  }));
+}
+
+function renderWelcome() {
+  const box = $('welcomeBox');
+  if (!box) return;
+  if (!myWelcome || myWelcome.used) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,rgba(245,196,0,0.15) 0%,rgba(18,19,24,0.9) 100%);border:1px dashed var(--gold)">
+      <h3 style="color:var(--gold)">🎁 هدية انضمامك لمكتب السلطان</h3>
+      <p class="muted">كود الخصم الحصري لك: <b style="font-size:18px;color:#fff;letter-spacing:1px">${esc(myWelcome.code)}</b></p>
+      <p class="muted">خصم 5 جنيه على أول أوردر لك من الإدارة. انسخ الكود وضعه في خانة الكوبون.</p>
+    </div>`;
+}
+
+function renderAccount() {
+  const owed = mine.filter(o => o.status === 'delivered').reduce((s, o) => s + adminCut(o), 0);
+  const paid = myPayments.reduce((s, p) => s + (p.amount || 0), 0);
+  const bal = Math.round(owed - paid);
+  const history = [...myPayments]
+    .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+    .slice(0, 5)
+    .map(p => `<div class="muted">${p.kind === 'zero' ? '🧾 تسوية وتصفير' : '💵 دفعة سداد'}: ${p.amount} جنيه${p.note && p.kind !== 'zero' ? ' · ' + esc(p.note) : ''}</div>`)
+    .join('');
+  $('accountBox').innerHTML = `
+    <h3>حساباتك مع إدارة المكتب</h3>
+    <p class="muted">حصة الإدارة المستحقة من الطلبات المسلمة: <b>${Math.round(owed)} جنيه</b></p>
+    <p class="muted">إجمالي ما قمت بتوريده وسداده: <b>${Math.round(paid)} جنيه</b></p>
+    <div class="totalBox" style="margin-top:14px">
+      <span>${bal > 0 ? 'المبلغ المتبقي عليك للإدارة' : bal < 0 ? 'رصيد لك لدى الإدارة' : 'حسابك خالص ومسوى تماماً ✅'}</span>
+      <b style="color:${bal > 0 ? 'var(--danger)' : 'var(--ok)'}">${Math.abs(bal)} جنيه</b>
+    </div>
+    ${history ? `<div style="margin-top:14px;display:grid;gap:6px">${history}</div>` : ''}`;
+}
+
+function renderEarn() {
+  const done = mine.filter(o => o.status === 'delivered');
+  $('earnPeriods').innerHTML = ['day','week','month'].map(p => {
+    const s = summarize(done, p);
+    return `<div class="pcard">
+      <span>${PERIOD_LABEL[p]}</span>
+      <b>${s.count}</b><small>طلب مكتمل</small>
+      <em>أرباحك: ${Math.round(s.earn)} جنيه</em>
+    </div>`;
+  }).join('');
+  $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
+  $('doneCount').textContent = 'إجمالي الطلبات المكتملة عبرك: ' + done.length;
+}
+
+function openCard(o, i) {
+  return `
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${o.restaurantName ? '🍽️ طلب مطعم: ' + esc(o.restaurantName) : 'طلب عميل مباشر'}</b><span class="tag new">جديد متاح</span></div>
+    <p class="muted">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>المكان:</b> ${esc(o.address)}</p>
+    <p class="muted">💰 الميزانية التقديرية: ${esc(o.budget || 'غير محددة')} جنيه</p>
+    <p class="muted" style="color:var(--gold);font-weight:700">🛵 أجرة المشوار: ${payNow(o)} جنيه (نصيبك الصافي: ${Math.round(o.deliveryFee * AGENT_SHARE)} جنيه)</p>
+    <div class="actions">
+      <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول المشوار 🛵</button>
+      <button class="btn grey small" data-act="ret" data-id="${o.id}">تخطي</button>
+    </div>
+  </div>`;
+}
+
+function mineCard(o, i) {
+  const nxt = NEXT[o.status];
+  const label = o.status === 'accepted' ? 'خرجت للتوصيل 🛵' : 'تم التسليم وقبض المبلغ ✅';
+  return `
+  <div class="card" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">(مطعم: ${esc(o.restaurantName)})</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 هاتف العميل: <a href="tel:${esc(o.customerPhone)}" style="color:var(--gold);text-decoration:none;font-weight:700">${esc(o.customerPhone)}</a></p>
+    <p class="muted">🛒 الأصناف: ${esc(o.items)}</p>
+    <p class="muted">📍 العنوان: ${esc(o.address)}</p>
+    ${o.adminNote ? `<p class="muted" style="color:var(--gold)">📝 تنبيه الإدارة: ${esc(o.adminNote)}</p>` : ''}
+    ${nxt ? `<button class="btn small" style="margin-top:12px" data-act="next" data-id="${o.id}">${label}</button>` : ''}
+  </div>`;
+}
+
+// ===== إجراءات الأوامر والتعاملات =====
+async function acceptOrder(id) {
+  if (!isAvail()) return toast('قم بتفعيل حالتك إلى (متاح) أولاً 🟢');
+  const ref = doc(db, 'orders', id);
+  try {
+    await runTransaction(db, async tx => {
+      const s = await tx.get(ref);
+      if (!s.exists() || s.data().status !== 'new') throw new Error('taken');
+      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, agentPhone: profile.phone, acceptedAt: serverTimestamp() });
+    });
+    stopRing();
+    toast('تم قبول الطلب، توجه لاستلامه فوراً 🛵', 'ok');
+  } catch {
+    toast('عذراً، قام كابتن آخر بقبول هذا الطلب قبلك');
+  }
+}
+
+const actions = {
+  logout: () => signOut(auth),
+  seeOpen: () => { tab('open'); stopRing(); },
+  dismiss: () => stopRing(),
+  accept: id => acceptOrder(id),
+  ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
+  restCancel: async id => {
+    if (!confirm('هل تريد بالتأكيد إلغاء هذا الطلب؟')) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: 'ألغاه المطعم' });
+    toast('تم إلغاء الطلب');
+  },
+  cancel: async id => {
+    const reason = prompt('يرجى كتابة سبب الإلغاء إن رغبت (اختياري)');
+    if (reason === null) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: reason.trim() || 'ألغاه العميل' });
+    toast('تم إلغاء طلبك');
+  },
+  reorder: id => {
+    const o = myOrdersList.find(x => x.id === id);
+    if (!o) return;
+    $('items').value = o.items;
+    $('address').value = o.address;
+    $('budget').value = o.budget || '';
+    $('orderSection').scrollIntoView({ behavior: 'smooth' });
+    toast('تم ملء تفاصيل الطلب السابقة، راجعها واضغط إرسال', 'ok');
+  },
+  avail: () => updateDoc(doc(db, 'users', me.uid), { available: !isAvail() }),
+  rate: async (id, el) => {
+    const stars = Number(el.dataset.stars);
+    await updateDoc(doc(db, 'orders', id), { rating: stars, ratedAt: serverTimestamp() });
+    toast('شكراً جزيلاً على تقييمك ⭐', 'ok');
+  },
+  report: async id => {
+    const txt = prompt('يرجى توضيح الشكوى أو الملاحظة (تأخير، أصناف ناقصة..)');
+    if (!txt || !txt.trim()) return;
+    await updateDoc(doc(db, 'orders', id), { issue: txt.trim(), issueAt: serverTimestamp() });
+    toast('تم إرسال بلاغك للإدارة للمتابعة السريعة', 'ok');
+  },
+  next: async id => {
+    const o = mine.find(x => x.id === id);
+    if (!o || !NEXT[o.status]) return;
+    const patch = { status: NEXT[o.status] };
+    let restPrice = null;
+    if (patch.status === 'out') patch.outAt = serverTimestamp();
+    if (patch.status === 'delivered') {
+      let g = null;
+      while (g === null) {
+        const v = prompt('أدخل قيمة المشتريات/الأصناف المحصلة من العميل بالفاتورة:');
+        if (v === null) return;
+        if (v.trim() !== '' && !isNaN(Number(v)) && Number(v) >= 0) g = Number(v);
+        else alert('يرجى إدخال أرقام صحيحة فقط');
+      }
+      if (o.restaurantId) restPrice = g; else patch.goodsPrice = g;
+      patch.deliveredAt = serverTimestamp();
+    }
+    await updateDoc(doc(db, 'orders', id), patch);
+    if (restPrice != null) await setDoc(doc(db, 'prices', id), { price: restPrice, createdAt: serverTimestamp() });
+    toast(patch.status === 'delivered' ? 'تم إنهاء وتسليم الطلب بنجاح ✅' : 'تم تحديث حالة الطلب', 'ok');
+  }
+};
+
+function tab(name) {
+  ['open','mine','earn'].forEach(n => {
+    $('sec-' + n).classList.toggle('hidden', n !== name);
+    $('tab-' + n).classList.toggle('active', n === name);
+  });
+  if (name === 'earn') renderEarn();
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab]');
+  if (t) return tab(t.dataset.tab);
+  const b = e.target.closest('[data-act]');
+  if (b) actions[b.dataset.act]?.(b.dataset.id, b);
+});
+
+setMode('login');
+setTimeout(() => $('splash').classList.add('gone'), 1200);
 </script>
 </body>
 </html>
