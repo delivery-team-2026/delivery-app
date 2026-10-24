@@ -25,11 +25,11 @@
   --surface: rgba(255, 255, 255, 0.04);
   --border-glass: rgba(245, 196, 0, 0.16);
   --border-focus: rgba(245, 196, 0, 0.5);
-  
+
   --gold: #f5c400;
   --gold-dark: #b8860b;
   --gold-glow: rgba(245, 196, 0, 0.35);
-  
+
   --ink: #f8fafc;
   --ink-muted: #94a3b8;
   --danger: #ef4444;
@@ -42,7 +42,7 @@
 
 body {
   background-color: var(--bg-main);
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 10%, rgba(245, 196, 0, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(212, 160, 23, 0.06) 0%, transparent 45%),
     radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
@@ -221,7 +221,7 @@ textarea { min-height: 84px; resize: vertical; }
   height: 100%; width: var(--w);
   background: linear-gradient(90deg, #d4a017, #f5c400);
   box-shadow: 0 0 10px var(--gold-glow);
-  border-radius: 999px; transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 999px; transition: none;
 }
 .step { position: relative; z-index: 1; text-align: center; flex: 1; }
 .dot {
@@ -325,6 +325,11 @@ textarea { min-height: 84px; resize: vertical; }
 
 .actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .list { display: grid; gap: 14px; }
+
+/* ===== حركة الكروت: تتشغل بس أول ظهور أو لما الحالة تتغير ===== */
+.card.noanim { animation: none !important; }
+@keyframes growBar { from { width: 0; } to { width: var(--w); } }
+.stepper.anim .line div { animation: growBar 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after { animation: none !important; transition: none !important; }
@@ -493,6 +498,10 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
 const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
 const doneTime = o => o.deliveredAt?.toMillis?.() ?? o.createdAt?.toMillis?.() ?? 0;
+
+// ===== حركة الكروت: تتشغل بس أول ظهور أو لما الحالة تتغير =====
+const seenStatus = {};
+const fresh = o => { const changed = seenStatus[o.id] !== o.status; seenStatus[o.id] = o.status; return changed; };
 
 function toast(msg, cls = '') {
   const t = $('toast');
@@ -698,7 +707,7 @@ function startCustomer() {
   }));
 }
 
-function stepperHtml(status) {
+function stepperHtml(status, anim) {
   const steps = [
     { k: 'new', t: 'تم الإرسال', i: '📝' },
     { k: 'accepted', t: 'قيد التجهيز', i: '🤝' },
@@ -708,7 +717,7 @@ function stepperHtml(status) {
   const idx = Math.max(0, STEPS.indexOf(status));
   const pct = (idx / (steps.length - 1)) * 100;
   return `
-  <div class="stepper">
+  <div class="stepper ${anim ? 'anim' : ''}">
     <div class="line"><div style="--w:${pct}%"></div></div>
     ${steps.map((st, n) => `
       <div class="step ${n <= idx ? 'done' : ''} ${n === idx ? 'now' : ''}">
@@ -719,13 +728,14 @@ function stepperHtml(status) {
 }
 
 function orderCardCustomer(o, i) {
+  const ch = fresh(o);
   return `
-  <div class="card" style="animation-delay:${i * 0.06}s">
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
     <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted" style="margin-top:6px">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
     <p class="muted">📍 <b>العنوان:</b> ${esc(o.address)}</p>
     ${o.status !== 'cancelled' ? invoiceHtml(o) : ''}
-    ${o.status !== 'cancelled' ? stepperHtml(o.status) : ''}
+    ${o.status !== 'cancelled' ? stepperHtml(o.status, ch) : ''}
     ${o.status === 'delivered' && o.agentId ? (o.rating
       ? `<p class="muted" style="color:var(--gold);margin-top:8px">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
       : `<p class="muted" style="margin-top:8px">قيّم كابتن التوصيل:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
@@ -793,8 +803,9 @@ function startRestaurant() {
 }
 
 function restCard(o, i) {
+  const ch = fresh(o);
   return `
-  <div class="card" style="animation-delay:${i * 0.06}s">
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
     <div class="row"><b>عميل: ${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">📞 ${esc(o.customerPhone)}</p>
     <p class="muted">🛒 ${esc(o.items)}</p>
@@ -924,8 +935,9 @@ function renderEarn() {
 }
 
 function openCard(o, i) {
+  const ch = fresh(o);
   return `
-  <div class="card" style="animation-delay:${i * 0.06}s">
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
     <div class="row"><b>${o.restaurantName ? '🍽️ طلب مطعم: ' + esc(o.restaurantName) : 'طلب عميل مباشر'}</b><span class="tag new">جديد متاح</span></div>
     <p class="muted">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
     <p class="muted">📍 <b>المكان:</b> ${esc(o.address)}</p>
@@ -939,10 +951,11 @@ function openCard(o, i) {
 }
 
 function mineCard(o, i) {
+  const ch = fresh(o);
   const nxt = NEXT[o.status];
   const label = o.status === 'accepted' ? 'خرجت للتوصيل 🛵' : 'تم التسليم وقبض المبلغ ✅';
   return `
-  <div class="card" style="animation-delay:${i * 0.06}s">
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
     <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">(مطعم: ${esc(o.restaurantName)})</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
     <p class="muted">📞 هاتف العميل: <a href="tel:${esc(o.customerPhone)}" style="color:var(--gold);text-decoration:none;font-weight:700">${esc(o.customerPhone)}</a></p>
     <p class="muted">🛒 الأصناف: ${esc(o.items)}</p>
@@ -1049,4 +1062,4 @@ setMode('login');
 setTimeout(() => $('splash').classList.add('gone'), 1200);
 </script>
 </body>
-  </html>
+</html>
