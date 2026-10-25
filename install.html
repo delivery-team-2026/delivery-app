@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تحميل تطبيق مكتب السلطان</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
+  body { background: #0c0d0f; color: #f8fafc; min-height: 100vh; padding: 26px 18px 40px; }
+  .wrap { max-width: 480px; margin: 0 auto; text-align: center; }
+  .logo { width: 130px; height: 130px; border-radius: 50%; border: 3px solid #f5c400; box-shadow: 0 0 40px rgba(245,196,0,.4); object-fit: cover; }
+  h1 { color: #f5c400; font-size: 26px; margin-top: 18px; font-weight: 900; }
+  .sub { color: #94a3b8; margin-top: 8px; font-size: 15px; line-height: 1.7; }
+  .btn { display: block; margin: 24px auto 0; background: linear-gradient(135deg,#d4a017,#f5c400); color: #0d0e12; font-weight: 900; font-size: 18px; padding: 16px; border-radius: 16px; text-decoration: none; box-shadow: 0 10px 26px rgba(245,196,0,.35); }
+  .card { background: rgba(22,23,28,.85); border: 1px solid rgba(245,196,0,.2); border-radius: 20px; padding: 20px; margin-top: 22px; text-align: right; }
+  .card h2 { color: #f5c400; font-size: 18px; margin-bottom: 12px; }
+  ol { padding-right: 20px; line-height: 2; font-size: 15px; color: #e2e8f0; }
+  .note { color: #94a3b8; font-size: 13px; margin-top: 14px; line-height: 1.7; text-align: center; }
+  .copy { margin-top: 16px; width: 100%; background: rgba(255,255,255,.06); border: 1px solid rgba(245,196,0,.3); color: #f5c400; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="logo" src="1000115413.jpg" alt="مكتب السلطان">
+  <h1>مكتب السلطان</h1>
+  <p class="sub">طلبك يوصل لحد الباب، حمّل التطبيق على موبايلك واطلب بضغطة.</p>
+
+  <a class="btn" href="index.html">🛵 افتح التطبيق دلوقتي</a>
+
+  <div class="card">
+    <h2>📱 تثبيت على أندرويد</h2>
+    <ol>
+      <li>افتح الرابط من <b>Chrome</b>.</li>
+      <li>اضغط على النقط الثلاث ⋮ فوق.</li>
+      <li>اختار <b>تثبيت التطبيق</b> أو <b>Add to Home screen</b>.</li>
+      <li>التطبيق هيظهر على شاشتك زي أي تطبيق.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>🍎 تثبيت على آيفون</h2>
+    <ol>
+      <li>افتح الرابط من <b>Safari</b> (لازم يكون Safari).</li>
+      <li>اضغط على زرار المشاركة <b>⬆️</b>.</li>
+      <li>اختار <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    </ol>
+  </div>
+
+  <button class="copy" id="copyBtn">📋 انسخ رابط التطبيق</button>
+  <p class="note">لو عندك حساب مطعم أو مندوب، الإدارة هتعملهولك وتبعتلك الرقم والباسورد.</p>
+</div>
+
+<script>
+  document.getElementById('copyBtn').onclick = async () => {
+    const url = 'https://delivery-team-2026.github.io/delivery-app/install.html';
+    try { await navigator.clipboard.writeText(url); alert('اتنسخ الرابط ✅'); }
+    catch { prompt('انسخ الرابط:', url); }
+  };
+</script>
+</body>
+</html>
