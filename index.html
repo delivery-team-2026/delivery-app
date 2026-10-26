@@ -908,7 +908,18 @@ async function refreshAgentTotals() {
     agentTotals = { cnt: d.cnt || 0, fee: d.fee || 0, disc: (d.disc || 0) + (d.cdisc || 0) };
     renderEarn();
     renderAccount();
-  } catch (e) { console.warn('totals', e); }
+  } catch (e) {
+    // لو الحساب من السيرفر فشل، نحسب من الطلبات اللي محمّلة عندنا بدل ما يطلع صفر
+    console.warn('totals', e);
+    const done = mine.filter(o => o.status === 'delivered');
+    agentTotals = {
+      cnt: done.length,
+      fee: done.reduce((t, o) => t + (o.deliveryFee || 0), 0),
+      disc: done.reduce((t, o) => t + discountOf(o), 0)
+    };
+    renderEarn();
+    renderAccount();
+  }
 }
 
 function renderWelcome() {
