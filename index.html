@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <title>مكتب السلطان | التوصيل الفاخر</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/jpeg" href="1000117396.jpg">
-<link rel="apple-touch-icon" href="1000117396.jpg">
-<meta name="theme-color" content="#0a0a0c">
+<link rel="icon" type="image/jpeg" href="1000115413.jpg">
+<link rel="apple-touch-icon" href="1000115413.jpg">
+<meta name="theme-color" content="#121214">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="السلطان">
@@ -22,13 +22,19 @@
   --bg-main: #0c0d0f;
   --bg-card: rgba(22, 23, 28, 0.75);
   --bg-card-hover: rgba(30, 32, 40, 0.85);
+  --surface: rgba(255, 255, 255, 0.04);
   --border-glass: rgba(245, 196, 0, 0.16);
+  --border-focus: rgba(245, 196, 0, 0.5);
+
   --gold: #f5c400;
-  --gold-glow: rgba(245, 196, 0, 0.4);
+  --gold-dark: #b8860b;
+  --gold-glow: rgba(245, 196, 0, 0.35);
+
   --ink: #f8fafc;
   --ink-muted: #94a3b8;
   --danger: #ef4444;
   --ok: #10b981;
+  --info: #38bdf8;
   --font: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -37,175 +43,325 @@
 body {
   background-color: var(--bg-main);
   background-image:
-    radial-gradient(circle at 10% 10%, rgba(245, 196, 0, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(212, 160, 23, 0.04) 0%, transparent 45%);
+    radial-gradient(circle at 10% 10%, rgba(245, 196, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 160, 23, 0.06) 0%, transparent 45%),
+    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
   color: var(--ink);
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 50px;
   overflow-x: hidden;
   animation: pageFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hidden { display: none !important; }
 
-/* ===== الحركات والموشن جرافيكس ===== */
-@keyframes pageFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 70% { transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
-@keyframes goldPulse { 0% { box-shadow: 0 0 15px var(--gold-glow); } 50% { box-shadow: 0 0 40px rgba(245,196,0,0.8); } 100% { box-shadow: 0 0 15px var(--gold-glow); } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+/* ===== سلاسل الحركة والموشن جرافيكس ===== */
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes floatLogo { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+@keyframes goldSheen { 0% { transform: translateX(-150%) skewX(-25deg); } 100% { transform: translateX(250%) skewX(-25deg); } }
+@keyframes pulseRings { 0% { box-shadow: 0 0 0 0 var(--gold-glow); } 70% { box-shadow: 0 0 0 14px rgba(245,196,0,0); } 100% { box-shadow: 0 0 0 0 rgba(245,196,0,0); } }
+@keyframes cardEntrance { 0% { opacity: 0; transform: translateY(22px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes dynamicPop { 0% { transform: scale(0.9) translateY(-20px); opacity: 0; } 60% { transform: scale(1.03) translateY(3px); opacity: 1; } 100% { transform: scale(1) translateY(0); } }
+@keyframes flowGlow { 0%, 100% { filter: drop-shadow(0 0 6px rgba(245,196,0,0.4)); } 50% { filter: drop-shadow(0 0 16px rgba(245,196,0,0.8)); } }
 
-/* ===== شاشة الافتتاح (Splash Screen) - مطابقة للصورة ===== */
+/* ===== شاشة الافتتاح (Splash Screen) ===== */
 #splash {
   position: fixed; inset: 0;
-  background: #0a0a0c;
+  background: radial-gradient(circle at center, #1e1b10 0%, #0a0a0c 100%);
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   z-index: 9999;
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s;
 }
-#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.05); }
-.splash-container {
-  display: flex; flex-direction: column; align-items: center;
-  animation: popIn 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 .splashImg {
-  width: 160px; height: 160px; border-radius: 50%;
-  border: 4px solid var(--gold);
-  animation: goldPulse 2s infinite;
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 35px var(--gold-glow);
+  animation: floatLogo 3s ease-in-out infinite, pulseRings 2s infinite;
   object-fit: cover;
-  margin-bottom: 30px;
 }
 #splash h2 {
-  font-size: 32px; font-weight: 900; color: var(--gold);
-  letter-spacing: 1px; text-shadow: 0 2px 10px rgba(245,196,0,0.3);
+  font-size: 26px; font-weight: 800; color: var(--gold);
+  margin-top: 18px; letter-spacing: 0.5px;
+  animation: flowGlow 3s ease-in-out infinite;
 }
 
-/* ===== الهيدر ===== */
+/* ===== الهيدر الزجاجي (Frosted Glass Header) ===== */
 header {
   position: sticky; top: 0; z-index: 60;
-  background: rgba(14, 15, 18, 0.85);
+  background: rgba(14, 15, 18, 0.82);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
-  padding: 16px 24px;
+  padding: 16px 22px;
   display: flex; justify-content: space-between; align-items: center;
 }
-header h1 { font-size: 20px; font-weight: 800; color: #fff; }
+header h1 { font-size: 19px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
 header h1 span { color: var(--gold); }
-header small { font-size: 13px; color: var(--ink-muted); font-weight: 500; display: block; margin-top: 4px; }
+header small { font-size: 12px; color: var(--ink-muted); font-weight: 500; display: block; margin-top: 2px; }
 
 .ghostBtn {
-  background: rgba(245, 196, 0, 0.08); border: 1px solid var(--border-glass);
-  color: var(--gold); padding: 8px 18px; border-radius: 999px;
-  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+  background: rgba(245, 196, 0, 0.08);
+  border: 1px solid var(--border-glass);
+  color: var(--gold);
+  padding: 7px 16px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.ghostBtn:hover { background: var(--gold); color: #000; transform: translateY(-2px); }
+.ghostBtn:hover { background: var(--gold); color: #000; transform: translateY(-1px); }
+.ghostBtn:active { transform: scale(0.95); }
 
-main { padding: 24px 16px; display: grid; gap: 20px; max-width: 600px; margin: 0 auto; }
+main { padding: 18px 16px; display: grid; gap: 18px; max-width: 580px; margin: 0 auto; }
 
-/* ===== الكروت (Cards) ===== */
+/* ===== كارت الترحيب الفاخر (Hero Card) ===== */
+.hero {
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg, #1b1913 0%, #111114 100%);
+  border-radius: 24px; padding: 22px 20px;
+  border: 1px solid rgba(245, 196, 0, 0.3);
+  box-shadow: 0 16px 36px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(245, 196, 0, 0.18) 50%, transparent 100%);
+  animation: goldSheen 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.hero h2 { font-size: 20px; font-weight: 900; color: var(--gold); letter-spacing: -0.3px; }
+.hero .heroSub { font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; }
+.hero p { font-size: 12.5px; color: var(--ink-muted); margin-top: 5px; line-height: 1.6; }
+.heroLogo {
+  width: 76px; height: 76px; border-radius: 50%;
+  border: 2px solid var(--gold);
+  box-shadow: 0 6px 20px var(--gold-glow);
+  object-fit: cover; flex-shrink: 0;
+  animation: floatLogo 3.5s ease-in-out infinite;
+}
+
+/* ===== الكروت الزجاجية (Glassmorphic Cards) ===== */
 .card {
-  background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-glass); border-radius: 20px; padding: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  transition: transform 0.3s, border-color 0.3s;
-  animation: slideUp 0.5s ease-out both;
+  background: var(--bg-card);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px; padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.card:hover { border-color: rgba(245, 196, 0, 0.4); transform: translateY(-3px); }
-.card h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 16px; }
+.card:hover { border-color: rgba(245, 196, 0, 0.35); box-shadow: 0 14px 35px rgba(0,0,0,0.5); }
+.card h3 { font-size: 16.5px; font-weight: 800; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.muted { color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
-.empty { text-align: center; color: var(--ink-muted); padding: 40px 16px; font-weight: 600; font-size: 15px; }
+.muted { color: var(--ink-muted); font-size: 13.5px; line-height: 1.8; }
+.empty { text-align: center; color: var(--ink-muted); padding: 36px 14px; font-weight: 600; font-size: 14px; }
 
-/* ===== الحقول (Inputs) ===== */
+/* ===== الحقول والمدخلات الفخمة ===== */
 input, textarea {
-  width: 100%; padding: 15px 18px;
-  background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px; margin-bottom: 16px; color: #fff; font-size: 15px; font-weight: 500;
-  transition: all 0.3s;
+  width: 100%; padding: 13px 16px;
+  background: rgba(10, 11, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px; margin-bottom: 12px;
+  color: #fff; font-size: 14.5px; font-weight: 500;
+  transition: all 0.25s ease;
 }
-input:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(245, 196, 0, 0.15); }
-textarea { min-height: 90px; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #64748b; }
+input:focus, textarea:focus {
+  outline: none; border-color: var(--gold);
+  background: #14151a;
+  box-shadow: 0 0 0 3px rgba(245, 196, 0, 0.18);
+}
+textarea { min-height: 84px; resize: vertical; }
 
-/* ===== الأزرار ===== */
+/* ===== الأزرار والمؤثرات التفاعلية ===== */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 100%; padding: 15px 24px; border: 0; border-radius: 14px;
+  width: 100%; padding: 13px 20px; border: 0; border-radius: 14px;
   background: linear-gradient(135deg, #d4a017 0%, #f5c400 100%);
-  color: #000; font-size: 16px; font-weight: 800; cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.3s;
-  box-shadow: 0 6px 20px rgba(245, 196, 0, 0.3);
+  color: #0d0e12; font-size: 15px; font-weight: 800;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.2s;
+  box-shadow: 0 6px 18px rgba(245, 196, 0, 0.28);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(245, 196, 0, 0.45); }
-.btn:active { transform: scale(0.96); }
-.btn.small { width: auto; padding: 10px 20px; font-size: 14px; border-radius: 999px; }
-.btn.ok { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; box-shadow: 0 6px 20px rgba(16,185,129,0.3); }
-.btn.danger { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; box-shadow: 0 6px 20px rgba(239,68,68,0.3); }
-.btn.grey { background: rgba(255,255,255,0.08); color: #e2e8f0; box-shadow: none; border: 1px solid rgba(255,255,255,0.1); }
-.link { background: none; border: 0; color: var(--gold); font-size: 14.5px; font-weight: 700; cursor: pointer; text-decoration: none; margin-top: 10px; }
+.btn::after {
+  content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(245, 196, 0, 0.42); }
+.btn:hover::after { left: 160%; }
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* ===== التاغات ===== */
-.tag { padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; white-space: nowrap; }
-.tag.new { background: rgba(245, 196, 0, 0.15); color: #f5c400; border: 1px solid rgba(245, 196, 0, 0.4); }
-.tag.accepted { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
-.tag.out { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
-.tag.delivered { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
-.tag.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.btn.small { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 999px; }
+.btn.ok { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; box-shadow: 0 6px 16px rgba(16,185,129,0.3); }
+.btn.danger { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; box-shadow: 0 6px 16px rgba(239,68,68,0.3); }
+.btn.grey { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; box-shadow: none; }
+.btn.grey:hover { background: rgba(255,255,255,0.14); }
 
-/* ===== التوست (التنبيهات) ===== */
+.link { background: none; border: 0; color: var(--gold); font-size: 13.5px; font-weight: 700; cursor: pointer; text-decoration: underline; margin-top: 14px; }
+
+/* ===== التاغات وحالات الطلب (Neon Tags) ===== */
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.tag.new { background: rgba(245, 196, 0, 0.15); color: #f5c400; border: 1px solid rgba(245, 196, 0, 0.3); animation: pulseRings 2.5s infinite; }
+.tag.accepted { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.tag.out { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+.tag.delivered { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.tag.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+/* ===== خطوات مسار الطلب (Stepper) ===== */
+.stepper { position: relative; display: flex; justify-content: space-between; margin: 20px 0 10px; }
+.stepper .line {
+  position: absolute; top: 18px; left: 10%; right: 10%; height: 3px;
+  background: rgba(255,255,255,0.08); border-radius: 999px; z-index: 0;
+}
+.stepper .line div {
+  height: 100%; width: var(--w);
+  background: linear-gradient(90deg, #d4a017, #f5c400);
+  box-shadow: 0 0 10px var(--gold-glow);
+  border-radius: 999px; transition: none;
+}
+.step { position: relative; z-index: 1; text-align: center; flex: 1; }
+.dot {
+  width: 38px; height: 38px; border-radius: 50%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: #15161c; border: 2px solid rgba(255,255,255,0.12);
+  font-size: 15px; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step.done .dot { background: var(--gold); border-color: #ffe066; color: #000; box-shadow: 0 0 16px var(--gold-glow); }
+.step.now .dot {
+  background: #231f0d; border-color: var(--gold);
+  animation: pulseRings 1.8s infinite; transform: scale(1.12);
+}
+.step small { display: block; margin-top: 7px; color: var(--ink-muted); font-size: 11px; font-weight: 600; }
+.step.done small { color: #fff; }
+.step.now small { color: var(--gold); }
+
+/* ===== التبويبات المتطورة (Sliding Tabs) ===== */
+.tabs {
+  display: flex; gap: 4px;
+  background: rgba(18, 19, 24, 0.9);
+  border: 1px solid var(--border-glass);
+  border-radius: 999px; padding: 4px;
+  margin: 14px 16px 0; max-width: 580px; margin-left: auto; margin-right: auto;
+}
+.tabs button {
+  flex: 1; border: 0; background: transparent; padding: 9px 12px;
+  border-radius: 999px; font-weight: 700; font-size: 13.5px;
+  color: var(--ink-muted); cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tabs button.active {
+  background: linear-gradient(135deg, #d4a017, #f5c400);
+  color: #0b0c0e; box-shadow: 0 4px 14px rgba(245, 196, 0, 0.3);
+}
+
+/* ===== الأرباح والإحصائيات المضيئة ===== */
+.periods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pcard {
+  background: linear-gradient(160deg, #181920 0%, #0f1013 100%);
+  border: 1px solid rgba(245, 196, 0, 0.14); border-radius: 18px;
+  padding: 14px 8px; text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.pcard:hover { transform: translateY(-3px); border-color: var(--gold); }
+.pcard span { color: var(--ink-muted); font-size: 12px; font-weight: 600; }
+.pcard b { display: block; font-size: 22px; color: #fff; margin: 4px 0 2px; font-weight: 800; }
+.pcard em { display: block; font-style: normal; color: var(--gold); font-weight: 700; font-size: 13.5px; }
+
+.totalBox {
+  background: linear-gradient(135deg, #201a08 0%, #121318 100%);
+  border: 1px solid rgba(245, 196, 0, 0.35); border-radius: 20px;
+  padding: 22px; text-align: center;
+}
+.totalBox span { color: var(--ink-muted); font-size: 13px; }
+.totalBox b { display: block; font-size: 34px; color: var(--gold); font-weight: 900; margin-top: 4px; text-shadow: 0 0 20px rgba(245,196,0,0.3); }
+
+/* ===== بانر الطلب الجديد (Dynamic Island Notification) ===== */
+.banner {
+  position: fixed; top: -140px; left: 50%; transform: translateX(-50%);
+  width: calc(100% - 24px); max-width: 480px;
+  background: rgba(22, 23, 30, 0.95);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--gold);
+  border-radius: 22px; padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 25px rgba(245,196,0,0.25);
+  transition: top 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.banner.show { top: 16px; animation: dynamicPop 0.6s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.banner b { font-size: 15px; color: var(--gold); font-weight: 800; }
+.banner .muted { font-size: 12.5px; color: #cbd5e1; }
+.banner .btns { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ===== التوست المنبثق (Toast Pill) ===== */
 .toast {
-  position: fixed; top: 24px; left: 50%;
-  background: rgba(20, 22, 28, 0.95); color: #fff; padding: 14px 28px; border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+  position: fixed; top: 22px; left: 50%;
+  background: rgba(18, 19, 24, 0.94);
+  color: #fff; padding: 12px 24px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.6);
   z-index: 2000; opacity: 0; pointer-events: none;
-  transform: translate(-50%, -20px); font-size: 15px; font-weight: 700;
-  transition: all 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transform: translate(-50%, -20px) scale(0.95);
+  font-size: 14px; font-weight: 700;
+  transition: all 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
 .toast.ok { border-color: var(--ok); color: #34d399; }
 
-/* ===== تسجيل الدخول ===== */
-.authWrap { max-width: 440px; margin: 40px auto 20px; padding: 0 20px; animation: slideUp 0.6s ease-out; }
-.brandImg { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 16px; display: block; box-shadow: 0 0 35px var(--gold-glow); }
-.list { display: grid; gap: 16px; }
-.actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+/* شاشة تسجيل الدخول */
+.authWrap { max-width: 420px; margin: 50px auto 20px; padding: 0 16px; }
+.brand { text-align: center; margin-bottom: 24px; }
+.brandImg {
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 3px solid var(--gold); margin: 0 auto 12px; display: block;
+  box-shadow: 0 0 30px var(--gold-glow);
+  animation: floatLogo 3.2s ease-in-out infinite;
+}
+.brand p { color: var(--ink-muted); font-size: 14px; font-weight: 500; }
+
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.list { display: grid; gap: 14px; }
+
+/* ===== حركة الكروت: تتشغل بس أول ظهور أو لما الحالة تتغير ===== */
+.card.noanim { animation: none !important; }
+@keyframes growBar { from { width: 0; } to { width: var(--w); } }
+.stepper.anim .line div { animation: growBar 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation: none !important; transition: none !important; }
+}
 </style>
 </head>
 <body>
 
-<!-- سكريبت إخفاء شاشة البداية المستقل (لكي لا يعلق الموقع أبداً) -->
-<script>
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const splash = document.getElementById('splash');
-      if (splash) splash.classList.add('gone');
-    }, 1800); // 1.8 ثانية وتختفي
-  });
-</script>
-
-<!-- شاشة البداية المحدثة -->
+<!-- شاشة البداية -->
 <div id="splash">
-  <div class="splash-container">
-    <img class="splashImg" src="1000117396.jpg" alt="مكتب السلطان">
-    <h2>مكتب السلطان</h2>
-  </div>
+  <img class="splashImg" src="1000115413.jpg" alt="مكتب السلطان">
+  <h2>مكتب السلطان</h2>
 </div>
 
+<!-- التنبيهات المنبثقة -->
 <div id="toast" class="toast"></div>
-<div id="banner" class="banner hidden"></div> <!-- يمكن إضافة ستايل الـ banner هنا لو محتاجه -->
+<div id="banner" class="banner"></div>
 
 <!-- شاشة تسجيل الدخول -->
 <section id="authView" class="hidden">
   <div class="authWrap">
-    <div style="text-align: center; margin-bottom: 24px;">
-      <img class="brandImg" src="1000117396.jpg" alt="مكتب السلطان">
-      <p style="color:var(--ink-muted); font-size:15px; font-weight:600;">خدمة التوصيل السريع على مدار الساعة</p>
+    <div class="brand">
+      <img class="brandImg" src="1000115413.jpg" alt="مكتب السلطان">
+      <p>خدمة التوصيل السريع على مدار الساعة</p>
     </div>
     <form id="authForm" class="card">
-      <h3 id="authTitle" style="text-align: center; font-size: 22px;">دخول للحساب</h3>
+      <h3 id="authTitle">دخول للحساب</h3>
       <input id="name" class="hidden" placeholder="الاسم بالكامل">
       <input id="phone" type="tel" placeholder="رقم الهاتف" required>
       <input id="password" type="password" placeholder="كلمة المرور (6 خانات على الأقل)" required minlength="6">
       <button id="authBtn" class="btn" type="submit">دخول</button>
-      <div style="text-align:center; margin-top:12px;"><button id="toggleMode" class="link" type="button">ليس لديك حساب؟ اشترك معنا الآن</button></div>
+      <div style="text-align:center"><button id="toggleMode" class="link" type="button">ليس لديك حساب؟ اشترك معنا الآن</button></div>
     </form>
   </div>
 </section>
@@ -217,14 +373,17 @@ textarea { min-height: 90px; resize: vertical; }
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
   <main>
-    <div class="card" style="background: linear-gradient(145deg, #1b1913 0%, #111114 100%);">
-      <h2 style="color:var(--gold); font-weight:900; font-size:20px; margin-bottom:6px;">مكتب السلطان</h2>
-      <p style="color:#fff; font-weight:700; font-size:15px;">مشاويرك ومشترياتك تصل لباب بيتك</p>
-      <p style="color:var(--ink-muted); font-size:13px; margin-top:6px;">مطاعم، سوبرماركت، صيدليات أو شحنات خاصة بأعلى سرعة وأمان</p>
+    <div class="hero">
+      <div>
+        <h2>مكتب السلطان</h2>
+        <p class="heroSub">مشاويرك ومشترياتك تصل لباب بيتك</p>
+        <p>مطاعم، سوبرماركت، صيدليات أو شحنات خاصة بأعلى سرعة وأمان</p>
+      </div>
+      <img src="1000115413.jpg" alt="شعار السلطان" class="heroLogo">
     </div>
     <div id="welcomeBox"></div>
     <div id="slotOrder"></div>
-    <h3 style="margin-top:12px;font-size:18px;font-weight:800;color:#fff;">📋 طلباتي السابقة والجارية</h3>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📋 طلباتي السابقة والجارية</h3>
     <div id="myOrders" class="list"></div>
   </main>
 </section>
@@ -235,20 +394,36 @@ textarea { min-height: 90px; resize: vertical; }
     <div><h1 id="agentName"></h1><small>بوابة كابتن التوصيل</small></div>
     <button class="ghostBtn" data-act="logout">خروج</button>
   </header>
-  <div style="padding:16px; max-width:600px; margin:0 auto">
+  <div style="padding:14px 16px 0; max-width:580px; margin:0 auto">
+    <div class="hero">
+      <div>
+        <h2>جاهز للمشوار اليوم؟ 🛵</h2>
+        <p class="heroSub">الطلبات بانتظارك</p>
+        <p>اقبل الطلب فور صدوره وسيتم احتساب نسبتك آلياً بمجرد التسليم.</p>
+      </div>
+      <img src="1000115413.jpg" alt="" class="heroLogo">
+    </div>
+  </div>
+  <div style="padding:12px 16px 0; max-width:580px; margin:0 auto">
     <button id="availBtn" class="btn small" data-act="avail">🟢 متاح لاستقبال الطلبات</button>
   </div>
-  <main style="padding-top: 0;">
-    <div style="display:flex; gap:8px; margin-bottom:16px;">
-      <button class="btn small grey" style="flex:1" data-tab="open" id="tab-open">المتاحة</button>
-      <button class="btn small grey" style="flex:1" data-tab="mine" id="tab-mine">طلباتي</button>
-      <button class="btn small grey" style="flex:1" data-tab="earn" id="tab-earn">حسابي</button>
-    </div>
+  <nav class="tabs">
+    <button data-tab="open" id="tab-open" class="active">المتاحة</button>
+    <button data-tab="mine" id="tab-mine">طلباتي</button>
+    <button data-tab="earn" id="tab-earn">أرباحي وحسابي</button>
+  </nav>
+  <main>
     <div id="slotOrderA"></div>
     <div id="sec-open" class="list"></div>
     <div id="sec-mine" class="list hidden"></div>
-    <div id="sec-earn" class="hidden" style="display:grid;gap:16px;">
+    <div id="sec-earn" class="hidden" style="display:grid;gap:14px">
       <div class="card" id="accountBox"></div>
+      <div class="periods" id="earnPeriods"></div>
+      <div class="totalBox">
+        <span>إجمالي ما حققته من طلبات مكتملة</span>
+        <b id="earnTotal">0 جنيه</b>
+        <p class="muted" id="doneCount" style="margin-top:6px"></p>
+      </div>
     </div>
   </main>
 </section>
@@ -267,11 +442,11 @@ textarea { min-height: 90px; resize: vertical; }
         <input id="rPhone" type="tel" placeholder="رقم هاتف العميل" required>
         <input id="rAddress" placeholder="عنوان التوصيل بالتفصيل" required>
         <textarea id="rItems" placeholder="تفاصيل ومحتويات الوجبات / الأصناف" required></textarea>
-        <p class="muted" style="color:var(--gold); font-weight:800; margin-bottom:12px;">🛵 سعر التوصيل الثابت: 30 جنيه</p>
-        <button class="btn" type="submit">إرسال للكباتن الآن</button>
+        <p class="muted" style="color:var(--gold); font-weight:700">🛵 سعر التوصيل الثابت: 30 جنيه</p>
+        <button class="btn" type="submit" style="margin-top:10px">إرسال للكباتن الآن</button>
       </form>
     </div>
-    <h3 style="margin-top:12px;font-size:18px;font-weight:800;color:#fff;">📦 سجل طلبات المطعم</h3>
+    <h3 style="margin-top:8px;font-size:17px;font-weight:800;color:#fff">📦 سجل طلبات المطعم</h3>
     <div id="restOrders" class="list"></div>
   </main>
 </section>
@@ -280,19 +455,19 @@ textarea { min-height: 90px; resize: vertical; }
 <section id="orderSection" class="card hidden">
   <h3>اطلب مشوار أو طلبية جديدة</h3>
   <form id="orderForm">
-    <textarea id="items" placeholder="اكتب الأصناف بالتفصيل..." required></textarea>
+    <textarea id="items" placeholder="اكتب الأصناف بالتفصيل، مثال: عيش فينو 10، حليب، دواء من الصيدلية" required></textarea>
     <input id="address" placeholder="عنوان الاستلام والتسليم بالتفصيل" required>
-    <input id="coupon" placeholder="كود الخصم (إن وجد)">
+    <input id="coupon" placeholder="كود الخصم أو كود الترحيب (إن وجد)">
     <input id="budget" type="number" min="0" placeholder="ميزانية تقديرية للمشتريات (جنيه)">
     <button class="btn" type="submit">إرسال الطلب فوراً</button>
   </form>
 </section>
 
-<!-- كود Firebase -->
+<!-- كود Firebase و JavaScript بكامل المنطق البرمجي -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, updateDoc, runTransaction, arrayUnion, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, onSnapshot, updateDoc, runTransaction, arrayUnion, serverTimestamp, writeBatch, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC3jlhf1gZKRj-mn2a-Gb6VvARouFvvL7A",
@@ -311,6 +486,10 @@ const DEFAULT_FEE = 30;
 const AGENT_SHARE = 2 / 3;
 const ADMIN_SHARE = 1 / 3;
 const STATUS = { new:'جديد ومتاح', accepted:'تم القبول', out:'خرج للتوصيل', delivered:'تم التسليم', cancelled:'ملغي' };
+const STEPS = ['new','accepted','out','delivered'];
+const NEXT = { accepted:'out', out:'delivered' };
+const PERIOD_LABEL = { day:'اليوم', week:'الأسبوع', month:'الشهر' };
+const ADMIN_PHONE = '01010422493';
 
 let me = null, profile = null, unsubs = [], mine = [], open = [], mode = 'login', myPayments = [], myOrdersList = [];
 const isAvail = () => profile?.available !== false;
@@ -318,19 +497,97 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const emailOf = phone => phone.replace(/\D/g,'') + '@delivery.app';
 const tsOf = o => o.createdAt?.toMillis?.() ?? Date.now();
+const doneTime = o => o.deliveredAt?.toMillis?.() ?? o.createdAt?.toMillis?.() ?? 0;
+
+// ===== حركة الكروت: تتشغل بس أول ظهور أو لما الحالة تتغير =====
+const seenStatus = {};
+const fresh = o => { const changed = seenStatus[o.id] !== o.status; seenStatus[o.id] = o.status; return changed; };
 
 function toast(msg, cls = '') {
   const t = $('toast');
   t.textContent = msg;
   t.className = 'toast show ' + cls;
   clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove('show'), 3500);
+  t._h = setTimeout(() => t.classList.remove('show'), 3300);
+}
+
+// ===== نغمات ورنين التنبيه للمناديب =====
+let audioCtx = null, ringTimer = null, ringStopper = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+document.addEventListener('click', () => { try { getAudio(); } catch {} }, { once: true });
+
+function chime() {
+  try {
+    const c = getAudio();
+    [0, 0.25, 0.55].forEach((t, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = i === 1 ? 1240 : 920;
+      g.gain.setValueAtTime(0, c.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.35, c.currentTime + t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + t + 0.24);
+      o.connect(g).connect(c.destination);
+      o.start(c.currentTime + t);
+      o.stop(c.currentTime + t + 0.26);
+    });
+  } catch {}
+}
+
+function startRing(order) {
+  stopRing();
+  const b = $('banner');
+  b.innerHTML = `
+    <div>
+      <b>⚡ طلب توصيل متاح الآن!</b>
+      <div class="muted">${esc(order.items)}</div>
+      <div class="muted" style="color:var(--gold)">📍 ${esc(order.address)}</div>
+    </div>
+    <div class="btns">
+      <button class="btn small" data-act="seeOpen">عرض</button>
+      <button class="btn small grey" data-act="dismiss">إغلاق</button>
+    </div>`;
+  b.classList.add('show');
+  const ring = () => { chime(); navigator.vibrate?.([400, 200, 400]); };
+  ring();
+  ringTimer = setInterval(ring, 2600);
+  ringStopper = setTimeout(stopRing, 60000);
+}
+
+function stopRing() {
+  clearInterval(ringTimer); clearTimeout(ringStopper);
+  ringTimer = null; ringStopper = null;
+  navigator.vibrate?.(0);
+  $('banner').classList.remove('show');
 }
 
 function show(id) {
   ['authView','customerView','agentView','restView'].forEach(v => $(v).classList.toggle('hidden', v !== id));
 }
 
+function periodStart(p) {
+  const n = new Date();
+  const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  if (p === 'day') return today.getTime();
+  if (p === 'week') {
+    const d = new Date(today);
+    d.setDate(d.getDate() - ((d.getDay() + 1) % 7));
+    return d.getTime();
+  }
+  return new Date(n.getFullYear(), n.getMonth(), 1).getTime();
+}
+
+function summarize(list, p) {
+  const from = periodStart(p);
+  const inP = list.filter(o => doneTime(o) >= from);
+  return { count: inP.length, earn: inP.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0) };
+}
+
+// ===== تسجيل الدخول والاشتراك =====
 function setMode(m) {
   mode = m;
   $('name').classList.toggle('hidden', m !== 'register');
@@ -344,18 +601,21 @@ function friendly(err) {
   const c = err.code || '';
   if (c.includes('email-already-in-use')) return 'هذا الرقم مسجل به حساب سابق';
   if (c.includes('weak-password')) return 'كلمة المرور يجب أن تكون 6 خانات على الأقل';
-  if (c.includes('invalid-credential') || c.includes('user-not-found')) return 'بيانات الدخول غير صحيحة';
-  return 'حدث خطأ، يرجى إعادة المحاولة (تأكد من إضافة الرابط في Firebase)';
+  if (c.includes('invalid-email')) return 'رقم الهاتف غير صحيح';
+  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'بيانات الدخول غير صحيحة';
+  return 'حدث خطأ، يرجى إعادة المحاولة';
 }
 
 $('authForm').onsubmit = async e => {
   e.preventDefault();
   const phone = $('phone').value.replace(/\D/g, '');
   const pass = $('password').value;
+  if (phone.length < 10) return toast('يرجى كتابة رقم هاتف صحيح');
   $('authBtn').disabled = true;
   try {
     if (mode === 'register') {
       const name = $('name').value.trim();
+      if (!name) return toast('يرجى كتابة اسمك');
       const cred = await createUserWithEmailAndPassword(auth, emailOf(phone), pass);
       await setDoc(doc(db, 'users', cred.user.uid), { name, phone, role: 'customer', createdAt: serverTimestamp() });
     } else {
@@ -369,20 +629,438 @@ $('authForm').onsubmit = async e => {
 };
 
 onAuthStateChanged(auth, async user => {
-  unsubs.forEach(u => u()); unsubs = [];
+  unsubs.forEach(u => u()); unsubs = []; mine = []; open = [];
   if (!user) { $('orderSection').classList.add('hidden'); show('authView'); return; }
   me = user;
   const snap = await getDoc(doc(db, 'users', user.uid));
   if (!snap.exists()) { toast('الحساب غير مسجل بالنظام'); await signOut(auth); return; }
   profile = { uid: user.uid, ...snap.data() };
-  if (profile.role === 'disabled') { toast('هذا الحساب معطل'); await signOut(auth); return; }
+  if (profile.role === 'disabled') {
+    toast('هذا الحساب معطل حالياً، تواصل مع الإدارة');
+    await signOut(auth);
+    return;
+  }
   profile.role === 'agent' ? startAgent() : profile.role === 'restaurant' ? startRestaurant() : startCustomer();
 });
 
-// --- يمكنك استكمال باقي الدوال (startCustomer, startAgent...) بنفس المنطق السابق تماماً لضمان عدم كسر أي كود ---
-// وضعت لك الهيكل الأساسي الذي يعالج مشكلة الـ Splash Screen ويدمج التصميم الجديد بسلاسة.
+// ===== لوحة العميل =====
+let coupons = [];
+let myWelcome = null;
+const discountOf = o => (o.adminDiscount || 0) + (o.couponDiscount || 0);
+const adminCut = o => (o.deliveryFee || 0) * ADMIN_SHARE - discountOf(o);
+const payNow = o => (o.deliveryFee || 0) - discountOf(o);
+const discountLabel = o => {
+  if (o.adminDiscount) return `🎁 كود ترحيبي: خصم ${o.adminDiscount} جنيه`;
+  if (o.couponDiscount) return `🏷️ كوبون ${esc(o.couponCode)}: خصم ${o.couponDiscount} جنيه`;
+  return '';
+};
+const invoiceHtml = o => {
+  const goods = o.goodsPrice != null ? o.goodsPrice : null;
+  const total = goods != null ? goods + payNow(o) : null;
+  return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(245,196,0,0.18);border-radius:14px;padding:12px;margin-top:12px;font-size:13.5px;line-height:2">
+    <div>🧺 قيمة المشتريات: <b>${goods != null ? goods + ' جنيه' : 'تُحدد عند استلام الفاتورة'}</b></div>
+    <div>🛵 رسوم التوصيل: <b style="color:var(--gold)">${payNow(o)} جنيه</b>${discountOf(o) ? ` <span style="color:#94a3b8">(${o.deliveryFee} - خصم ${discountOf(o)})</span>` : ''}</div>
+    ${discountOf(o) ? `<div style="color:var(--gold)">${discountLabel(o)}</div>` : ''}
+    <div style="border-top:1px dashed rgba(255,255,255,0.1); margin-top:4px; padding-top:4px">💵 المبلغ الإجمالي: <b>${total != null ? total + ' جنيه' : payNow(o) + ' جنيه + قيمة الطلبات'}</b></div>
+  </div>`;
+};
+const lastStatus = {};
+let statusReady = false;
+
+function startCustomer() {
+  $('welcome').textContent = 'أهلاً بك، ' + profile.name;
+  $('slotOrder').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
+  show('customerView');
+  (async () => {
+    try {
+      const ref = doc(db, 'welcome', me.uid);
+      const s = await getDoc(ref);
+      if (!s.exists()) {
+        await setDoc(ref, { code: 'WLC' + Math.random().toString(36).slice(2, 7).toUpperCase(), used: false, amount: 5, createdAt: serverTimestamp() });
+      }
+    } catch {}
+  })();
+  unsubs.push(onSnapshot(doc(db, 'welcome', me.uid), s => {
+    myWelcome = s.exists() ? s.data() : null;
+    renderWelcome();
+  }));
+  unsubs.push(onSnapshot(collection(db, 'coupons'), snap => {
+    coupons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }));
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('customerId', '==', me.uid), orderBy('createdAt', 'desc'), limit(50)), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    if (statusReady) {
+      list.forEach(o => {
+        if (lastStatus[o.id] && lastStatus[o.id] !== o.status) {
+          toast(`حالة طلبك #${o.id.slice(-5)} أصبحت: ${STATUS[o.status]} 🔔`, 'ok');
+          navigator.vibrate?.([200, 100, 200]);
+        }
+      });
+    }
+    list.forEach(o => { lastStatus[o.id] = o.status; });
+    statusReady = true;
+    myOrdersList = list;
+    $('myOrders').innerHTML = list.length
+      ? list.map((o, i) => orderCardCustomer(o, i)).join('')
+      : '<p class="empty">لم تقم بإجراء أي طلبات حتى الآن</p>';
+  }));
+}
+
+function stepperHtml(status, anim) {
+  const steps = [
+    { k: 'new', t: 'تم الإرسال', i: '📝' },
+    { k: 'accepted', t: 'قيد التجهيز', i: '🤝' },
+    { k: 'out', t: 'في الطريق', i: '🛵' },
+    { k: 'delivered', t: 'تم التسليم', i: '✅' }
+  ];
+  const idx = Math.max(0, STEPS.indexOf(status));
+  const pct = (idx / (steps.length - 1)) * 100;
+  return `
+  <div class="stepper ${anim ? 'anim' : ''}">
+    <div class="line"><div style="--w:${pct}%"></div></div>
+    ${steps.map((st, n) => `
+      <div class="step ${n <= idx ? 'done' : ''} ${n === idx ? 'now' : ''}">
+        <div class="dot">${st.i}</div>
+        <small>${st.t}</small>
+      </div>`).join('')}
+  </div>`;
+}
+
+function orderCardCustomer(o, i) {
+  const ch = fresh(o);
+  return `
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>طلب #${esc(o.id.slice(-5))}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted" style="margin-top:6px">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>العنوان:</b> ${esc(o.address)}</p>
+    ${o.status !== 'cancelled' ? invoiceHtml(o) : ''}
+    ${o.status !== 'cancelled' ? stepperHtml(o.status, ch) : ''}
+    ${o.status === 'delivered' && o.agentId ? (o.rating
+      ? `<p class="muted" style="color:var(--gold);margin-top:8px">تقييمك للمندوب: ${'⭐'.repeat(o.rating)}</p>`
+      : `<p class="muted" style="margin-top:8px">قيّم كابتن التوصيل:</p><div class="actions">${[1,2,3,4,5].map(n => `<button class="btn grey small" data-act="rate" data-id="${o.id}" data-stars="${n}">${n} ⭐</button>`).join('')}</div>`) : ''}
+    ${o.issue ? `<p class="muted" style="color:#f87171;margin-top:8px">⚠️ بلاغك قيد المتابعة: ${esc(o.issue)}</p>` : ''}
+    <div class="actions">
+      ${o.status === 'new' ? `<button class="btn danger small" data-act="cancel" data-id="${o.id}">إلغاء الطلب</button>` : ''}
+      ${o.status === 'delivered' || o.status === 'cancelled' ? `<button class="btn grey small" data-act="reorder" data-id="${o.id}">🔁 طلب مطابق مرة أخرى</button>` : ''}
+      ${o.status !== 'cancelled' && o.status !== 'delivered' ? `<button class="btn grey small" data-act="report" data-id="${o.id}">⚠️ إبلاغ عن مشكلة</button>` : ''}
+      <a class="btn small" style="text-decoration:none" href="tel:+2${ADMIN_PHONE}">📞 اتصال بالإدارة</a>
+    </div>
+  </div>`;
+}
+
+// ===== إرسال الطلب =====
+$('orderForm').onsubmit = async e => {
+  e.preventDefault();
+  const items = $('items').value.trim();
+  const address = $('address').value.trim();
+  const budget = Number($('budget').value) || 0;
+  if (!items || !address) return toast('يرجى تحديد الأصناف والعنوان بدقة');
+  const code = $('coupon').value.trim().toUpperCase();
+  let fee = DEFAULT_FEE, couponCode = null, welcomeCode = null, adminDiscount = 0, couponDiscount = 0;
+  if (code && myWelcome && code === myWelcome.code) {
+    if (myWelcome.used) return toast('تم استخدام كود الترحيب مسبقاً');
+    welcomeCode = code;
+    adminDiscount = myWelcome.amount || 5;
+  }
+  if (code && !welcomeCode) {
+    const c = coupons.find(x => x.code === code && x.active);
+    if (!c) return toast('كود الخصم غير فعال أو منتهي الصلاحية');
+    couponDiscount = c.amount;
+    couponCode = code;
+  }
+  const orderRef = doc(collection(db, 'orders'));
+  const orderPayload = {
+    customerId: me.uid, customerName: profile.name, customerPhone: profile.phone,
+    items, address, budget, deliveryFee: fee, couponCode, couponDiscount,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  };
+  if (welcomeCode) {
+    orderPayload.welcomeCode = welcomeCode;
+    orderPayload.adminDiscount = adminDiscount;
+    const batch = writeBatch(db);
+    batch.set(orderRef, orderPayload);
+    batch.update(doc(db, 'welcome', me.uid), { used: true });
+    await batch.commit();
+  } else {
+    await setDoc(orderRef, orderPayload);
+  }
+  e.target.reset();
+  toast('تم إرسال طلبك للمناديب بنجاح 🚀', 'ok');
+};
+
+// ===== شاشة المطعم =====
+function startRestaurant() {
+  $('restName').textContent = profile.name;
+  show('restView');
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('restaurantId', '==', me.uid)), snap => {
+    const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    $('restOrders').innerHTML = list.length
+      ? list.map((o, i) => restCard(o, i)).join('')
+      : '<p class="empty">لا توجد طلبات جارية حالياً</p>';
+  }));
+}
+
+function restCard(o, i) {
+  const ch = fresh(o);
+  return `
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>عميل: ${esc(o.customerName)}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 ${esc(o.customerPhone)}</p>
+    <p class="muted">🛒 ${esc(o.items)}</p>
+    <p class="muted">📍 ${esc(o.address)}</p>
+    ${o.agentId
+      ? `<div style="margin-top:10px;background:rgba(245,196,0,0.06);border:1px solid rgba(245,196,0,0.2);border-radius:14px;padding:12px">
+           <div>🛵 كابتن التوصيل: <b>${esc(o.agentName)}</b></div>
+           ${o.agentPhone ? `<div class="actions"><a class="btn small" style="text-decoration:none" href="tel:+2${esc(o.agentPhone)}">📞 اتصال بالمندوب</a></div>` : ''}
+         </div>`
+      : '<p class="muted" style="color:var(--gold)">⏳ في انتظار قبول أحد المناديب...</p>'}
+    ${o.status === 'new' ? `<div class="actions"><button class="btn danger small" data-act="restCancel" data-id="${o.id}">إلغاء الطلب</button></div>` : ''}
+  </div>`;
+}
+
+$('restForm').onsubmit = async e => {
+  e.preventDefault();
+  const payload = {
+    restaurantId: me.uid, restaurantName: profile.name, customerId: null,
+    customerName: $('rName').value.trim(),
+    customerPhone: $('rPhone').value.replace(/\D/g, ''),
+    items: $('rItems').value.trim(),
+    address: $('rAddress').value.trim(),
+    budget: 0, deliveryFee: DEFAULT_FEE, couponCode: null, couponDiscount: 0,
+    status: 'new', agentId: null, agentName: null, declinedBy: [],
+    createdAt: serverTimestamp()
+  };
+  if (!payload.customerName || !payload.customerPhone || !payload.address || !payload.items) return toast('يرجى استكمال كافة الحقول');
+  await addDoc(collection(db, 'orders'), payload);
+  e.target.reset();
+  toast('تم تعميم الطلب على الكباتن بنجاح ✅', 'ok');
+};
+
+// ===== شاشة المندوب =====
+function startAgent() {
+  $('agentName').textContent = profile.name;
+  $('slotOrderA').appendChild($('orderSection'));
+  $('orderSection').classList.remove('hidden');
+  tab('open');
+  show('agentView');
+
+  let ready = false;
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('status', '==', 'new')), snap => {
+    if (ready) {
+      snap.docChanges().forEach(c => {
+        const d = c.doc.data();
+        if (c.type === 'added' && isAvail() && d.customerId !== me.uid && !(d.declinedBy || []).includes(me.uid)) {
+          startRing(d);
+        }
+      });
+    }
+    ready = true;
+    open = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(o => o.customerId !== me.uid && !(o.declinedBy || []).includes(me.uid));
+    $('sec-open').innerHTML = open.length
+      ? open.map((o, i) => openCard(o, i)).join('')
+      : '<p class="empty">لا توجد طلبات متاحة في منطقتك حالياً</p>';
+  }));
+
+  unsubs.push(onSnapshot(doc(db, 'users', me.uid), s => {
+    profile = { ...profile, ...s.data() };
+    const b = $('availBtn');
+    if (b) {
+      b.textContent = isAvail() ? '🟢 متاح لاستقبال الطلبات (اضغط للإيقاف المؤقت)' : '⚪ في استراحة (اضغط للعودة للعمل)';
+      b.className = 'btn small ' + (isAvail() ? 'ok' : 'grey');
+    }
+  }));
+
+  unsubs.push(onSnapshot(query(collection(db, 'payments'), where('agentId', '==', me.uid)), snap => {
+    myPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAccount();
+  }));
+
+  unsubs.push(onSnapshot(query(collection(db, 'orders'), where('agentId', '==', me.uid)), snap => {
+    mine = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => tsOf(b) - tsOf(a));
+    $('sec-mine').innerHTML = mine.length
+      ? mine.map((o, i) => mineCard(o, i)).join('')
+      : '<p class="empty">ليس لديك طلبات نشطة حالياً</p>';
+    renderEarn();
+    renderAccount();
+  }));
+}
+
+function renderWelcome() {
+  const box = $('welcomeBox');
+  if (!box) return;
+  if (!myWelcome || myWelcome.used) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,rgba(245,196,0,0.15) 0%,rgba(18,19,24,0.9) 100%);border:1px dashed var(--gold)">
+      <h3 style="color:var(--gold)">🎁 هدية انضمامك لمكتب السلطان</h3>
+      <p class="muted">كود الخصم الحصري لك: <b style="font-size:18px;color:#fff;letter-spacing:1px">${esc(myWelcome.code)}</b></p>
+      <p class="muted">خصم 5 جنيه على أول أوردر لك من الإدارة. انسخ الكود وضعه في خانة الكوبون.</p>
+    </div>`;
+}
+
+function renderAccount() {
+  const owed = mine.filter(o => o.status === 'delivered').reduce((s, o) => s + adminCut(o), 0);
+  const paid = myPayments.reduce((s, p) => s + (p.amount || 0), 0);
+  const bal = Math.round(owed - paid);
+  const history = [...myPayments]
+    .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+    .slice(0, 5)
+    .map(p => `<div class="muted">${p.kind === 'zero' ? '🧾 تسوية وتصفير' : '💵 دفعة سداد'}: ${p.amount} جنيه${p.note && p.kind !== 'zero' ? ' · ' + esc(p.note) : ''}</div>`)
+    .join('');
+  $('accountBox').innerHTML = `
+    <h3>حساباتك مع إدارة المكتب</h3>
+    <p class="muted">حصة الإدارة المستحقة من الطلبات المسلمة: <b>${Math.round(owed)} جنيه</b></p>
+    <p class="muted">إجمالي ما قمت بتوريده وسداده: <b>${Math.round(paid)} جنيه</b></p>
+    <div class="totalBox" style="margin-top:14px">
+      <span>${bal > 0 ? 'المبلغ المتبقي عليك للإدارة' : bal < 0 ? 'رصيد لك لدى الإدارة' : 'حسابك خالص ومسوى تماماً ✅'}</span>
+      <b style="color:${bal > 0 ? 'var(--danger)' : 'var(--ok)'}">${Math.abs(bal)} جنيه</b>
+    </div>
+    ${history ? `<div style="margin-top:14px;display:grid;gap:6px">${history}</div>` : ''}`;
+}
+
+function renderEarn() {
+  const done = mine.filter(o => o.status === 'delivered');
+  $('earnPeriods').innerHTML = ['day','week','month'].map(p => {
+    const s = summarize(done, p);
+    return `<div class="pcard">
+      <span>${PERIOD_LABEL[p]}</span>
+      <b>${s.count}</b><small>طلب مكتمل</small>
+      <em>أرباحك: ${Math.round(s.earn)} جنيه</em>
+    </div>`;
+  }).join('');
+  $('earnTotal').textContent = Math.round(done.reduce((s, o) => s + (o.deliveryFee || 0) * AGENT_SHARE, 0)) + ' جنيه';
+  $('doneCount').textContent = 'إجمالي الطلبات المكتملة عبرك: ' + done.length;
+}
+
+function openCard(o, i) {
+  const ch = fresh(o);
+  return `
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${o.restaurantName ? '🍽️ طلب مطعم: ' + esc(o.restaurantName) : 'طلب عميل مباشر'}</b><span class="tag new">جديد متاح</span></div>
+    <p class="muted">🛒 <b>الأصناف:</b> ${esc(o.items)}</p>
+    <p class="muted">📍 <b>المكان:</b> ${esc(o.address)}</p>
+    <p class="muted">💰 الميزانية التقديرية: ${esc(o.budget || 'غير محددة')} جنيه</p>
+    <p class="muted" style="color:var(--gold);font-weight:700">🛵 أجرة المشوار: ${payNow(o)} جنيه (نصيبك الصافي: ${Math.round(o.deliveryFee * AGENT_SHARE)} جنيه)</p>
+    <div class="actions">
+      <button class="btn ok small" data-act="accept" data-id="${o.id}">قبول المشوار 🛵</button>
+      <button class="btn grey small" data-act="ret" data-id="${o.id}">تخطي</button>
+    </div>
+  </div>`;
+}
+
+function mineCard(o, i) {
+  const ch = fresh(o);
+  const nxt = NEXT[o.status];
+  const label = o.status === 'accepted' ? 'خرجت للتوصيل 🛵' : 'تم التسليم وقبض المبلغ ✅';
+  return `
+  <div class="card ${ch ? '' : 'noanim'}" style="animation-delay:${i * 0.06}s">
+    <div class="row"><b>${esc(o.customerName)}${o.restaurantName ? ` <span class="muted">(مطعم: ${esc(o.restaurantName)})</span>` : ''}</b><span class="tag ${o.status}">${STATUS[o.status]}</span></div>
+    <p class="muted">📞 هاتف العميل: <a href="tel:${esc(o.customerPhone)}" style="color:var(--gold);text-decoration:none;font-weight:700">${esc(o.customerPhone)}</a></p>
+    <p class="muted">🛒 الأصناف: ${esc(o.items)}</p>
+    <p class="muted">📍 العنوان: ${esc(o.address)}</p>
+    ${o.adminNote ? `<p class="muted" style="color:var(--gold)">📝 تنبيه الإدارة: ${esc(o.adminNote)}</p>` : ''}
+    ${nxt ? `<button class="btn small" style="margin-top:12px" data-act="next" data-id="${o.id}">${label}</button>` : ''}
+  </div>`;
+}
+
+// ===== إجراءات الأوامر والتعاملات =====
+async function acceptOrder(id) {
+  if (!isAvail()) return toast('قم بتفعيل حالتك إلى (متاح) أولاً 🟢');
+  const ref = doc(db, 'orders', id);
+  try {
+    await runTransaction(db, async tx => {
+      const s = await tx.get(ref);
+      if (!s.exists() || s.data().status !== 'new') throw new Error('taken');
+      tx.update(ref, { status: 'accepted', agentId: me.uid, agentName: profile.name, agentPhone: profile.phone, acceptedAt: serverTimestamp() });
+    });
+    stopRing();
+    toast('تم قبول الطلب، توجه لاستلامه فوراً 🛵', 'ok');
+  } catch {
+    toast('عذراً، قام كابتن آخر بقبول هذا الطلب قبلك');
+  }
+}
+
+const actions = {
+  logout: () => signOut(auth),
+  seeOpen: () => { tab('open'); stopRing(); },
+  dismiss: () => stopRing(),
+  accept: id => acceptOrder(id),
+  ret: id => updateDoc(doc(db, 'orders', id), { declinedBy: arrayUnion(me.uid) }),
+  restCancel: async id => {
+    if (!confirm('هل تريد بالتأكيد إلغاء هذا الطلب؟')) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: 'ألغاه المطعم' });
+    toast('تم إلغاء الطلب');
+  },
+  cancel: async id => {
+    const reason = prompt('يرجى كتابة سبب الإلغاء إن رغبت (اختياري)');
+    if (reason === null) return;
+    await updateDoc(doc(db, 'orders', id), { status: 'cancelled', cancelReason: reason.trim() || 'ألغاه العميل' });
+    toast('تم إلغاء طلبك');
+  },
+  reorder: id => {
+    const o = myOrdersList.find(x => x.id === id);
+    if (!o) return;
+    $('items').value = o.items;
+    $('address').value = o.address;
+    $('budget').value = o.budget || '';
+    $('orderSection').scrollIntoView({ behavior: 'smooth' });
+    toast('تم ملء تفاصيل الطلب السابقة، راجعها واضغط إرسال', 'ok');
+  },
+  avail: () => updateDoc(doc(db, 'users', me.uid), { available: !isAvail() }),
+  rate: async (id, el) => {
+    const stars = Number(el.dataset.stars);
+    await updateDoc(doc(db, 'orders', id), { rating: stars, ratedAt: serverTimestamp() });
+    toast('شكراً جزيلاً على تقييمك ⭐', 'ok');
+  },
+  report: async id => {
+    const txt = prompt('يرجى توضيح الشكوى أو الملاحظة (تأخير، أصناف ناقصة..)');
+    if (!txt || !txt.trim()) return;
+    await updateDoc(doc(db, 'orders', id), { issue: txt.trim(), issueAt: serverTimestamp() });
+    toast('تم إرسال بلاغك للإدارة للمتابعة السريعة', 'ok');
+  },
+  next: async id => {
+    const o = mine.find(x => x.id === id);
+    if (!o || !NEXT[o.status]) return;
+    const patch = { status: NEXT[o.status] };
+    let restPrice = null;
+    if (patch.status === 'out') patch.outAt = serverTimestamp();
+    if (patch.status === 'delivered') {
+      let g = null;
+      while (g === null) {
+        const v = prompt('أدخل قيمة المشتريات/الأصناف المحصلة من العميل بالفاتورة:');
+        if (v === null) return;
+        if (v.trim() !== '' && !isNaN(Number(v)) && Number(v) >= 0) g = Number(v);
+        else alert('يرجى إدخال أرقام صحيحة فقط');
+      }
+      if (o.restaurantId) restPrice = g; else patch.goodsPrice = g;
+      patch.deliveredAt = serverTimestamp();
+    }
+    await updateDoc(doc(db, 'orders', id), patch);
+    if (restPrice != null) await setDoc(doc(db, 'prices', id), { price: restPrice, createdAt: serverTimestamp() });
+    toast(patch.status === 'delivered' ? 'تم إنهاء وتسليم الطلب بنجاح ✅' : 'تم تحديث حالة الطلب', 'ok');
+  }
+};
+
+function tab(name) {
+  ['open','mine','earn'].forEach(n => {
+    $('sec-' + n).classList.toggle('hidden', n !== name);
+    $('tab-' + n).classList.toggle('active', n === name);
+  });
+  $('slotOrderA').classList.toggle('hidden', name !== 'open');
+  if (name === 'earn') renderEarn();
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab]');
+  if (t) return tab(t.dataset.tab);
+  const b = e.target.closest('[data-act]');
+  if (b) actions[b.dataset.act]?.(b.dataset.id, b);
+});
 
 setMode('login');
+setTimeout(() => $('splash').classList.add('gone'), 1200);
 </script>
 </body>
 </html>
